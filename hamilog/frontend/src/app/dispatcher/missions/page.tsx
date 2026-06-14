@@ -11,29 +11,14 @@ import {
   getStoredUser,
 } from "@/lib/api-client";
 
-import PriorityBadge from "@/components/dispatcher/PriorityBadge";
-
-type MissionStatusFilter = {
-  unassigned: boolean;
-  assigned: boolean;
-  active: boolean;
-  cooling: boolean;
-  urgencyLow: boolean;
-  urgencyMedium: boolean;
-  urgencyHigh: boolean;
-  urgencyCritical: boolean;
-  orderByDeliveryDate: boolean;
-};
-
-type NewMissionForm = {
-  title: string;
-  cargoDescription: string;
-  from: string;
-  to: string;
-  urgency: MissionPriority;
-  cooling: "yes" | "no";
-  heavyLoad: "yes" | "no";
-};
+import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import MissionEntry from "@/components/dispatcher/missions/MissionEntry";
+import MissionFilters, {
+  type MissionStatusFilter,
+} from "@/components/dispatcher/missions/MissionFilters";
+import NewMissionFormPanel, {
+  type NewMissionForm,
+} from "@/components/dispatcher/missions/NewMissionFormPanel";
 
 const initialFilters: MissionStatusFilter = {
   unassigned: true,
@@ -56,24 +41,6 @@ const initialForm: NewMissionForm = {
   cooling: "no",
   heavyLoad: "no",
 };
-
-function formatDateTime(dateValue?: string) {
-  if (!dateValue) return "Unknown";
-
-  const date = new Date(dateValue);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Unknown";
-  }
-
-  return date.toLocaleString([], {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 function getMissionState(mission: Mission) {
   if (mission.status === "in_transit") return "active";
@@ -124,63 +91,11 @@ function getPriorityRank(priority: MissionPriority) {
   }
 }
 
-function StatBox({
-  title,
-  value,
-  subtitle,
-}: {
-  title: string;
-  value: number;
-  subtitle: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-app bg-card p-5 shadow-xl">
-      <p className="text-sm text-muted">{title}</p>
-      <p className="mt-2 text-3xl font-black text-main">{value}</p>
-      <p className="mt-1 text-xs text-soft">{subtitle}</p>
-    </div>
-  );
-}
-
-function FilterCheckbox({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onChange}
-      className="flex w-full items-center justify-between rounded-xl border border-app bg-app px-4 py-3 text-left text-sm transition hover:bg-card-soft"
-    >
-      <span className="text-muted">{label}</span>
-
-      <span
-        className={`flex h-6 w-6 items-center justify-center rounded-md border text-sm font-black ${
-          checked
-            ? "border-emerald-500 bg-emerald-500 text-main"
-            : "border-app bg-card-soft text-transparent"
-        }`}
-      >
-        ✓
-      </span>
-    </button>
-  );
-}
-
 async function createMission(body: NewMissionForm) {
   const token = getToken();
-
-  const apiUrl =
-    process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
   const isHeavyLoad = body.heavyLoad === "yes";
   const requiresCooling = body.cooling === "yes";
-
   const missionTitle =
     body.title.trim() ||
     body.cargoDescription.trim().slice(0, 40) ||
@@ -279,26 +194,20 @@ export default function MissionsPage() {
   const filteredMissions = useMemo(() => {
     let result = missions.filter((mission) => {
       const state = getMissionState(mission);
-
       const statusMatches =
         (filters.unassigned && state === "unassigned") ||
         (filters.assigned && state === "assigned") ||
         (filters.active && state === "active");
-
       const noStatusFilterSelected =
         !filters.unassigned && !filters.assigned && !filters.active;
-
       const statusOk = noStatusFilterSelected || statusMatches;
-
       const coolingOk =
         !filters.cooling || Boolean(mission.cargo?.requires_cooling);
-
       const urgencyFiltersSelected =
         filters.urgencyLow ||
         filters.urgencyMedium ||
         filters.urgencyHigh ||
         filters.urgencyCritical;
-
       const urgencyOk =
         !urgencyFiltersSelected ||
         (filters.urgencyLow && mission.priority === "low") ||
@@ -312,8 +221,7 @@ export default function MissionsPage() {
     result = [...result].sort((a, b) => {
       if (filters.orderByDeliveryDate) {
         return (
-          new Date(b.created_at).getTime() -
-          new Date(a.created_at).getTime()
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
       }
 
@@ -376,9 +284,7 @@ export default function MissionsPage() {
             <p className="text-sm font-semibold uppercase tracking-wider text-red-400">
               Mission Management
             </p>
-
             <h1 className="mt-1 text-3xl font-black">Missions</h1>
-
             <p className="mt-2 text-muted">
               Add missions, review delivery details, and filter the mission pool.
             </p>
@@ -394,19 +300,27 @@ export default function MissionsPage() {
         </header>
 
         <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <StatBox title="Missions" value={stats.total} subtitle="Total missions" />
-          <StatBox
+          <DispatcherStatBox
+            title="Missions"
+            value={stats.total}
+            subtitle="Total missions"
+          />
+          <DispatcherStatBox
             title="Unassigned"
             value={stats.unassigned}
             subtitle="Needs driver"
           />
-          <StatBox
+          <DispatcherStatBox
             title="Assigned"
             value={stats.assigned}
             subtitle="Driver selected"
           />
-          <StatBox title="Active" value={stats.active} subtitle="In delivery" />
-          <StatBox
+          <DispatcherStatBox
+            title="Active"
+            value={stats.active}
+            subtitle="In delivery"
+          />
+          <DispatcherStatBox
             title="Cooling"
             value={stats.cooling}
             subtitle="Requires cooling"
@@ -414,138 +328,12 @@ export default function MissionsPage() {
         </section>
 
         {isAddOpen && (
-          <section className="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 shadow-xl">
-            <div className="mb-5">
-              <h2 className="text-xl font-black text-main">
-                Add New Mission
-              </h2>
-
-              <p className="mt-1 text-sm text-muted">
-                Fill the delivery information and post it to the mission pool.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-muted">
-                  Mission title
-                </label>
-
-                <input
-                  value={form.title}
-                  onChange={(event) => updateForm("title", event.target.value)}
-                  placeholder="Example: Medical supplies delivery"
-                  className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-muted">
-                  Urgency
-                </label>
-
-                <select
-                  value={form.urgency}
-                  onChange={(event) =>
-                    updateForm("urgency", event.target.value as MissionPriority)
-                  }
-                  className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="critical">Critical</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-muted">
-                  Cooling
-                </label>
-
-                <select
-                  value={form.cooling}
-                  onChange={(event) =>
-                    updateForm("cooling", event.target.value as "yes" | "no")
-                  }
-                  className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
-                >
-                  <option value="no">No</option>
-                  <option value="yes">Yes</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-muted">
-                  Heavy load
-                </label>
-
-                <select
-                  value={form.heavyLoad}
-                  onChange={(event) =>
-                    updateForm("heavyLoad", event.target.value as "yes" | "no")
-                  }
-                  className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
-                >
-                  <option value="no">No</option>
-                  <option value="yes">Yes</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-muted">
-                  From
-                </label>
-
-                <input
-                  value={form.from}
-                  onChange={(event) => updateForm("from", event.target.value)}
-                  placeholder="Pickup address"
-                  className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-muted">
-                  To
-                </label>
-
-                <input
-                  value={form.to}
-                  onChange={(event) => updateForm("to", event.target.value)}
-                  placeholder="Dropoff address"
-                  className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-semibold text-muted">
-                  Cargo description
-                </label>
-
-                <textarea
-                  value={form.cargoDescription}
-                  onChange={(event) =>
-                    updateForm("cargoDescription", event.target.value)
-                  }
-                  placeholder="Describe what should be delivered..."
-                  rows={4}
-                  className="w-full resize-none rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
-                />
-              </div>
-            </div>
-
-            <div className="mt-5 flex justify-end">
-              <button
-                type="button"
-                onClick={handlePostMission}
-                disabled={posting}
-                className="rounded-xl bg-emerald-600 px-6 py-3 text-sm font-bold text-main transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {posting ? "Posting..." : "Post Mission"}
-              </button>
-            </div>
-          </section>
+          <NewMissionFormPanel
+            form={form}
+            posting={posting}
+            onUpdate={updateForm}
+            onSubmit={handlePostMission}
+          />
         )}
 
         <section className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_320px]">
@@ -569,233 +357,26 @@ export default function MissionsPage() {
                 const isExpanded = expandedMissionId === mission.id;
 
                 return (
-                  <article key={mission.id} className="bg-card">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setExpandedMissionId(isExpanded ? null : mission.id)
-                      }
-                      className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-card-soft"
-                    >
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="truncate font-bold text-main">
-                            {mission.title}
-                          </h3>
-
-                          <PriorityBadge priority={mission.priority} />
-
-                          <span
-                            className={`rounded-full border px-3 py-1 text-xs font-bold capitalize ${getStateClasses(
-                              state
-                            )}`}
-                          >
-                            {state.replace("_", " ")}
-                          </span>
-
-                          {mission.cargo?.requires_cooling && (
-                            <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-300">
-                              Cooling
-                            </span>
-                          )}
-                        </div>
-
-                        <p className="mt-1 truncate text-sm text-muted">
-                          {mission.pickup?.address || "Pickup TBD"} →{" "}
-                          {mission.dropoff?.address || "Dropoff TBD"}
-                        </p>
-                      </div>
-
-                      <span className="text-xl text-muted">
-                        {isExpanded ? "⌃" : "⌄"}
-                      </span>
-                    </button>
-
-                    {isExpanded && (
-                      <div className="border-t border-app bg-app/60 px-5 py-5">
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                          <div className="rounded-xl border border-app bg-card p-4">
-                            <p className="text-xs uppercase tracking-wider text-soft">
-                              Status
-                            </p>
-
-                            <p
-                              className={`mt-2 inline-flex rounded-full border px-3 py-1 text-sm font-bold capitalize ${getStateClasses(
-                                state
-                              )}`}
-                            >
-                              {state.replace("_", " ")}
-                            </p>
-                          </div>
-
-                          <div className="rounded-xl border border-app bg-card p-4">
-                            <p className="text-xs uppercase tracking-wider text-soft">
-                              Urgency
-                            </p>
-
-                            <div className="mt-2">
-                              <PriorityBadge priority={mission.priority} />
-                            </div>
-                          </div>
-
-                          <div className="rounded-xl border border-app bg-card p-4">
-                            <p className="text-xs uppercase tracking-wider text-soft">
-                              Published
-                            </p>
-
-                            <p className="mt-2 font-semibold text-main">
-                              {formatDateTime(mission.created_at)}
-                            </p>
-                          </div>
-
-                          <div className="rounded-xl border border-app bg-card p-4">
-                            <p className="text-xs uppercase tracking-wider text-soft">
-                              From
-                            </p>
-
-                            <p className="mt-2 font-semibold text-main">
-                              {mission.pickup?.address ||
-                                "Pickup location TBD"}
-                            </p>
-                          </div>
-
-                          <div className="rounded-xl border border-app bg-card p-4">
-                            <p className="text-xs uppercase tracking-wider text-soft">
-                              To
-                            </p>
-
-                            <p className="mt-2 font-semibold text-main">
-                              {mission.dropoff?.address ||
-                                "Dropoff location TBD"}
-                            </p>
-                          </div>
-
-                          <div className="rounded-xl border border-app bg-card p-4">
-                            <p className="text-xs uppercase tracking-wider text-soft">
-                              Assigned Driver
-                            </p>
-
-                            <p className="mt-2 font-semibold text-main">
-                              {mission.assigned_driver_id || "No driver assigned"}
-                            </p>
-                          </div>
-
-                          <div className="rounded-xl border border-app bg-card p-4 md:col-span-2">
-                            <p className="text-xs uppercase tracking-wider text-soft">
-                              Cargo
-                            </p>
-
-                            <p className="mt-2 font-semibold text-main">
-                              {mission.description || "No cargo description"}
-                            </p>
-
-                            <p className="mt-1 text-sm text-muted">
-                              {mission.cargo?.weight_kg ?? "?"} kg ·{" "}
-                              {mission.cargo?.volume_liters ?? "?"} L
-                              {mission.cargo?.requires_cooling
-                                ? " · Cooling required"
-                                : ""}
-                            </p>
-                          </div>
-
-                          <div className="rounded-xl border border-app bg-card p-4">
-                            <p className="text-xs uppercase tracking-wider text-soft">
-                              Mission ID
-                            </p>
-
-                            <p className="mt-2 font-mono text-sm text-muted">
-                              {mission.id}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </article>
+                  <MissionEntry
+                    key={mission.id}
+                    mission={mission}
+                    state={state}
+                    isExpanded={isExpanded}
+                    onToggle={() =>
+                      setExpandedMissionId(isExpanded ? null : mission.id)
+                    }
+                    getStateClasses={getStateClasses}
+                  />
                 );
               })}
             </div>
           </div>
 
-          <aside className="rounded-2xl border border-app bg-card p-5 shadow-xl">
-            <div className="mb-4">
-              <h2 className="text-xl font-bold text-main">Filters</h2>
-              <p className="mt-1 text-sm text-muted">
-                Tick filters with ✓ to control the mission list.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <FilterCheckbox
-                label="Unassigned"
-                checked={filters.unassigned}
-                onChange={() => updateFilter("unassigned")}
-              />
-
-              <FilterCheckbox
-                label="Assigned"
-                checked={filters.assigned}
-                onChange={() => updateFilter("assigned")}
-              />
-
-              <FilterCheckbox
-                label="Active"
-                checked={filters.active}
-                onChange={() => updateFilter("active")}
-              />
-
-              <FilterCheckbox
-                label="Cooling"
-                checked={filters.cooling}
-                onChange={() => updateFilter("cooling")}
-              />
-
-              <FilterCheckbox
-                label="Order by delivery date"
-                checked={filters.orderByDeliveryDate}
-                onChange={() => updateFilter("orderByDeliveryDate")}
-              />
-
-              <div className="pt-3">
-                <p className="mb-2 text-sm font-bold text-muted">
-                  Urgency
-                </p>
-
-                <div className="space-y-3">
-                  <FilterCheckbox
-                    label="Urgency: Low"
-                    checked={filters.urgencyLow}
-                    onChange={() => updateFilter("urgencyLow")}
-                  />
-
-                  <FilterCheckbox
-                    label="Urgency: Medium"
-                    checked={filters.urgencyMedium}
-                    onChange={() => updateFilter("urgencyMedium")}
-                  />
-
-                  <FilterCheckbox
-                    label="Urgency: High"
-                    checked={filters.urgencyHigh}
-                    onChange={() => updateFilter("urgencyHigh")}
-                  />
-
-                  <FilterCheckbox
-                    label="Urgency: Critical"
-                    checked={filters.urgencyCritical}
-                    onChange={() => updateFilter("urgencyCritical")}
-                  />
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setFilters(initialFilters)}
-                className="mt-4 w-full rounded-xl border border-app bg-card-soft px-4 py-3 text-sm font-bold text-main transition hover:bg-card-soft"
-              >
-                Reset Filters
-              </button>
-            </div>
-          </aside>
+          <MissionFilters
+            filters={filters}
+            onToggle={updateFilter}
+            onReset={() => setFilters(initialFilters)}
+          />
         </section>
       </div>
     </main>

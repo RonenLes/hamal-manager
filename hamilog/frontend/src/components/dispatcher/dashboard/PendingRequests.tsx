@@ -1,8 +1,8 @@
-// src/components/dispatcher/PendingRequests.tsx
+// src/components/dispatcher/dashboard/PendingRequests.tsx
 
 import type { Mission } from "@/lib/api-client";
 import DashboardPanel from "./DashboardPanel";
-import PriorityBadge from "./PriorityBadge";
+import PriorityBadge from "../shared/PriorityBadge";
 
 type PendingRequestsProps = {
   missions: Mission[];

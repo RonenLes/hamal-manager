@@ -1,8 +1,8 @@
-// src/components/dispatcher/UnassignedMissions.tsx
+// src/components/dispatcher/dashboard/UnassignedMissions.tsx
 
 import type { Mission } from "@/lib/api-client";
 import DashboardPanel from "./DashboardPanel";
-import PriorityBadge from "./PriorityBadge";
+import PriorityBadge from "../shared/PriorityBadge";
 
 type UnassignedMissionsProps = {
   missions: Mission[];

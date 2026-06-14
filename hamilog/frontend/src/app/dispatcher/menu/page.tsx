@@ -1,6 +1,6 @@
 // src/app/dispatcher/menu/page.tsx
 
-import MenuCard from "@/components/dispatcher/MenuCard";
+import MenuCard from "@/components/shared/MenuCard";
 
 const menuItems = [
   {
@@ -29,7 +29,7 @@ const menuItems = [
   },
   {
     title: "Drivers",
-    description: "View driver status and availability.",
+    description: "View driver status, availability and new request for new drivers.",
     icon: "👥",
     href: "/dispatcher/drivers",
   },
@@ -58,7 +58,12 @@ const menuItems = [
     icon: "⚙️",
     href: "/dispatcher/settings",
   },
-  
+  {
+    title: "Help",
+    description: "Learn what each dispatcher page offers.",
+    icon: "❓",
+    href: "/dispatcher/help",
+  },
 ];
 
 export default function DispatcherMenuPage() {
@@ -67,9 +72,7 @@ export default function DispatcherMenuPage() {
       <div className="mx-auto max-w-7xl">
         <header className="mb-8">
           <h1 className="text-3xl font-black">Dispatcher Menu</h1>
-          <p className="mt-2 text-muted">
-            Choose a dispatcher page or tool.
-          </p>
+          <p className="mt-2 text-muted">Choose a dispatcher page or tool.</p>
         </header>
 
         <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">

@@ -12,6 +12,7 @@ import type {
   CargoAnalysisResponse,
   AssignResponse,
   ApiError,
+  DriverRequest,
 } from './types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -29,6 +30,7 @@ export type {
   CargoSpecifications,
   Location,
   Driver,
+  DriverRequest,
   LoginResponse,
   StoredUser,
   CargoAnalysisResponse,
@@ -219,6 +221,34 @@ export async function getDrivers(): Promise<Driver[]> {
 // GET /api/drivers/:id
 export async function getDriver(driverId: string): Promise<Driver> {
   return apiFetch<Driver>(`/api/drivers/${driverId}`);
+}
+
+export async function getPendingDriverRequestsCount() {
+  const data = await apiFetch<{ count: number }>(
+    '/api/driver-requests/pending/count',
+  );
+
+  return data.count;
+}
+
+export async function getPendingDriverRequests(): Promise<DriverRequest[]> {
+  return apiFetch<DriverRequest[]>('/api/driver-requests?status=pending');
+}
+
+export async function approveDriverRequest(
+  requestId: string,
+): Promise<DriverRequest> {
+  return apiFetch<DriverRequest>(`/api/driver-requests/${requestId}/approve`, {
+    method: 'POST',
+  });
+}
+
+export async function declineDriverRequest(
+  requestId: string,
+): Promise<DriverRequest> {
+  return apiFetch<DriverRequest>(`/api/driver-requests/${requestId}/decline`, {
+    method: 'POST',
+  });
 }
 
 // ---------------------------------------------------------------------------

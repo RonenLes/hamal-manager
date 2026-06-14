@@ -22,20 +22,14 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const initialRole = searchParams.get("role") === "driver" ? "driver" : "dispatcher";
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"dispatcher" | "driver">("dispatcher");
+  const [role, setRole] = useState<"dispatcher" | "driver">(initialRole);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shaking, setShaking] = useState(false);
-
-  // Auto-fill role from URL param
-  useEffect(() => {
-    const urlRole = searchParams.get("role");
-    if (urlRole === "dispatcher" || urlRole === "driver") {
-      setRole(urlRole);
-    }
-  }, [searchParams]);
 
   // Redirect if already logged in
   useEffect(() => {

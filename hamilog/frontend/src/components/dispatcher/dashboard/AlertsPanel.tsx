@@ -1,4 +1,4 @@
-// src/components/dispatcher/AlertsPanel.tsx
+// src/components/dispatcher/dashboard/AlertsPanel.tsx
 
 import type { Mission, Driver } from "@/lib/api-client";
 import DashboardPanel from "./DashboardPanel";

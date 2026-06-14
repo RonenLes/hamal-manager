@@ -1,4 +1,4 @@
-// src/components/dispatcher/RecentActivity.tsx
+// src/components/dispatcher/dashboard/RecentActivity.tsx
 
 import type { Mission, Driver } from "@/lib/api-client";
 import DashboardPanel from "./DashboardPanel";

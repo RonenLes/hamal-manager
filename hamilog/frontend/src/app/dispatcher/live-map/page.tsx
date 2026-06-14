@@ -12,7 +12,8 @@ import {
   getStoredUser,
 } from "@/lib/api-client";
 
-import PriorityBadge from "@/components/dispatcher/PriorityBadge";
+import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import PriorityBadge from "@/components/dispatcher/shared/PriorityBadge";
 
 type DeliveryMapState =
   | "active"
@@ -131,24 +132,6 @@ function locationToSvgPoint(
   };
 }
 
-function StatBox({
-  title,
-  value,
-  subtitle,
-}: {
-  title: string;
-  value: number;
-  subtitle: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-app bg-card p-5 shadow-xl">
-      <p className="text-sm text-muted">{title}</p>
-      <p className="mt-2 text-3xl font-black text-main">{value}</p>
-      <p className="mt-1 text-xs text-soft">{subtitle}</p>
-    </div>
-  );
-}
-
 export default function LiveDeliveryMapPage() {
   const router = useRouter();
 
@@ -253,27 +236,31 @@ export default function LiveDeliveryMapPage() {
         </header>
 
         <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <StatBox title="Deliveries" value={stats.total} subtitle="All shown" />
+          <DispatcherStatBox
+            title="Deliveries"
+            value={stats.total}
+            subtitle="All shown"
+          />
 
-          <StatBox
+          <DispatcherStatBox
             title="Active"
             value={stats.active}
             subtitle="Green points"
           />
 
-          <StatBox
+          <DispatcherStatBox
             title="Assigned"
             value={stats.assigned}
             subtitle="Waiting to start"
           />
 
-          <StatBox
+          <DispatcherStatBox
             title="Unassigned"
             value={stats.unassigned}
             subtitle="Needs driver"
           />
 
-          <StatBox
+          <DispatcherStatBox
             title="Delivered"
             value={stats.delivered}
             subtitle="Completed"

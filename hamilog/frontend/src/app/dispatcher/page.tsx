@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -13,13 +13,13 @@ import {
   clearToken,
 } from "@/lib/api-client";
 
-import TodaysSchedule from "@/components/dispatcher/TodaysSchedule";
-import PendingRequests from "@/components/dispatcher/PendingRequests";
-import UnassignedMissions from "@/components/dispatcher/UnassignedMissions";
-import AlertsPanel from "@/components/dispatcher/AlertsPanel";
-import DriverStatusPanel from "@/components/dispatcher/DriverStatusPanel";
-import RecentActivity from "@/components/dispatcher/RecentActivity";
-import StatCard from "@/components/dispatcher/StatCard";
+import TodaysSchedule from "@/components/dispatcher/dashboard/TodaysSchedule";
+import PendingRequests from "@/components/dispatcher/dashboard/PendingRequests";
+import UnassignedMissions from "@/components/dispatcher/dashboard/UnassignedMissions";
+import AlertsPanel from "@/components/dispatcher/dashboard/AlertsPanel";
+import DriverStatusPanel from "@/components/dispatcher/dashboard/DriverStatusPanel";
+import RecentActivity from "@/components/dispatcher/dashboard/RecentActivity";
+import StatCard from "@/components/dispatcher/dashboard/StatCard";
 
 export default function DispatcherPage() {
   const router = useRouter();
@@ -57,16 +57,6 @@ export default function DispatcherPage() {
     const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
   }, []);
-
-  const activeDrivers = useMemo(
-    () => drivers.filter((driver) => driver.status !== "offline").length,
-    [drivers]
-  );
-
-  const completedMissions = useMemo(
-    () => missions.filter((mission) => mission.status === "delivered").length,
-    [missions]
-  );
 
   function handleLogout() {
     clearToken();

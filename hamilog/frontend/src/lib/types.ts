@@ -149,6 +149,16 @@ export interface WSMissionAssignedToYou {
   mission: Mission;
 }
 
+export type DriverRequest = {
+  id: string;
+  name: string;
+  phone: string;
+  address: string;
+  car_type: CarType;
+  status: "pending" | "approved" | "declined";
+  created_at: string;
+};
+
 export type WSDispatchMessage =
   | WSGpsUpdate
   | WSMissionStatusUpdate

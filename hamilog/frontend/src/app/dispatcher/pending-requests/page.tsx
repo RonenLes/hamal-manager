@@ -13,71 +13,11 @@ import {
   assignMission,
 } from "@/lib/api-client";
 
-import PriorityBadge from "@/components/dispatcher/PriorityBadge";
-
-type RequestStatus = "pending" | "accepted" | "declined";
-
-type DeliveryRequest = {
-  id: string;
-  driver: Driver;
-  mission: Mission;
-  requestedAt: string;
-  driverScore: number;
-  status: RequestStatus;
-};
-
-function formatDateTime(dateValue?: string) {
-  if (!dateValue) return "Unknown";
-
-  const date = new Date(dateValue);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Unknown";
-  }
-
-  return date.toLocaleString([], {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function getRequestStatusClasses(status: RequestStatus) {
-  switch (status) {
-    case "pending":
-      return "border-orange-500/30 bg-orange-500/10 text-orange-300";
-    case "accepted":
-      return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
-    case "declined":
-      return "border-red-500/30 bg-red-500/10 text-red-300";
-  }
-}
-
-function getDriverScoreClasses(score: number) {
-  if (score >= 85) return "text-emerald-300";
-  if (score >= 65) return "text-orange-300";
-  return "text-red-300";
-}
-
-function StatBox({
-  title,
-  value,
-  subtitle,
-}: {
-  title: string;
-  value: number;
-  subtitle: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-app bg-card p-5 shadow-xl">
-      <p className="text-sm text-muted">{title}</p>
-      <p className="mt-2 text-3xl font-black text-main">{value}</p>
-      <p className="mt-1 text-xs text-soft">{subtitle}</p>
-    </div>
-  );
-}
+import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import PendingRequestEntry, {
+  type DeliveryRequest,
+  type RequestStatus,
+} from "@/components/dispatcher/pending-requests/PendingRequestEntry";
 
 function createMockRequests(missions: Mission[], drivers: Driver[]) {
   const availableMissions = missions.filter(
@@ -107,8 +47,6 @@ function createMockRequests(missions: Mission[], drivers: Driver[]) {
 export default function PendingRequestsPage() {
   const router = useRouter();
 
-  const [missions, setMissions] = useState<Mission[]>([]);
-  const [drivers, setDrivers] = useState<Driver[]>([]);
   const [requests, setRequests] = useState<DeliveryRequest[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -129,9 +67,6 @@ export default function PendingRequestsPage() {
         getMissions(),
         getDrivers(),
       ]);
-
-      setMissions(missionsData);
-      setDrivers(driversData);
 
       setRequests((currentRequests) => {
         const nextRequests = createMockRequests(missionsData, driversData);
@@ -244,34 +179,29 @@ export default function PendingRequestsPage() {
           <p className="text-sm font-semibold uppercase tracking-wider text-orange-400">
             Delivery Pool Requests
           </p>
-
           <h1 className="mt-1 text-3xl font-black">Pending Requests</h1>
-
           <p className="mt-2 text-muted">
             Drivers requesting to deliver packages from the delivery pool.
           </p>
         </header>
 
         <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatBox
+          <DispatcherStatBox
             title="Total Requests"
             value={stats.total}
             subtitle="All driver requests"
           />
-
-          <StatBox
+          <DispatcherStatBox
             title="Pending"
             value={stats.pending}
             subtitle="Waiting for decision"
           />
-
-          <StatBox
+          <DispatcherStatBox
             title="Accepted"
             value={stats.accepted}
             subtitle="Approved by dispatcher"
           />
-
-          <StatBox
+          <DispatcherStatBox
             title="Declined"
             value={stats.declined}
             subtitle="Rejected requests"
@@ -295,199 +225,19 @@ export default function PendingRequestsPage() {
 
             {sortedRequests.map((request) => {
               const isExpanded = expandedId === request.id;
-              const isActionLoading = actionLoadingId === request.id;
 
               return (
-                <article key={request.id} className="bg-card">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setExpandedId(isExpanded ? null : request.id)
-                    }
-                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-card-soft"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="font-bold text-main">
-                          Driver: {request.driver.name}
-                        </h3>
-
-                        <span
-                          className={`rounded-full border px-3 py-1 text-xs font-bold capitalize ${getRequestStatusClasses(
-                            request.status
-                          )}`}
-                        >
-                          {request.status}
-                        </span>
-
-                        <PriorityBadge priority={request.mission.priority} />
-                      </div>
-
-                      <p className="mt-1 truncate text-sm text-muted">
-                        Delivery: {request.mission.title} · To:{" "}
-                        {request.mission.dropoff?.address || "Dropoff TBD"}
-                      </p>
-                    </div>
-
-                    <div className="flex shrink-0 items-center gap-3">
-                      <span
-                        className={`text-sm font-black ${getDriverScoreClasses(
-                          request.driverScore
-                        )}`}
-                      >
-                        {request.driverScore}%
-                      </span>
-
-                      <span className="text-xl text-muted">
-                        {isExpanded ? "⌃" : "⌄"}
-                      </span>
-                    </div>
-                  </button>
-
-                  {isExpanded && (
-                    <div className="border-t border-app bg-app/60 px-5 py-5">
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        <div className="rounded-xl border border-app bg-card p-4">
-                          <p className="text-xs uppercase tracking-wider text-soft">
-                            Driver
-                          </p>
-
-                          <p className="mt-2 font-semibold text-main">
-                            {request.driver.name}
-                          </p>
-
-                          <p className="mt-1 text-sm capitalize text-muted">
-                            Status: {request.driver.status.replace("_", " ")}
-                          </p>
-                        </div>
-
-                        <div className="rounded-xl border border-app bg-card p-4">
-                          <p className="text-xs uppercase tracking-wider text-soft">
-                            From
-                          </p>
-
-                          <p className="mt-2 font-semibold text-main">
-                            {request.mission.pickup?.address ||
-                              "Pickup location TBD"}
-                          </p>
-                        </div>
-
-                        <div className="rounded-xl border border-app bg-card p-4">
-                          <p className="text-xs uppercase tracking-wider text-soft">
-                            To
-                          </p>
-
-                          <p className="mt-2 font-semibold text-main">
-                            {request.mission.dropoff?.address ||
-                              "Dropoff location TBD"}
-                          </p>
-                        </div>
-
-                        <div className="rounded-xl border border-app bg-card p-4">
-                          <p className="text-xs uppercase tracking-wider text-soft">
-                            Request Time
-                          </p>
-
-                          <p className="mt-2 font-semibold text-main">
-                            {formatDateTime(request.requestedAt)}
-                          </p>
-
-                          <p className="mt-1 text-sm text-muted">
-                            Initially published:{" "}
-                            {formatDateTime(request.mission.created_at)}
-                          </p>
-                        </div>
-
-                        <div className="rounded-xl border border-app bg-card p-4">
-                          <p className="text-xs uppercase tracking-wider text-soft">
-                            Driver Score
-                          </p>
-
-                          <p
-                            className={`mt-2 text-3xl font-black ${getDriverScoreClasses(
-                              request.driverScore
-                            )}`}
-                          >
-                            {request.driverScore}%
-                          </p>
-
-                          <p className="mt-1 text-sm text-muted">
-                            Estimated compatibility score
-                          </p>
-                        </div>
-
-                        <div className="rounded-xl border border-app bg-card p-4">
-                          <p className="text-xs uppercase tracking-wider text-soft">
-                            Urgency
-                          </p>
-
-                          <div className="mt-2">
-                            <PriorityBadge
-                              priority={request.mission.priority}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="rounded-xl border border-app bg-card p-4 md:col-span-2">
-                          <p className="text-xs uppercase tracking-wider text-soft">
-                            Cargo / Product
-                          </p>
-
-                          <p className="mt-2 font-semibold text-main">
-                            {request.mission.description ||
-                              "No product description"}
-                          </p>
-
-                          <p className="mt-1 text-sm text-muted">
-                            {request.mission.cargo?.weight_kg ?? "?"} kg ·{" "}
-                            {request.mission.cargo?.volume_liters ?? "?"} L
-                            {request.mission.cargo?.requires_cooling
-                              ? " · Cooling required"
-                              : ""}
-                          </p>
-                        </div>
-
-                        <div className="rounded-xl border border-app bg-card p-4">
-                          <p className="text-xs uppercase tracking-wider text-soft">
-                            Request Status
-                          </p>
-
-                          <p
-                            className={`mt-2 inline-flex rounded-full border px-3 py-1 text-sm font-bold capitalize ${getRequestStatusClasses(
-                              request.status
-                            )}`}
-                          >
-                            {request.status}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="mt-5 flex flex-col gap-3 border-t border-app pt-5 sm:flex-row sm:justify-end">
-                        <button
-                          type="button"
-                          onClick={() => handleDecline(request.id)}
-                          disabled={
-                            request.status !== "pending" || isActionLoading
-                          }
-                          className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-main transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                          Decline
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleAccept(request)}
-                          disabled={
-                            request.status !== "pending" || isActionLoading
-                          }
-                          className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-main transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                          {isActionLoading ? "Accepting..." : "Accept"}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </article>
+                <PendingRequestEntry
+                  key={request.id}
+                  request={request}
+                  isExpanded={isExpanded}
+                  isActionLoading={actionLoadingId === request.id}
+                  onToggle={() =>
+                    setExpandedId(isExpanded ? null : request.id)
+                  }
+                  onAccept={handleAccept}
+                  onDecline={handleDecline}
+                />
               );
             })}
           </div>

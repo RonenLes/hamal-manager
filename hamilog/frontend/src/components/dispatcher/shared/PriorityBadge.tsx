@@ -1,4 +1,4 @@
-// src/components/dispatcher/PriorityBadge.tsx
+// src/components/dispatcher/shared/PriorityBadge.tsx
 
 import type { MissionPriority } from "@/lib/api-client";
 
