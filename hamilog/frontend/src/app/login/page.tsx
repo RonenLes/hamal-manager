@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter} from "next/navigation";
 import { login as apiLogin, getStoredUser, getToken } from "@/lib/api-client";
 
 // ---------------------------------------------------------------------------
@@ -20,13 +20,10 @@ const TEST_ACCOUNTS = [
 // ---------------------------------------------------------------------------
 function LoginForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const initialRole = searchParams.get("role") === "driver" ? "driver" : "dispatcher";
+  
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"dispatcher" | "driver">(initialRole);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shaking, setShaking] = useState(false);
@@ -69,7 +66,6 @@ function LoginForm() {
     async (account: (typeof TEST_ACCOUNTS)[number]) => {
       setUsername(account.username);
       setPassword(account.password);
-      setRole(account.role as "dispatcher" | "driver");
       setError(null);
       setLoading(true);
 
@@ -93,7 +89,7 @@ function LoginForm() {
 
   return (
     <div
-      className={`glass-card w-full max-w-md p-8 ${shaking ? "animate-shake" : ""}`}
+     className={`w-full max-w-md p-8 rounded-2xl border border-app bg-card text-main shadow-xl ${shaking ? "animate-shake" : ""}`}
       style={{ animation: "fade-up 0.6s ease-out forwards" }}
     >
       {/* Header */}
@@ -108,34 +104,16 @@ function LoginForm() {
           }}
           id="login-title"
         >
-          HAMILOG
+          LOGIN
         </h1>
-        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+        <p className="text-sm text-muted"  >
           Sign in to continue
         </p>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        {/* Role selector */}
-        <div className="flex gap-2" id="role-selector">
-          {(["dispatcher", "driver"] as const).map((r) => (
-            <button
-              key={r}
-              type="button"
-              onClick={() => setRole(r)}
-              className="flex-1 py-2.5 rounded-lg text-sm font-semibold capitalize transition-all cursor-pointer"
-              style={{
-                background: role === r ? "var(--gradient-blue)" : "rgba(255,255,255,0.05)",
-                color: role === r ? "#fff" : "var(--text-secondary)",
-                border: role === r ? "none" : "1px solid var(--border-subtle)",
-              }}
-              id={`role-btn-${r}`}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
+      
 
         {/* Username */}
         <div className="relative">
@@ -143,7 +121,7 @@ function LoginForm() {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="glass-input w-full px-4 py-3 text-sm"
+            className="w-full px-4 py-3 text-sm rounded-lg border border-app bg-input text-main placeholder:text-soft outline-none focus:border-blue-500"
             placeholder="Username"
             autoComplete="username"
             required
@@ -157,7 +135,7 @@ function LoginForm() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="glass-input w-full px-4 py-3 text-sm"
+            className="w-full px-4 py-3 text-sm rounded-lg border border-app bg-input text-main placeholder:text-soft outline-none focus:border-blue-500"
             placeholder="Password"
             autoComplete="current-password"
             required
@@ -218,7 +196,7 @@ function LoginForm() {
             type="button"
             onClick={() => handleQuickLogin(account)}
             disabled={loading}
-            className="glass-panel px-4 py-2.5 text-sm flex items-center justify-between cursor-pointer hover:border-white/15 transition-all disabled:opacity-50"
+            className="px-4 py-2.5 text-sm flex items-center justify-between cursor-pointer transition-all disabled:opacity-50 rounded-xl border border-app bg-card-soft hover:opacity-90"
             id={`quick-login-${account.username}`}
           >
             <span style={{ color: "var(--text-primary)" }}>{account.label}</span>
@@ -254,7 +232,7 @@ function LoginForm() {
 // ---------------------------------------------------------------------------
 export default function LoginPage() {
   return (
-    <main className="relative min-h-screen flex items-center justify-center px-4">
+    <main className="relative min-h-screen flex items-center justify-center px-4 bg-app text-main">
       {/* Background */}
       <div className="absolute inset-0 bg-dot-pattern pointer-events-none" />
       <div
