@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const links = [
   { label: "Dashboard", href: "/driver" },
   { label: "Menu", href: "/driver/menu" },
+  { label: "History", href: "/driver/history" },
 ];
 
 export default function DriverNavbar() {

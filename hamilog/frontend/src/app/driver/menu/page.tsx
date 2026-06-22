@@ -14,6 +14,12 @@ const menuItems = [
     href: "/driver/my-missions",
   },
   {
+    title: "History",
+    description: "Review every mission you finished.",
+    icon: "🕘",
+    href: "/driver/history",
+  },
+  {
     title: "Open Tasks",
     description: "Review and accept available missions.",
     icon: "📦",
@@ -42,7 +48,7 @@ export default function DriverMenuPage() {
           <p className="mt-2 text-muted">Choose a driver page or tool.</p>
         </header>
 
-        <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
           {menuItems.map((item) => (
             <MenuCard
               key={item.href}
