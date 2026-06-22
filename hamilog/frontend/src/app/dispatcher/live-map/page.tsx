@@ -11,6 +11,7 @@ import {
   getToken,
   getStoredUser,
 } from "@/lib/api-client";
+import { formatDateTime24 } from "@/lib/date-format";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
 import PriorityBadge from "@/components/dispatcher/shared/PriorityBadge";
@@ -96,21 +97,7 @@ function getBadgeClasses(state: DeliveryMapState) {
 }
 
 function formatDateTime(dateValue?: string) {
-  if (!dateValue) return "Unknown";
-
-  const date = new Date(dateValue);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Unknown";
-  }
-
-  return date.toLocaleString([], {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatDateTime24(dateValue);
 }
 
 function locationToSvgPoint(

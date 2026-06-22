@@ -11,6 +11,7 @@ import {
   getToken,
   getStoredUser,
 } from "@/lib/api-client";
+import { formatDateDisplay } from "@/lib/date-format";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
 import ScheduleEntry, {
@@ -36,13 +37,7 @@ function toLocalDateInputValue(date: Date) {
 
 function formatReadableDate(dateString: string) {
   const date = new Date(`${dateString}T00:00:00`);
-
-  return date.toLocaleDateString([], {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  return formatDateDisplay(date);
 }
 
 function isSameLocalDate(dateValue: string | undefined, selectedDate: string) {

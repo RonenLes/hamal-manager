@@ -56,11 +56,6 @@ const reportViews: { id: ReportView; label: string }[] = [
   { id: "cargo", label: "Cargo" },
 ];
 
-const monthFormatter = new Intl.DateTimeFormat("en", {
-  month: "short",
-  year: "2-digit",
-});
-
 const driverGraphLabels: Record<DriverGraph, string> = {
   deliveries: "Deliveries by driver",
   score: "Driver score",
@@ -317,7 +312,7 @@ export default function DispatcherReportsPage() {
       );
 
       return {
-        label: monthFormatter.format(month),
+        label: formatDateDisplay(month),
         created: monthMissions.length,
         delivered: monthMissions.filter((mission) => mission.status === "delivered").length,
       };
@@ -632,14 +627,14 @@ export default function DispatcherReportsPage() {
               note={`${stats.delivered} delivered from ${filteredMissions.length} missions`}
             />
             <MetricCard
-              title="Open Work"
-              value={`${stats.unassigned + stats.assigned + stats.active}`}
-              note="Available, assigned, and in transit"
+              title="Total Deliveries Made"
+              value={`${stats.delivered}`}
+              note="Delivered missions in selected range"
             />
             <MetricCard
-              title="Active Drivers"
-              value={`${stats.activeDrivers}/${drivers.length}`}
-              note="Drivers not marked offline"
+              title="Total Drivers"
+              value={`${drivers.length}`}
+              note="Registered drivers"
             />
             <MetricCard
               title="Cargo Load"

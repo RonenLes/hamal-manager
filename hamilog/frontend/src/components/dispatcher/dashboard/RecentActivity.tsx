@@ -1,6 +1,7 @@
 // src/components/dispatcher/dashboard/RecentActivity.tsx
 
 import type { Mission, Driver } from "@/lib/api-client";
+import { formatTime24FromValue } from "@/lib/date-format";
 import DashboardPanel from "./DashboardPanel";
 
 type RecentActivityProps = {
@@ -9,18 +10,7 @@ type RecentActivityProps = {
 };
 
 function formatTime(date?: string) {
-  if (!date) return "Recently";
-
-  const parsed = new Date(date);
-
-  if (Number.isNaN(parsed.getTime())) {
-    return "Recently";
-  }
-
-  return parsed.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatTime24FromValue(date, "Recently");
 }
 
 export default function RecentActivity({
