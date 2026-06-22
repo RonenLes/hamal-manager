@@ -34,6 +34,12 @@ const menuItems = [
     href: "/dispatcher/drivers",
   },
   {
+    title: "Reports",
+    description: "View mission, driver, and cargo statistics.",
+    icon: "📈",
+    href: "/dispatcher/reports",
+  },
+  {
     title: "Alerts",
     description: "Important warnings and system alerts.",
     icon: "⚠️",

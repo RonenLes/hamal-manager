@@ -32,6 +32,27 @@ const initialFilters: MissionStatusFilter = {
   orderByDeliveryDate: true,
 };
 
+function getInitialFiltersFromQuery(): MissionStatusFilter {
+  if (typeof window === "undefined") return initialFilters;
+
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get("status");
+  const priority = params.get("priority");
+
+  if (!status && !priority) return initialFilters;
+
+  return {
+    ...initialFilters,
+    unassigned: status === "open",
+    assigned: status === "open",
+    active: status === "active",
+    urgencyLow: priority === "low",
+    urgencyMedium: priority === "medium",
+    urgencyHigh: priority === "high",
+    urgencyCritical: priority === "critical",
+  };
+}
+
 const initialForm: NewMissionForm = {
   title: "",
   cargoDescription: "",
@@ -144,7 +165,9 @@ export default function MissionsPage() {
     null
   );
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [filters, setFilters] = useState<MissionStatusFilter>(initialFilters);
+  const [filters, setFilters] = useState<MissionStatusFilter>(
+    getInitialFiltersFromQuery,
+  );
   const [form, setForm] = useState<NewMissionForm>(initialForm);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);

@@ -50,6 +50,11 @@ function getDeliveriesMade(driver: Driver, missions: Mission[]) {
   ).length;
 }
 
+function getInitialStatusFilter() {
+  if (typeof window === "undefined") return null;
+  return new URLSearchParams(window.location.search).get("status");
+}
+
 export default function DriversPage() {
   const router = useRouter();
 
@@ -58,6 +63,7 @@ export default function DriversPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [copiedDriverId, setCopiedDriverId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [statusFilter] = useState<string | null>(getInitialStatusFilter);
   const [pendingDriverRequestsCount, setPendingDriverRequestsCount] =
     useState(0);
 
@@ -120,7 +126,19 @@ export default function DriversPage() {
   }, [drivers, missions]);
 
   const sortedDrivers = useMemo(() => {
-    return [...drivers].sort((a, b) => {
+    return drivers
+      .filter((driver) => {
+        if (statusFilter === "available") return driver.status === "available";
+        if (statusFilter === "on_mission") {
+          return (
+            driver.status === "on_mission" ||
+            Boolean(getActiveMissionForDriver(driver, missions))
+          );
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
       const aActive = Boolean(getActiveMissionForDriver(a, missions));
       const bActive = Boolean(getActiveMissionForDriver(b, missions));
 
@@ -132,7 +150,7 @@ export default function DriversPage() {
 
       return a.name.localeCompare(b.name);
     });
-  }, [drivers, missions]);
+  }, [drivers, missions, statusFilter]);
 
   async function handleCopyPhone(driverId: string, phone: string) {
     try {
