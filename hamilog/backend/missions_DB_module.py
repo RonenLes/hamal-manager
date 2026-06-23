@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import re
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
 
@@ -146,6 +146,7 @@ class Driver(BaseModel):
     status: DriverStatus = DriverStatus.available
     current_location: Optional[Location] = None
     current_mission_id: Optional[str] = None
+    score: Optional[int] = None
 
 
 # ---------------------------------------------------------------------------
@@ -169,6 +170,12 @@ class InMemoryDB:
     def _seed(self) -> None:
         """Populate the store with realistic sample missions and drivers."""
         now = datetime.now(timezone.utc)
+        two_hours_ago = now - timedelta(hours=2)
+        six_hours_ago = now - timedelta(hours=6)
+        yesterday = now - timedelta(days=1)
+        two_days_ago = now - timedelta(days=2)
+        three_days_ago = now - timedelta(days=3)
+        four_days_ago = now - timedelta(days=4)
 
         sample_missions: List[Mission] = [
             Mission(
@@ -243,6 +250,96 @@ class InMemoryDB:
                 created_at=now,
                 updated_at=now,
             ),
+            Mission(
+                id="msn_007",
+                title="Generator Parts to Field Team",
+                description="Replacement generator cables and filters for the Jerusalem field team.",
+                status=MissionStatus.assigned,
+                cargo=CargoSpecifications(volume_liters=220.0, weight_kg=95.0, requires_cooling=False),
+                pickup=Location(lat=31.7810, lng=35.2100, address="Jerusalem Equipment Depot"),
+                dropoff=Location(lat=31.7930, lng=35.2250, address="Field Team Staging Area"),
+                assigned_driver_id="drv_002",
+                priority=Priority.high,
+                created_at=two_hours_ago,
+                updated_at=two_hours_ago,
+            ),
+            Mission(
+                id="msn_008",
+                title="Emergency Radios to Haifa Command",
+                description="Battery packs and emergency radio units for live operations.",
+                status=MissionStatus.in_transit,
+                cargo=CargoSpecifications(volume_liters=160.0, weight_kg=70.0, requires_cooling=False),
+                pickup=Location(lat=32.7925, lng=34.9870, address="Haifa Logistics Annex"),
+                dropoff=Location(lat=32.8070, lng=35.0030, address="Haifa Command Center"),
+                assigned_driver_id="drv_003",
+                priority=Priority.critical,
+                created_at=six_hours_ago,
+                updated_at=two_hours_ago,
+            ),
+            Mission(
+                id="msn_009",
+                title="Baby Formula to Family Center",
+                description="Sealed cartons of baby formula and hygiene kits.",
+                status=MissionStatus.delivered,
+                cargo=CargoSpecifications(volume_liters=180.0, weight_kg=45.0, requires_cooling=False),
+                pickup=Location(lat=32.0640, lng=34.7710, address="Tel Aviv Relief Warehouse"),
+                dropoff=Location(lat=32.1010, lng=34.8120, address="Family Support Center"),
+                assigned_driver_id="drv_001",
+                priority=Priority.medium,
+                created_at=yesterday,
+                updated_at=yesterday + timedelta(hours=3),
+            ),
+            Mission(
+                id="msn_010",
+                title="Cancelled Clothing Transfer",
+                description="Clothing transfer cancelled after receiving site reported enough stock.",
+                status=MissionStatus.cancelled,
+                cargo=CargoSpecifications(volume_liters=350.0, weight_kg=60.0, requires_cooling=False),
+                pickup=Location(lat=32.0905, lng=34.7755, address="North Tel Aviv Donation Center"),
+                dropoff=Location(lat=32.1210, lng=34.8125, address="Temporary Shelter C"),
+                priority=Priority.low,
+                created_at=two_days_ago,
+                updated_at=two_days_ago + timedelta(hours=1),
+            ),
+            Mission(
+                id="msn_011",
+                title="Hygiene Kits to Ashdod Shelter",
+                description="Completed delivery of hygiene kits and towels.",
+                status=MissionStatus.delivered,
+                cargo=CargoSpecifications(volume_liters=260.0, weight_kg=110.0, requires_cooling=False),
+                pickup=Location(lat=31.8000, lng=34.6500, address="Ashdod Supply Hub"),
+                dropoff=Location(lat=31.8050, lng=34.6550, address="Ashdod Shelter"),
+                assigned_driver_id="drv_001",
+                priority=Priority.high,
+                created_at=three_days_ago,
+                updated_at=three_days_ago + timedelta(hours=4),
+            ),
+            Mission(
+                id="msn_012",
+                title="Cold Medicine to Pediatric Clinic",
+                description="Delivered temperature-sensitive pediatric medicine.",
+                status=MissionStatus.delivered,
+                cargo=CargoSpecifications(volume_liters=25.0, weight_kg=12.0, requires_cooling=True),
+                pickup=Location(lat=32.0853, lng=34.7818, address="Tel Aviv Medical Center"),
+                dropoff=Location(lat=32.0950, lng=34.8300, address="Pediatric Clinic, Givatayim"),
+                assigned_driver_id="drv_004",
+                priority=Priority.critical,
+                created_at=four_days_ago,
+                updated_at=four_days_ago + timedelta(hours=2),
+            ),
+            Mission(
+                id="msn_013",
+                title="Volunteer Meals to Night Shift",
+                description="Delivered packed meals for night-shift volunteers.",
+                status=MissionStatus.delivered,
+                cargo=CargoSpecifications(volume_liters=90.0, weight_kg=28.0, requires_cooling=False),
+                pickup=Location(lat=31.2530, lng=34.7915, address="Be'er Sheva Kitchen"),
+                dropoff=Location(lat=31.2600, lng=34.8000, address="Southern Outpost"),
+                assigned_driver_id="drv_003",
+                priority=Priority.medium,
+                created_at=two_days_ago,
+                updated_at=two_days_ago + timedelta(hours=5),
+            ),
         ]
 
         sample_drivers: List[Driver] = [
@@ -254,6 +351,7 @@ class InMemoryDB:
                 car_type=CarType.sedan,
                 status=DriverStatus.available,
                 current_location=Location(lat=32.0800, lng=34.7800, address="Central Tel Aviv"),
+                score=94,
             ),
             Driver(
                 id="drv_002",
@@ -263,6 +361,7 @@ class InMemoryDB:
                 car_type=CarType.suv,
                 status=DriverStatus.available,
                 current_location=Location(lat=31.7700, lng=35.2100, address="Jerusalem Center"),
+                score=82,
             ),
             Driver(
                 id="drv_003",
@@ -270,8 +369,10 @@ class InMemoryDB:
                 email="carol@hamilog.dev",
                 phone="+972-50-333-3333",
                 car_type=CarType.van,
-                status=DriverStatus.available,
+                status=DriverStatus.on_mission,
                 current_location=Location(lat=32.7900, lng=34.9900, address="Haifa Port Area"),
+                current_mission_id="msn_008",
+                score=88,
             ),
             Driver(
                 id="drv_004",
@@ -281,6 +382,27 @@ class InMemoryDB:
                 car_type=CarType.refrigerated_van,
                 status=DriverStatus.available,
                 current_location=Location(lat=32.0900, lng=34.7850, address="North Tel Aviv"),
+                score=91,
+            ),
+            Driver(
+                id="drv_005",
+                name="Eyal Barak",
+                email="eyal@hamilog.dev",
+                phone="+972-50-555-5555",
+                car_type=CarType.suv,
+                status=DriverStatus.offline,
+                current_location=Location(lat=31.2520, lng=34.7860, address="Be'er Sheva"),
+                score=67,
+            ),
+            Driver(
+                id="drv_006",
+                name="Maya Cohen",
+                email="maya@hamilog.dev",
+                phone="+972-50-666-6666",
+                car_type=CarType.van,
+                status=DriverStatus.blacklisted,
+                current_location=Location(lat=32.1663, lng=34.8433, address="Herzliya"),
+                score=42,
             ),
         ]
 
