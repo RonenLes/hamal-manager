@@ -25,6 +25,10 @@ class AssignRequest(BaseModel):
     driver_id: str
 
 
+class CreateMissionDeliveryRequest(BaseModel):
+    mission_id: str
+
+
 class CargoAnalysisRequest(BaseModel):
     description: str
 

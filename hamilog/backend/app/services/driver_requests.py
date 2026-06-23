@@ -10,7 +10,7 @@ class DriverRequestNotPendingError(Exception):
     pass
 
 
-driver_requests = [
+SAMPLE_DRIVER_REQUESTS = [
     {
         "id": "req_001",
         "name": "Daniel Cohen",
@@ -62,18 +62,18 @@ driver_requests = [
 
 
 def count_pending_driver_requests() -> int:
-    return sum(1 for request in driver_requests if request["status"] == "pending")
+    return sum(1 for request in SAMPLE_DRIVER_REQUESTS if request["status"] == "pending")
 
 
 def list_driver_requests(status_filter: Optional[str] = None) -> List[dict]:
     if status_filter:
         return [
             request
-            for request in driver_requests
+            for request in SAMPLE_DRIVER_REQUESTS
             if request["status"] == status_filter
         ]
 
-    return driver_requests
+    return SAMPLE_DRIVER_REQUESTS
 
 
 def review_driver_request(
@@ -81,7 +81,7 @@ def review_driver_request(
     next_status: Literal["approved", "declined"],
 ) -> dict:
     request = next(
-        (item for item in driver_requests if item["id"] == request_id),
+        (item for item in SAMPLE_DRIVER_REQUESTS if item["id"] == request_id),
         None,
     )
 

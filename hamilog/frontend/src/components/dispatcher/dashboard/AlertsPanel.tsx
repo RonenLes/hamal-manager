@@ -23,7 +23,7 @@ type DashboardAlert = {
 };
 
 function groupAlertsForPopup(alerts: DashboardAlert[]): PopupAlert[] {
-  const groups = new Map<string, DashboardAlert[]>();
+  const groups = new Map<DashboardAlert["type"], DashboardAlert[]>();
 
   alerts.forEach((alert) => {
     const current = groups.get(alert.type) ?? [];
@@ -31,7 +31,7 @@ function groupAlertsForPopup(alerts: DashboardAlert[]): PopupAlert[] {
   });
 
   return Array.from(groups.entries()).map(([type, group]) => {
-    const level = type === "danger" ? "critical" : type;
+    const level: PopupAlert["level"] = type === "danger" ? "critical" : type;
     const label =
       type === "danger" ? "Critical Alert" : type === "warning" ? "Warning" : "Info";
 
@@ -74,7 +74,7 @@ export default function AlertsPanel({ missions, drivers }: AlertsPanelProps) {
       ? [
           {
             id: "dashboard-unassigned-missions",
-            type: "warning",
+            type: "warning" as const,
             title: `${unassignedCount} mission(s) need assignment`,
             summary: "Assign a driver as soon as possible.",
           },
@@ -83,14 +83,14 @@ export default function AlertsPanel({ missions, drivers }: AlertsPanelProps) {
 
     ...offlineDrivers.map((driver) => ({
       id: `dashboard-offline-driver-${driver.id}`,
-      type: "danger",
+      type: "danger" as const,
       title: `${driver.name} is offline`,
       summary: "Driver is currently unavailable.",
     })),
 
     ...coolingMissions.map((mission) => ({
       id: `dashboard-cooling-${mission.id}`,
-      type: "info",
+      type: "info" as const,
       title: `${mission.title} requires cooling`,
       summary: "Use a vehicle that supports refrigerated cargo.",
     })),

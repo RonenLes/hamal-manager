@@ -4,7 +4,7 @@ import { formatDateTime24 } from "@/lib/date-format";
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
 
-export type RequestStatus = "pending" | "accepted" | "declined";
+export type RequestStatus = "pending" | "approved" | "declined";
 
 export type DeliveryRequest = {
   id: string;
@@ -32,7 +32,7 @@ function getRequestStatusClasses(status: RequestStatus) {
   switch (status) {
     case "pending":
       return "border-orange-500/30 bg-orange-500/10 text-orange-300";
-    case "accepted":
+    case "approved":
       return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
     case "declined":
       return "border-red-500/30 bg-red-500/10 text-red-300";
@@ -184,7 +184,7 @@ export default function PendingRequestEntry({
               disabled={request.status !== "pending" || isActionLoading}
               className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-main transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {isActionLoading ? "Accepting..." : "Accept"}
+              {isActionLoading ? "Approving..." : "Approve"}
             </button>
           </div>
         </div>

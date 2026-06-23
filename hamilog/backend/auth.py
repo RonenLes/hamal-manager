@@ -6,8 +6,7 @@ Provides:
     * JWT creation / validation (HS256, 24-hour expiry)
     * FastAPI dependencies for extracting the current user from a Bearer
       token and for enforcing role-based access control
-    * A hard-coded dictionary of test users so the app works without a
-      real user store
+    * Seed users used to initialise the database in development
 """
 
 from __future__ import annotations
@@ -19,6 +18,7 @@ from typing import Any, Dict, Optional
 import jwt
 from dotenv import load_dotenv
 from fastapi import Header, HTTPException, status
+from passlib.context import CryptContext
 
 load_dotenv()
 
@@ -29,9 +29,10 @@ load_dotenv()
 JWT_SECRET: str = os.getenv("JWT_SECRET", "hamilog-dev-secret-key-change-in-production")
 JWT_ALGORITHM: str = "HS256"
 JWT_EXPIRY_HOURS: int = 24
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 # ---------------------------------------------------------------------------
-# Test Users
+# Seed Users
 # ---------------------------------------------------------------------------
 
 TEST_USERS: Dict[str, Dict[str, Any]] = {
@@ -64,6 +65,32 @@ TEST_USERS: Dict[str, Dict[str, Any]] = {
         "driver_id": "drv_004",
     },
 }
+
+
+def hash_password(password: str) -> str:
+    """Hash a plain-text password for safe storage."""
+    return pwd_context.hash(password)
+
+
+def verify_password(password: str, password_hash: str) -> bool:
+    """Check a plain-text password against a stored hash."""
+    return pwd_context.verify(password, password_hash)
+
+
+def get_seed_users() -> Dict[str, Dict[str, Any]]:
+    """Return development users with hashed passwords for database seeding."""
+    return {
+        username: {
+            key: value
+            for key, value in {
+                **record,
+                "username": username,
+                "password_hash": hash_password(record["password"]),
+            }.items()
+            if key != "password"
+        }
+        for username, record in TEST_USERS.items()
+    }
 
 
 # ---------------------------------------------------------------------------

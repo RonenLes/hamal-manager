@@ -163,6 +163,9 @@ class InMemoryDB:
     def __init__(self) -> None:
         self.missions: Dict[str, dict] = {}
         self.drivers: Dict[str, dict] = {}
+        self.driver_requests: Dict[str, dict] = {}
+        self.mission_requests: Dict[str, dict] = {}
+        self.users: Dict[str, dict] = {}
         self._seed()
 
     # ----- seeding ----------------------------------------------------------
@@ -411,6 +414,16 @@ class InMemoryDB:
         for d in sample_drivers:
             self.drivers[d.id] = d.model_dump()
 
+        from app.services.driver_requests import SAMPLE_DRIVER_REQUESTS
+
+        for request in SAMPLE_DRIVER_REQUESTS:
+            self.driver_requests[request["id"]] = request.copy()
+
+        from auth import get_seed_users
+
+        for username, user in get_seed_users().items():
+            self.users[username] = user
+
     # ----- Mission CRUD -----------------------------------------------------
 
     def get_all_missions(self) -> List[dict]:
@@ -511,6 +524,97 @@ class InMemoryDB:
             return None
         driver["current_location"] = location
         return driver
+
+    # ----- Driver Request CRUD --------------------------------------------
+
+    def count_pending_driver_requests(self) -> int:
+        """Return the number of pending driver signup requests."""
+        return sum(
+            1
+            for request in self.driver_requests.values()
+            if request.get("status") == "pending"
+        )
+
+    def list_driver_requests(self, status_filter: Optional[str] = None) -> List[dict]:
+        """Return driver requests, optionally filtered by review status."""
+        requests = list(self.driver_requests.values())
+        if status_filter is None:
+            return requests
+        return [
+            request
+            for request in requests
+            if request.get("status") == status_filter
+        ]
+
+    def get_driver_request_by_id(self, request_id: str) -> Optional[dict]:
+        """Fetch a single driver request by ID, or ``None``."""
+        return self.driver_requests.get(request_id)
+
+    def review_driver_request(self, request_id: str, next_status: str) -> Optional[dict]:
+        """Approve or decline a pending driver request."""
+        request = self.driver_requests.get(request_id)
+        if request is None:
+            return None
+        request["status"] = next_status
+        request["reviewed_at"] = datetime.now(timezone.utc).isoformat()
+        return request
+
+    # ----- User CRUD -------------------------------------------------------
+
+    def get_user_by_username(self, username: str) -> Optional[dict]:
+        """Fetch a user login record by username, or ``None``."""
+        return self.users.get(username)
+
+    # ----- Mission Request CRUD -------------------------------------------
+
+    def create_mission_request(self, request_data: dict) -> dict:
+        """Create or return an existing pending request for a mission/driver."""
+        for request in self.mission_requests.values():
+            if (
+                request.get("mission_id") == request_data["mission_id"]
+                and request.get("driver_id") == request_data["driver_id"]
+                and request.get("status") == "pending"
+            ):
+                return request
+
+        self.mission_requests[request_data["id"]] = request_data
+        return request_data
+
+    def get_mission_request_by_id(self, request_id: str) -> Optional[dict]:
+        """Fetch a single mission request by ID, or ``None``."""
+        return self.mission_requests.get(request_id)
+
+    def list_mission_requests(self, status_filter: Optional[str] = None) -> List[dict]:
+        """Return mission delivery requests, optionally filtered by status."""
+        requests = list(self.mission_requests.values())
+        if status_filter is None:
+            return requests
+        return [
+            request
+            for request in requests
+            if request.get("status") == status_filter
+        ]
+
+    def review_mission_request(self, request_id: str, next_status: str) -> Optional[dict]:
+        """Approve or decline a driver request to take a mission."""
+        request = self.mission_requests.get(request_id)
+        if request is None:
+            return None
+        request["status"] = next_status
+        request["reviewed_at"] = datetime.now(timezone.utc).isoformat()
+        return request
+
+    def decline_other_mission_requests(self, mission_id: str, approved_request_id: str) -> None:
+        """Decline other pending requests once a mission is assigned."""
+        reviewed_at = datetime.now(timezone.utc).isoformat()
+        for request in self.mission_requests.values():
+            if (
+                request.get("mission_id") == mission_id
+                and request.get("id") != approved_request_id
+                and request.get("status") == "pending"
+            ):
+                request["status"] = "declined"
+                request["reviewed_at"] = reviewed_at
 
 
 # ---------------------------------------------------------------------------
