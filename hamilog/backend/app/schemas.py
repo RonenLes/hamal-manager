@@ -1,42 +1,20 @@
-from typing import Any, Dict, Optional
+"""Backward-compatible schema imports.
 
-from pydantic import BaseModel
+New code should import schemas from each feature package.
+"""
 
-from missions_DB_module import CargoSpecifications, Location, MissionStatus
+from .features.assignments.schemas import AssignRequest
+from .features.auth.schemas import LoginRequest, LoginResponse
+from .features.cargo.schemas import CargoAnalysisRequest
+from .features.mission_requests.schemas import CreateMissionDeliveryRequest
+from .features.missions.schemas import CreateMissionRequest, StatusUpdateRequest
 
-
-class LoginRequest(BaseModel):
-    username: str
-    password: str
-
-
-class LoginResponse(BaseModel):
-    token: str
-    user: Dict[str, Any]
-
-
-class StatusUpdateRequest(BaseModel):
-    status: MissionStatus
-    driver_id: Optional[str] = None
-
-
-class AssignRequest(BaseModel):
-    mission_id: str
-    driver_id: str
-
-
-class CreateMissionDeliveryRequest(BaseModel):
-    mission_id: str
-
-
-class CargoAnalysisRequest(BaseModel):
-    description: str
-
-
-class CreateMissionRequest(BaseModel):
-    title: str
-    description: str
-    cargo: CargoSpecifications
-    pickup: Location
-    dropoff: Location
-    priority: str = "medium"
+__all__ = [
+    "AssignRequest",
+    "CargoAnalysisRequest",
+    "CreateMissionDeliveryRequest",
+    "CreateMissionRequest",
+    "LoginRequest",
+    "LoginResponse",
+    "StatusUpdateRequest",
+]

@@ -4,16 +4,14 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import (
-    assignments,
-    auth,
-    cargo,
-    drivers,
-    mission_requests,
-    missions,
-    system,
-    websockets,
-)
+from .features.assignments.router import router as assignments_router
+from .features.auth.router import router as auth_router
+from .features.cargo.router import router as cargo_router
+from .features.drivers.router import router as drivers_router
+from .features.mission_requests.router import router as mission_requests_router
+from .features.missions.router import router as missions_router
+from .features.system.router import router as system_router
+from .realtime.router import router as websockets_router
 
 load_dotenv()
 
@@ -43,14 +41,14 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(auth.router)
-    app.include_router(missions.router)
-    app.include_router(drivers.router)
-    app.include_router(mission_requests.router)
-    app.include_router(assignments.router)
-    app.include_router(cargo.router)
-    app.include_router(websockets.router)
-    app.include_router(system.router)
+    app.include_router(auth_router)
+    app.include_router(missions_router)
+    app.include_router(drivers_router)
+    app.include_router(mission_requests_router)
+    app.include_router(assignments_router)
+    app.include_router(cargo_router)
+    app.include_router(websockets_router)
+    app.include_router(system_router)
 
     return app
 

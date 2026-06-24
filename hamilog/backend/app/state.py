@@ -1,11 +1,8 @@
-from missions_DB_module import InMemoryDB
+"""Backward-compatible application state imports.
 
-from .mongo_store import MongoDB
-from .websocket_manager import ConnectionManager
+New code should import from app.database.state.
+"""
 
-try:
-    db = MongoDB()
-except Exception:
-    db = InMemoryDB()
+from .database.state import db, manager
 
-manager = ConnectionManager()
+__all__ = ["db", "manager"]
