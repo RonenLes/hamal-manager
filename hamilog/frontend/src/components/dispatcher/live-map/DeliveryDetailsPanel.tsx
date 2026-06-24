@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { formatDateTime24 } from "@/lib/date-format";
+import { formatIdealDeliveryTime, getMissionDeliveredAt } from "@/lib/mission-time";
 
 import PriorityBadge from "@/components/dispatcher/shared/PriorityBadge";
 
@@ -29,6 +30,10 @@ function DetailBlock({
 export default function DeliveryDetailsPanel({
   selectedPoint,
 }: DeliveryDetailsPanelProps) {
+  const deliveredAt = selectedPoint
+    ? getMissionDeliveredAt(selectedPoint.mission)
+    : null;
+
   return (
     <aside className="rounded-2xl border border-app bg-card shadow-xl">
       <div className="border-b border-app px-5 py-4">
@@ -97,6 +102,20 @@ export default function DeliveryDetailsPanel({
           <DetailBlock label="Published">
             <p className="font-semibold text-main">
               {formatDateTime24(selectedPoint.mission.created_at)}
+            </p>
+          </DetailBlock>
+
+          <DetailBlock label="Ideal Delivery Time">
+            <p className="font-semibold text-main">
+              {formatIdealDeliveryTime(
+                selectedPoint.mission.ideal_delivery_time
+              )}
+            </p>
+          </DetailBlock>
+
+          <DetailBlock label="Delivered At">
+            <p className="font-semibold text-main">
+              {deliveredAt ? formatDateTime24(deliveredAt) : "Not delivered"}
             </p>
           </DetailBlock>
 

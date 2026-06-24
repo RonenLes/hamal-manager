@@ -61,6 +61,8 @@ def get_compatible_missions(driver: dict, db) -> List[dict]:
     return compatible
 
 
+
+
 def calculate_match_score(driver: dict, mission: dict) -> float:
     """Produce a 0.0-1.0 score indicating how well a driver matches a mission."""
 
@@ -99,6 +101,7 @@ def calculate_match_score(driver: dict, mission: dict) -> float:
         Priority.critical.value: 1.0,
     }
     priority_score = priority_map.get(priority_raw, 0.4)
+    driver_score = driver.get("score",0)/100
 
-    score = 0.70 * utilisation + 0.30 * priority_score
+    score = 0.60 * utilisation + 0.25 * priority_score + 0.15*driver_score
     return round(min(score, 1.0), 4)

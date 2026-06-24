@@ -52,5 +52,7 @@ class Mission(BaseModel):
     dropoff: Location
     assigned_driver_id: Optional[str] = None
     priority: Priority = Priority.medium
+    ideal_delivery_time: Optional[datetime] = None
+    delivered_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

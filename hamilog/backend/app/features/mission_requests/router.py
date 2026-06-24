@@ -24,10 +24,10 @@ def _enrich_mission_request(request: dict) -> dict:
     enriched = serialize_single(request)
     enriched["mission"] = serialize_single(mission) if mission else None
     enriched["driver"] = serialize_single(driver) if driver else None
-    enriched["driver_score"] = (
+    enriched["match_score"] = (
         calculate_match_score(driver, mission)
         if driver and mission
-        else driver.get("score", 0) if driver else 0
+        else 0.0
     )
     return enriched
 

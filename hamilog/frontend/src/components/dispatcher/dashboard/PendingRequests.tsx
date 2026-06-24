@@ -1,6 +1,7 @@
 // src/components/dispatcher/dashboard/PendingRequests.tsx
 
 import type { Mission } from "@/lib/api-client";
+import { formatIdealDeliveryTime } from "@/lib/mission-time";
 import DashboardPanel from "./DashboardPanel";
 import PriorityBadge from "../shared/PriorityBadge";
 
@@ -56,6 +57,11 @@ export default function PendingRequests({
               <p>
                 <span className="text-soft">To:</span>{" "}
                 {mission.dropoff?.address || "TBD"}
+              </p>
+
+              <p>
+                <span className="text-soft">Ideal time:</span>{" "}
+                {formatIdealDeliveryTime(mission.ideal_delivery_time)}
               </p>
             </div>
 

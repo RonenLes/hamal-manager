@@ -1,4 +1,5 @@
 import type { Mission } from "@/lib/api-client";
+import { formatIdealDeliveryTime } from "@/lib/mission-time";
 import DetailTile from "@/components/dispatcher/shared/DetailTile";
 import PriorityBadge from "@/components/dispatcher/shared/PriorityBadge";
 
@@ -47,6 +48,12 @@ export default function ActiveMissionCard({
             {mission.cargo?.weight_kg ?? "?"} kg -{" "}
             {mission.cargo?.volume_liters ?? "?"} L
             {mission.cargo?.requires_cooling ? " - Cooling required" : ""}
+          </p>
+        </DetailTile>
+
+        <DetailTile label="Ideal Delivery Time">
+          <p className="font-semibold text-main">
+            {formatIdealDeliveryTime(mission.ideal_delivery_time)}
           </p>
         </DetailTile>
       </div>

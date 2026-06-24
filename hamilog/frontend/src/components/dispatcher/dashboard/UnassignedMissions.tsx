@@ -2,6 +2,7 @@
 
 import type { Mission } from "@/lib/api-client";
 import { formatTime24FromValue } from "@/lib/date-format";
+import { formatIdealDeliveryTime } from "@/lib/mission-time";
 import DashboardPanel from "./DashboardPanel";
 import PriorityBadge from "../shared/PriorityBadge";
 
@@ -61,6 +62,10 @@ export default function UnassignedMissions({
               </div>
 
               <p className="pt-2 text-orange-300">No driver assigned</p>
+              <p className="text-xs text-soft">
+                Ideal time:{" "}
+                {formatIdealDeliveryTime(mission.ideal_delivery_time)}
+              </p>
             </div>
           </article>
         ))}

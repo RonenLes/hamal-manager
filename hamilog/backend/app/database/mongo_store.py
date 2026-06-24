@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -50,6 +50,7 @@ class MongoDB:
         self.users: Collection = self.database["users"]
         self._ensure_indexes()
         self._seed_if_empty()
+        self._ensure_mission_fields()
 
     def _ensure_indexes(self) -> None:
         self.missions.create_index("id", unique=True)
@@ -93,6 +94,37 @@ class MongoDB:
                 for user in get_seed_users().values()
             ])
 
+    def _ensure_mission_fields(self) -> None:
+        self.missions.update_many(
+            {"ideal_delivery_time": {"$exists": False}},
+            {"$set": {"ideal_delivery_time": None}},
+        )
+        for mission in self.missions.find({"ideal_delivery_time": {"$type": "int"}}):
+            created_at = mission.get("created_at") or datetime.now(timezone.utc)
+            self.missions.update_one(
+                {"_id": mission["_id"]},
+                {
+                    "$set": {
+                        "ideal_delivery_time": created_at
+                        + timedelta(minutes=mission["ideal_delivery_time"]),
+                    },
+                },
+            )
+        self.missions.update_many(
+            {"delivered_at": {"$exists": False}},
+            {"$set": {"delivered_at": None}},
+        )
+        for mission in self.missions.find({
+            "status": MissionStatus.delivered.value,
+            "delivered_at": None,
+        }):
+            delivered_at = mission.get("updated_at")
+            if delivered_at is not None:
+                self.missions.update_one(
+                    {"_id": mission["_id"]},
+                    {"$set": {"delivered_at": delivered_at}},
+                )
+
     def _all(self, collection: Collection, query: Optional[Dict[str, Any]] = None) -> List[dict]:
         return [
             _without_object_id(document)
@@ -110,6 +142,8 @@ class MongoDB:
 
     def create_mission(self, mission_data: dict) -> dict:
         mission_data = _to_mongo_value(mission_data)
+        mission_data.setdefault("ideal_delivery_time", None)
+        mission_data.setdefault("delivered_at", None)
         self.missions.insert_one(mission_data)
         return self.get_mission_by_id(mission_data["id"]) or mission_data
 
@@ -119,12 +153,43 @@ class MongoDB:
         status: str,
         driver_id: Optional[str] = None,
     ) -> Optional[dict]:
-        updates: Dict[str, Any] = {"status": status}
+        updates: Dict[str, Any] = {
+            "status": status,
+            "updated_at": datetime.now(timezone.utc),
+        }
+        if status == MissionStatus.delivered.value:
+            updates["delivered_at"] = updates["updated_at"]
         if driver_id is not None:
             updates["assigned_driver_id"] = driver_id
 
         self.missions.update_one({"id": mission_id}, {"$set": updates})
         return self.get_mission_by_id(mission_id)
+    
+    def update_mission_details(self,mission_id:str, updates:dict)-> Optional[dict]:   
+        fields = {
+            "title",
+            "description",
+            "cargo",
+            "pickup",
+            "dropoff",
+            "priority",
+            "ideal_delivery_time",
+        }
+        clean_updates = {
+            key:_to_mongo_value(value)
+            for key,value in updates.items()
+            if key in fields and value is not None
+        }
+        if not clean_updates:
+            return self.get_mission_by_id(mission_id)
+        clean_updates["updated_at"] = datetime.now(timezone.utc)
+        self.missions.update_one(
+            {"id": mission_id},
+            {"$set": clean_updates},
+        )
+        return self.get_mission_by_id(mission_id)
+
+
 
     def get_missions_by_status(self, status: str) -> List[dict]:
         return self._all(self.missions, {"status": status})

@@ -2,13 +2,13 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from ...core.security import get_current_user
+from ...core.security import get_current_user, require_role
 from ...database.state import db, manager
 from ...features.assignments.service import calculate_match_score, get_compatible_missions
 from ...features.drivers.models import DriverStatus
 from ...shared.serializers import serialize_missions, serialize_single
 from .models import Mission, MissionStatus
-from .schemas import CreateMissionRequest, StatusUpdateRequest
+from .schemas import CreateMissionRequest, StatusUpdateRequest, UpdateMissionRequest
 
 router = APIRouter(prefix="/api", tags=["Missions"])
 
@@ -53,6 +53,7 @@ async def create_mission(
         pickup=body.pickup,
         dropoff=body.dropoff,
         priority=body.priority,
+        ideal_delivery_time=body.ideal_delivery_time,
     )
     created = db.create_mission(mission.model_dump())
 
@@ -102,4 +103,33 @@ async def update_mission_status(
     if driver_id:
         await manager.send_to_driver(driver_id, payload)
 
+    return serialize_single(updated)
+
+
+@router.put("/missions/{mission_id}")
+async def update_mission(
+    mission_id: str,
+    body: UpdateMissionRequest,
+    user: dict = Depends(require_role("dispatcher")),
+) -> dict:
+    mission = db.get_mission_by_id(mission_id)
+    if mission is None:
+        raise HTTPException(status_code=404, detail="Mission not found")
+    if (
+        mission.get("status") != MissionStatus.available.value
+        or mission.get("assigned_driver_id")
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Only unassigned missions can be edited",
+        )
+
+    updated = db.update_mission_details(
+        mission_id,
+        body.model_dump(exclude_unset=True),
+    )
+    await manager.broadcast_to_dispatchers({
+        "type": "mission_updated",
+        "mission": serialize_single(updated),
+    })
     return serialize_single(updated)

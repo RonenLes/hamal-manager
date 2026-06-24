@@ -45,6 +45,8 @@ export interface Mission {
   dropoff: Location;
   assigned_driver_id: string | null;
   priority: MissionPriority;
+  ideal_delivery_time?: string | null;
+  delivered_at?: string | null;
   created_at: string;
   updated_at: string;
   /** Computed by the constraint engine when fetching available missions for a driver */
@@ -172,7 +174,7 @@ export type MissionDeliveryRequest = {
   reviewed_at?: string | null;
   mission: Mission | null;
   driver: Driver | null;
-  driver_score: number;
+  match_score: number;
 };
 
 export type WSDispatchMessage =

@@ -1,4 +1,5 @@
 import type { Driver, Mission } from "@/lib/api-client";
+import { getMissionDeliveredAt } from "@/lib/mission-time";
 
 export type DriverScorePoint = {
   label: string;
@@ -103,7 +104,9 @@ export function getDriverScoreTimeline({
     runningScore = clampScore(runningScore + getMissionScoreDelta(mission));
 
     return {
-      label: formatPointLabel(mission.updated_at || mission.created_at),
+      label: formatPointLabel(
+        getMissionDeliveredAt(mission) ?? mission.updated_at ?? mission.created_at
+      ),
       score: runningScore,
     };
   });

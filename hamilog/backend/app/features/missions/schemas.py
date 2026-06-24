@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel
@@ -18,3 +19,13 @@ class CreateMissionRequest(BaseModel):
     pickup: Location
     dropoff: Location
     priority: str = "medium"
+    ideal_delivery_time: Optional[datetime] = None
+
+class UpdateMissionRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    cargo: Optional[CargoSpecifications] = None
+    pickup: Optional[Location] = None
+    dropoff: Optional[Location] = None
+    priority: Optional[str] = None
+    ideal_delivery_time: Optional[datetime] = None

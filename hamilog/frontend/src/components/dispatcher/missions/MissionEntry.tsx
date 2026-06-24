@@ -1,5 +1,6 @@
 import type { Mission } from "@/lib/api-client";
 import { formatDateTime24 } from "@/lib/date-format";
+import { formatIdealDeliveryTime, getMissionDeliveredAt } from "@/lib/mission-time";
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
@@ -9,6 +10,7 @@ type MissionEntryProps = {
   state: string;
   isExpanded: boolean;
   onToggle: () => void;
+  onEdit: (mission: Mission) => void;
   getStateClasses: (state: string) => string;
 };
 
@@ -21,8 +23,12 @@ export default function MissionEntry({
   state,
   isExpanded,
   onToggle,
+  onEdit,
   getStateClasses,
 }: MissionEntryProps) {
+  const deliveredAt = getMissionDeliveredAt(mission);
+  const canEdit = mission.status === "available" && !mission.assigned_driver_id;
+
   return (
     <article className="bg-card">
       <button
@@ -57,7 +63,22 @@ export default function MissionEntry({
           </p>
         </div>
 
-        <span className="text-xl text-muted">{isExpanded ? "^" : "v"}</span>
+        <div className="flex shrink-0 items-center gap-3">
+          {canEdit && onEdit && (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onEdit(mission);
+              }}
+              className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-500"
+            >
+              Edit
+            </button>
+          )}
+
+          <span className="text-xl text-muted">{isExpanded ? "^" : "v"}</span>
+        </div>
       </button>
 
       {isExpanded && (
@@ -80,6 +101,18 @@ export default function MissionEntry({
             <DetailTile label="Published">
               <p className="font-semibold text-main">
                 {formatDateTime(mission.created_at)}
+              </p>
+            </DetailTile>
+
+            <DetailTile label="Ideal Time">
+              <p className="font-semibold text-main">
+                {formatIdealDeliveryTime(mission.ideal_delivery_time)}
+              </p>
+            </DetailTile>
+
+            <DetailTile label="Delivered At">
+              <p className="font-semibold text-main">
+                {deliveredAt ? formatDateTime(deliveredAt) : "Not delivered"}
               </p>
             </DetailTile>
 

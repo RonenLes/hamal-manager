@@ -156,6 +156,31 @@ export async function login(
 }
 
 // ---------------------------------------------------------------------------
+// Missions — core mission build
+// ---------------------------------------------------------------------------
+export type CreateMissionPayload = {
+  title: string;
+  description: string;
+  cargo: {
+    volume_liters: number;
+    weight_kg: number;
+    requires_cooling: boolean;
+  };
+  pickup: {
+    lat: number;
+    lng: number;
+    address: string;
+  };
+  dropoff: {
+    lat: number;
+    lng: number;
+    address: string;
+  };
+  priority?: string;
+  ideal_delivery_time?: string | null;
+};
+
+// ---------------------------------------------------------------------------
 // Missions — GET /api/missions
 // ---------------------------------------------------------------------------
 
@@ -183,6 +208,17 @@ export async function updateMissionStatus(
   return apiFetch<Mission>(`/api/mission/${missionId}/status`, {
     method: 'PUT',
     body: JSON.stringify({ status, driver_id: driverId }),
+  });
+}
+
+// PUT /api/missions/:id
+export async function updateMission(
+  missionId: string,
+  data: Partial<CreateMissionPayload>,
+): Promise<Mission> {
+  return apiFetch<Mission>(`/api/missions/${missionId}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
   });
 }
 
@@ -236,14 +272,7 @@ export async function declineMissionRequest(
 }
 
 // POST /api/missions (create new mission)
-export async function createMission(data: {
-  title: string;
-  description: string;
-  cargo: { volume_liters: number; weight_kg: number; requires_cooling: boolean };
-  pickup: { lat: number; lng: number; address: string };
-  dropoff: { lat: number; lng: number; address: string };
-  priority?: string;
-}): Promise<Mission> {
+export async function createMission(data: CreateMissionPayload): Promise<Mission> {
   return apiFetch<Mission>('/api/missions', {
     method: 'POST',
     body: JSON.stringify(data),

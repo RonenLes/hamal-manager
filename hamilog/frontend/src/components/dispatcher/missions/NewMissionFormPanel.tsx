@@ -6,6 +6,8 @@ export type NewMissionForm = {
   from: string;
   to: string;
   urgency: MissionPriority;
+  idealDeliveryDate: string;
+  idealDeliveryTime: string;
   cooling: "yes" | "no";
   heavyLoad: "yes" | "no";
 };
@@ -13,26 +15,43 @@ export type NewMissionForm = {
 type NewMissionFormPanelProps = {
   form: NewMissionForm;
   posting: boolean;
+  title?: string;
+  description?: string;
+  submitLabel?: string;
+  submittingLabel?: string;
   onUpdate: <K extends keyof NewMissionForm>(
     key: K,
     value: NewMissionForm[K]
   ) => void;
   onSubmit: () => void;
+  onCancel?: () => void;
 };
+
+const timeOptions = Array.from({ length: 24 * 4 }, (_, index) => {
+  const totalMinutes = index * 15;
+  const hours = Math.floor(totalMinutes / 60)
+    .toString()
+    .padStart(2, "0");
+  const minutes = (totalMinutes % 60).toString().padStart(2, "0");
+  return `${hours}:${minutes}`;
+});
 
 export default function NewMissionFormPanel({
   form,
   posting,
+  title = "Add New Mission",
+  description = "Fill the delivery information and post it to the mission pool.",
+  submitLabel = "Post Mission",
+  submittingLabel = "Posting...",
   onUpdate,
   onSubmit,
+  onCancel,
 }: NewMissionFormPanelProps) {
   return (
     <section className="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 shadow-xl">
       <div className="mb-5">
-        <h2 className="text-xl font-black text-main">Add New Mission</h2>
-        <p className="mt-1 text-sm text-muted">
-          Fill the delivery information and post it to the mission pool.
-        </p>
+        <h2 className="text-xl font-black text-main">{title}</h2>
+        <p className="mt-1 text-sm text-muted">{description}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -100,6 +119,40 @@ export default function NewMissionFormPanel({
 
         <div>
           <label className="mb-2 block text-sm font-semibold text-muted">
+            Ideal delivery date
+          </label>
+          <input
+            type="date"
+            value={form.idealDeliveryDate}
+            onChange={(event) =>
+              onUpdate("idealDeliveryDate", event.target.value)
+            }
+            className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-muted">
+            Ideal delivery time
+          </label>
+          <select
+            value={form.idealDeliveryTime}
+            onChange={(event) =>
+              onUpdate("idealDeliveryTime", event.target.value)
+            }
+            className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
+          >
+            <option value="">Select time</option>
+            {timeOptions.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-muted">
             From
           </label>
           <input
@@ -138,14 +191,25 @@ export default function NewMissionFormPanel({
         </div>
       </div>
 
-      <div className="mt-5 flex justify-end">
+      <div className="mt-5 flex justify-end gap-3">
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={posting}
+            className="rounded-xl border border-app px-6 py-3 text-sm font-bold text-main transition hover:bg-card-soft disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Cancel
+          </button>
+        )}
+
         <button
           type="button"
           onClick={onSubmit}
           disabled={posting}
           className="rounded-xl bg-emerald-600 px-6 py-3 text-sm font-bold text-main transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {posting ? "Posting..." : "Post Mission"}
+          {posting ? submittingLabel : submitLabel}
         </button>
       </div>
     </section>

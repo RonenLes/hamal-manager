@@ -266,7 +266,14 @@ class InMemoryDB:
         ]
 
         for m in sample_missions:
-            self.missions[m.id] = m.model_dump()
+            mission = m.model_dump()
+            mission["ideal_delivery_time"] = (
+                mission.get("ideal_delivery_time")
+                or mission["created_at"] + timedelta(hours=2)
+            )
+            if mission.get("status") == MissionStatus.delivered.value:
+                mission["delivered_at"] = mission.get("updated_at")
+            self.missions[m.id] = mission
         for d in sample_drivers:
             self.drivers[d.id] = d.model_dump()
 
@@ -298,6 +305,11 @@ class InMemoryDB:
         now = datetime.now(timezone.utc)
         mission_data.setdefault("id", f"msn_{uuid.uuid4().hex[:8]}")
         mission_data.setdefault("status", MissionStatus.available.value)
+        mission_data.setdefault(
+            "ideal_delivery_time",
+            now + timedelta(hours=2),
+        )
+        mission_data.setdefault("delivered_at", None)
         mission_data.setdefault("created_at", now)
         mission_data["updated_at"] = now
         self.missions[mission_data["id"]] = mission_data
@@ -317,9 +329,30 @@ class InMemoryDB:
         if mission is None:
             return None
         mission["status"] = status
-        mission["updated_at"] = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc)
+        mission["updated_at"] = now
+        if status == MissionStatus.delivered.value:
+            mission["delivered_at"] = now
         if driver_id is not None:
             mission["assigned_driver_id"] = driver_id
+        return mission
+    
+    def update_mission_details(self,mission_id:str, updates:dict)-> Optional[dict]:
+        mission = self.missions.get(mission_id)
+        if mission is None: return None
+        fields = {
+            "title",
+            "description",
+            "cargo",
+            "pickup",
+            "dropoff",
+            "priority",
+            "ideal_delivery_time",
+        }
+        for key,value in updates.items():
+            if key in fields and value is not None:
+                mission[key] = value
+        mission["updated_at"]=datetime.now(timezone.utc)
         return mission
 
     def get_missions_by_status(self, status: str) -> List[dict]:

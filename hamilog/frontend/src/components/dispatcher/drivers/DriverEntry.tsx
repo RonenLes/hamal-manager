@@ -4,6 +4,7 @@ import type { Driver, Mission } from "@/lib/api-client";
 import { CAR_SPECS } from "@/lib/car-specs";
 import { formatDateTime24 } from "@/lib/date-format";
 import type { DriverScorePoint } from "@/lib/driver-metrics";
+import { formatIdealDeliveryTime } from "@/lib/mission-time";
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
@@ -237,6 +238,12 @@ export default function DriverEntry({
                 <DetailTile label="Start Time">
                   <p className="font-semibold text-main">
                     {formatDateTime(activeMission.created_at)}
+                  </p>
+                </DetailTile>
+
+                <DetailTile label="Ideal Delivery Time">
+                  <p className="font-semibold text-main">
+                    {formatIdealDeliveryTime(activeMission.ideal_delivery_time)}
                   </p>
                 </DetailTile>
 

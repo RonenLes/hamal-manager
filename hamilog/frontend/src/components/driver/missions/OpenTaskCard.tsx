@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import type { Mission } from "@/lib/api-client";
+import { formatIdealDeliveryTime } from "@/lib/mission-time";
 import DetailTile from "@/components/dispatcher/shared/DetailTile";
 import PriorityBadge from "@/components/dispatcher/shared/PriorityBadge";
 
@@ -65,6 +66,9 @@ export default function OpenTaskCard({
           <span className="rounded-full border border-app bg-card-soft px-3 py-1 text-xs font-bold text-cyan-300">
             {mission.cargo?.volume_liters ?? "?"} L
           </span>
+          <span className="rounded-full border border-app bg-card-soft px-3 py-1 text-xs font-bold text-orange-300">
+            {formatIdealDeliveryTime(mission.ideal_delivery_time)}
+          </span>
           {mission.cargo?.requires_cooling && (
             <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-300">
               Cooling
@@ -113,6 +117,12 @@ export default function OpenTaskCard({
             <DetailTile label="Dropoff">
               <p className="font-semibold text-main">
                 {mission.dropoff?.address || "Dropoff location TBD"}
+              </p>
+            </DetailTile>
+
+            <DetailTile label="Ideal Delivery Time">
+              <p className="font-semibold text-main">
+                {formatIdealDeliveryTime(mission.ideal_delivery_time)}
               </p>
             </DetailTile>
 

@@ -1,5 +1,6 @@
 import type { Mission } from "@/lib/api-client";
 import { formatDateTime24 } from "@/lib/date-format";
+import { formatIdealDeliveryTime, getMissionDeliveredAt } from "@/lib/mission-time";
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
@@ -82,6 +83,8 @@ export default function DriverHistoryEntry({
   isExpanded,
   onToggle,
 }: DriverHistoryEntryProps) {
+  const deliveredAt = getMissionDeliveredAt(mission);
+
   return (
     <article className="bg-card">
       <button
@@ -160,6 +163,18 @@ export default function DriverHistoryEntry({
             <DetailTile label="Published / Start Time">
               <p className="font-semibold text-main">
                 {formatDateTime(mission.created_at)}
+              </p>
+            </DetailTile>
+
+            <DetailTile label="Ideal Delivery Time">
+              <p className="font-semibold text-main">
+                {formatIdealDeliveryTime(mission.ideal_delivery_time)}
+              </p>
+            </DetailTile>
+
+            <DetailTile label="Delivered At">
+              <p className="font-semibold text-main">
+                {deliveredAt ? formatDateTime(deliveredAt) : "Not delivered"}
               </p>
             </DetailTile>
 

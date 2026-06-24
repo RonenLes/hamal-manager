@@ -48,6 +48,7 @@ import {
   getStoredUser,
   getToken,
 } from "@/lib/api-client";
+import { formatIdealDeliveryTime, getMissionDeliveredAt } from "@/lib/mission-time";
 
 const reportViews: { id: ReportView; label: string }[] = [
   { id: "overview", label: "Overview" },
@@ -157,11 +158,12 @@ export default function DispatcherReportsPage() {
       deliveredMissions.length === 0
         ? 0
         : deliveredMissions.reduce((sum, mission) => {
+            const deliveredAt = getMissionDeliveredAt(mission);
             return (
               sum +
               Math.max(
                 0,
-                new Date(mission.updated_at).getTime() -
+                new Date(deliveredAt ?? mission.updated_at).getTime() -
                   new Date(mission.created_at).getTime(),
               )
             );
@@ -235,7 +237,11 @@ export default function DispatcherReportsPage() {
           (mission) =>
             mission.assigned_driver_id === driver.id &&
             mission.status === "delivered" &&
-            isWithinRange(mission.updated_at, range.start, range.end),
+            isWithinRange(
+              getMissionDeliveredAt(mission) ?? mission.updated_at,
+              range.start,
+              range.end,
+            ),
         ).length,
       }))
       .sort((a, b) => b.value - a.value);
@@ -349,7 +355,8 @@ export default function DispatcherReportsPage() {
           .length,
         completed: filteredMissions.filter(
           (mission) =>
-            mission.status === "delivered" && toDayKey(mission.updated_at) === date,
+            mission.status === "delivered" &&
+            toDayKey(getMissionDeliveredAt(mission) ?? mission.updated_at) === date,
         ).length,
       },
     }));
@@ -556,20 +563,30 @@ export default function DispatcherReportsPage() {
         { key: "cargo", label: "Cargo" },
         { key: "created", label: "Created" },
         { key: "updated", label: "Updated" },
+        { key: "deliveredAt", label: "Delivered At" },
+        { key: "idealTime", label: "Ideal Time" },
       ],
-      missionDetailRows.map((mission) => ({
-        title: mission.title,
-        status: labelize(mission.status),
-        priority: labelize(mission.priority),
-        driver: mission.assigned_driver_id ?? "Unassigned",
-        pickup: mission.pickup.address,
-        dropoff: mission.dropoff.address,
-        cargo: `${mission.cargo.weight_kg} kg, ${mission.cargo.volume_liters} L, ${
-          mission.cargo.requires_cooling ? "Cooling" : "Standard"
-        }`,
-        created: formatDateTimeDisplay(new Date(mission.created_at)),
-        updated: formatDateTimeDisplay(new Date(mission.updated_at)),
-      })),
+      missionDetailRows.map((mission) => {
+        const deliveredAt = getMissionDeliveredAt(mission);
+
+        return {
+          title: mission.title,
+          status: labelize(mission.status),
+          priority: labelize(mission.priority),
+          driver: mission.assigned_driver_id ?? "Unassigned",
+          pickup: mission.pickup.address,
+          dropoff: mission.dropoff.address,
+          cargo: `${mission.cargo.weight_kg} kg, ${mission.cargo.volume_liters} L, ${
+            mission.cargo.requires_cooling ? "Cooling" : "Standard"
+          }`,
+          created: formatDateTimeDisplay(new Date(mission.created_at)),
+          updated: formatDateTimeDisplay(new Date(mission.updated_at)),
+          deliveredAt: deliveredAt
+            ? formatDateTimeDisplay(new Date(deliveredAt))
+            : "Not delivered",
+          idealTime: formatIdealDeliveryTime(mission.ideal_delivery_time),
+        };
+      }),
     );
   }
 
