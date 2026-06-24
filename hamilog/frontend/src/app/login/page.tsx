@@ -247,7 +247,7 @@ function LoginForm() {
             className="px-4 py-2.5 text-sm flex items-center justify-between cursor-pointer transition-all disabled:opacity-50 rounded-xl border border-app bg-card-soft hover:opacity-90"
             id={`quick-login-${account.username}`}
           >
-            <span style={{ color: "var(--text-primary)" }}>{account.label}</span>
+            <span className="font-semibold text-main">{account.label}</span>
             <span
               className="badge"
               style={{

@@ -118,7 +118,10 @@ class MongoDB:
         status: str,
         driver_id: Optional[str] = None,
     ) -> Optional[dict]:
-        updates: Dict[str, Any] = {"status": status}
+        updates: Dict[str, Any] = {
+            "status": status,
+            "updated_at": datetime.now(timezone.utc),
+        }
         if driver_id is not None:
             updates["assigned_driver_id"] = driver_id
 
@@ -128,8 +131,15 @@ class MongoDB:
     def get_missions_by_status(self, status: str) -> List[dict]:
         return self._all(self.missions, {"status": status})
 
-    def get_missions_by_driver(self, driver_id: str) -> List[dict]:
-        return self._all(self.missions, {"assigned_driver_id": driver_id})
+    def get_missions_by_driver(
+        self,
+        driver_id: str,
+        status: Optional[str] = None,
+    ) -> List[dict]:
+        query: Dict[str, Any] = {"assigned_driver_id": driver_id}
+        if status is not None:
+            query["status"] = status
+        return self._all(self.missions, query)
 
     def get_all_drivers(self) -> List[dict]:
         return self._all(self.drivers)

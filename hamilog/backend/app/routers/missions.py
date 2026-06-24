@@ -38,7 +38,9 @@ async def list_missions(
                 return serialize_missions(missions)
 
     if driverUid:
-        return serialize_missions(db.get_missions_by_driver(driverUid))
+        return serialize_missions(
+            db.get_missions_by_driver(driverUid, status_filter)
+        )
 
     if status_filter:
         return serialize_missions(db.get_missions_by_status(status_filter))

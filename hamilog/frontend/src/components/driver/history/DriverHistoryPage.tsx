@@ -41,7 +41,10 @@ export default function DriverHistoryPage() {
 
     try {
       setError("");
-      const data = await getMissions({ driverUid: user.driver_id });
+      const data = await getMissions({
+        driverUid: user.driver_id,
+        status: "delivered",
+      });
       setMissions(
         data.filter(
           (mission) =>

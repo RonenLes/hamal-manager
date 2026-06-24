@@ -343,6 +343,19 @@ class InMemoryDB:
                 created_at=two_days_ago,
                 updated_at=two_days_ago + timedelta(hours=5),
             ),
+            Mission(
+                id="msn_014",
+                title="Carol Test Completed Delivery",
+                description="Test completed mission for Carol Mizrahi's driver history.",
+                status=MissionStatus.delivered,
+                cargo=CargoSpecifications(volume_liters=320.0, weight_kg=140.0, requires_cooling=False),
+                pickup=Location(lat=32.7900, lng=34.9900, address="Haifa Port Warehouse"),
+                dropoff=Location(lat=32.8150, lng=35.0050, address="Haifa Community Center"),
+                assigned_driver_id="drv_003",
+                priority=Priority.medium,
+                created_at=yesterday,
+                updated_at=yesterday + timedelta(hours=2),
+            ),
         ]
 
         sample_drivers: List[Driver] = [
@@ -470,11 +483,16 @@ class InMemoryDB:
         """Return all missions that match the given status string."""
         return [m for m in self.missions.values() if m.get("status") == status]
 
-    def get_missions_by_driver(self, driver_id: str) -> List[dict]:
-        """Return missions currently assigned to a specific driver."""
+    def get_missions_by_driver(
+        self,
+        driver_id: str,
+        status: Optional[str] = None,
+    ) -> List[dict]:
+        """Return missions assigned to a specific driver, optionally by status."""
         return [
             m for m in self.missions.values()
             if m.get("assigned_driver_id") == driver_id
+            and (status is None or m.get("status") == status)
         ]
 
     # ----- Driver CRUD ------------------------------------------------------
