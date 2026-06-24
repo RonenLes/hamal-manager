@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Dict, Optional
-
-from pydantic import BaseModel
+from typing import Dict, Optional,List
+from datetime import datetime
+from pydantic import BaseModel,Field
 
 from ...shared.models import Location
 
@@ -50,6 +50,10 @@ CAR_SPECS: Dict[CarType, Dict] = {
 }
 
 
+class ScoreRecord(BaseModel):
+    score: int
+    date: datetime = datetime.utcnow
+
 class Driver(BaseModel):
     """A volunteer driver with a specific vehicle type."""
 
@@ -62,3 +66,5 @@ class Driver(BaseModel):
     current_location: Optional[Location] = None
     current_mission_id: Optional[str] = None
     score: Optional[int] = None
+    history_score: List[ScoreRecord] =Field(default_factory=list)#dipacher trust score 
+    joined_at: datetime

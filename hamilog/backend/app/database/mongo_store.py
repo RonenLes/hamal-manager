@@ -51,6 +51,7 @@ class MongoDB:
         self._ensure_indexes()
         self._seed_if_empty()
         self._ensure_mission_fields()
+        self._ensure_driver_fields()
 
     def _ensure_indexes(self) -> None:
         self.missions.create_index("id", unique=True)
@@ -114,6 +115,10 @@ class MongoDB:
             {"delivered_at": {"$exists": False}},
             {"$set": {"delivered_at": None}},
         )
+        self.missions.update_many(
+            {"cancellation_history": {"$exists": False}},
+            {"$set": {"cancellation_history": []}},
+        )
         for mission in self.missions.find({
             "status": MissionStatus.delivered.value,
             "delivered_at": None,
@@ -124,6 +129,12 @@ class MongoDB:
                     {"_id": mission["_id"]},
                     {"$set": {"delivered_at": delivered_at}},
                 )
+
+    def _ensure_driver_fields(self) -> None:
+        self.drivers.update_many(
+            {"joined_at": {"$exists": False}},
+            {"$set": {"joined_at": datetime.now(timezone.utc)}},
+        )
 
     def _all(self, collection: Collection, query: Optional[Dict[str, Any]] = None) -> List[dict]:
         return [
@@ -144,6 +155,7 @@ class MongoDB:
         mission_data = _to_mongo_value(mission_data)
         mission_data.setdefault("ideal_delivery_time", None)
         mission_data.setdefault("delivered_at", None)
+        mission_data.setdefault("cancellation_history", [])
         self.missions.insert_one(mission_data)
         return self.get_mission_by_id(mission_data["id"]) or mission_data
 
@@ -163,6 +175,28 @@ class MongoDB:
             updates["assigned_driver_id"] = driver_id
 
         self.missions.update_one({"id": mission_id}, {"$set": updates})
+        return self.get_mission_by_id(mission_id)
+
+    def cancel_mission_assignment(
+        self,
+        mission_id: str,
+        cancellation_record: dict,
+        final_status: str = MissionStatus.available.value,
+    ) -> Optional[dict]:
+        updates: Dict[str, Any] = {
+            "status": final_status,
+            "assigned_driver_id": None,
+            "updated_at": datetime.now(timezone.utc),
+        }
+        self.missions.update_one(
+            {"id": mission_id},
+            {
+                "$set": updates,
+                "$push": {
+                    "cancellation_history": _to_mongo_value(cancellation_record),
+                },
+            },
+        )
         return self.get_mission_by_id(mission_id)
     
     def update_mission_details(self,mission_id:str, updates:dict)-> Optional[dict]:   
@@ -205,6 +239,7 @@ class MongoDB:
 
     def create_driver(self, driver_data: dict) -> dict:
         driver_data = _to_mongo_value(driver_data)
+        driver_data.setdefault("joined_at", datetime.now(timezone.utc))
         self.drivers.insert_one(driver_data)
         return self.get_driver_by_id(driver_data["id"]) or driver_data
 

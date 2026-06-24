@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import type { Mission } from "@/lib/api-client";
 import { formatIdealDeliveryTime } from "@/lib/mission-time";
 import DetailTile from "@/components/dispatcher/shared/DetailTile";
@@ -9,13 +11,31 @@ type ActiveMissionCardProps = {
   mission: Mission;
   onMarkDelivered: (id: string) => void;
   onUpdateStatus: (id: string, status: "in_transit") => void;
+  onCancelMission: (id: string, reason: string) => void;
 };
+
+const cancellationReasons = [
+  "Vehicle problem",
+  "Medical or personal emergency",
+  "Pickup location unreachable",
+  "Cargo does not match mission details",
+  "Other",
+];
 
 export default function ActiveMissionCard({
   mission,
   onMarkDelivered,
   onUpdateStatus,
+  onCancelMission,
 }: ActiveMissionCardProps) {
+  const [isCancelOpen, setIsCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState(cancellationReasons[0]);
+
+  function submitCancellation() {
+    onCancelMission(mission.id, cancelReason);
+    setIsCancelOpen(false);
+  }
+
   return (
     <article className="rounded-2xl border border-app bg-card p-5 shadow-xl">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -89,7 +109,56 @@ export default function ActiveMissionCard({
             Mark Delivered
           </button>
         )}
+
+        {(mission.status === "assigned" || mission.status === "in_transit") && (
+          <button
+            type="button"
+            onClick={() => setIsCancelOpen(true)}
+            className="rounded-xl border border-red-500/40 bg-red-500/10 px-5 py-2.5 text-sm font-bold text-red-200 transition hover:bg-red-500/20"
+          >
+            Cancel Mission
+          </button>
+        )}
       </div>
+
+      {isCancelOpen && (
+        <div className="mt-5 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+          <h3 className="text-sm font-bold text-red-100">Cancel mission</h3>
+          <p className="mt-1 text-sm text-muted">
+            Choose the reason. This will notify dispatch and return the mission
+            to the available pool.
+          </p>
+
+          <select
+            value={cancelReason}
+            onChange={(event) => setCancelReason(event.target.value)}
+            className="mt-4 w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-red-400"
+          >
+            {cancellationReasons.map((reason) => (
+              <option key={reason} value={reason}>
+                {reason}
+              </option>
+            ))}
+          </select>
+
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={() => setIsCancelOpen(false)}
+              className="rounded-xl border border-app px-5 py-2.5 text-sm font-bold text-main transition hover:bg-card-soft"
+            >
+              Keep Mission
+            </button>
+            <button
+              type="button"
+              onClick={submitCancellation}
+              className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-red-500"
+            >
+              Confirm Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </article>
   );
 }

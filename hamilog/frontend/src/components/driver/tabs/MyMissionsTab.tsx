@@ -9,12 +9,14 @@ type MyMissionsTabProps = {
   missions: Mission[];
   onMarkDelivered: (id: string) => void;
   onUpdateStatus: (id: string, status: "in_transit") => void;
+  onCancelMission: (id: string, reason: string) => void;
 };
 
 export default function MyMissionsTab({
   missions,
   onMarkDelivered,
   onUpdateStatus,
+  onCancelMission,
 }: MyMissionsTabProps) {
   const activeMission = useMemo(
     () =>
@@ -48,6 +50,7 @@ export default function MyMissionsTab({
           mission={activeMission}
           onMarkDelivered={onMarkDelivered}
           onUpdateStatus={onUpdateStatus}
+          onCancelMission={onCancelMission}
         />
       )}
 

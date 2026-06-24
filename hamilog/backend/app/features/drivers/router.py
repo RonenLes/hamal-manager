@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -9,6 +10,7 @@ from ...features.driver_requests.service import (
     DriverRequestNotFoundError,
     DriverRequestNotPendingError,
 )
+from ...features.drivers.models import DriverStatus
 from ...shared.serializers import serialize_drivers, serialize_single
 
 router = APIRouter(prefix="/api")
@@ -91,5 +93,26 @@ def _review_driver_request(request_id: str, next_status: str) -> dict:
     reviewed = db.review_driver_request(request_id, next_status)
     if reviewed is None:
         raise DriverRequestNotFoundError
+
+    if next_status == "approved":
+        driver_id = f"drv_{request_id}"
+        if db.get_driver_by_id(driver_id) is None:
+            db.create_driver({
+                "id": driver_id,
+                "name": reviewed.get("name", "New Driver"),
+                "email": reviewed.get("email") or f"{driver_id}@hamilog.local",
+                "phone": reviewed.get("phone", ""),
+                "car_type": reviewed.get("car_type"),
+                "status": DriverStatus.available.value,
+                "current_location": {
+                    "lat": 0,
+                    "lng": 0,
+                    "address": reviewed.get("address", ""),
+                },
+                "current_mission_id": None,
+                "score": 100,
+                "history_score": [],
+                "joined_at": datetime.now(timezone.utc),
+            })
 
     return serialize_single(reviewed)

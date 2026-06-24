@@ -10,6 +10,7 @@ from .models import CargoSpecifications, MissionStatus
 class StatusUpdateRequest(BaseModel):
     status: MissionStatus
     driver_id: Optional[str] = None
+    reason: Optional[str] = None
 
 
 class CreateMissionRequest(BaseModel):
@@ -29,3 +30,7 @@ class UpdateMissionRequest(BaseModel):
     dropoff: Optional[Location] = None
     priority: Optional[str] = None
     ideal_delivery_time: Optional[datetime] = None
+
+
+class CancelMissionRequest(BaseModel):
+    reason: str

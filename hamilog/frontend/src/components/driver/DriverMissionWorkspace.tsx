@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   type Mission,
   type StoredUser,
+  cancelMission,
   createMissionRequest,
   getMissions,
   updateMissionStatus,
@@ -171,6 +172,18 @@ export default function DriverMissionWorkspace({
     [fetchData]
   );
 
+  const handleCancelMission = useCallback(
+    async (missionId: string, reason: string) => {
+      try {
+        await cancelMission(missionId, reason);
+        await fetchData();
+      } catch {
+        alert("Could not cancel mission.");
+      }
+    },
+    [fetchData]
+  );
+
   return (
     <main className="min-h-screen bg-app p-6 text-main">
       <div className="mx-auto max-w-7xl">
@@ -184,6 +197,7 @@ export default function DriverMissionWorkspace({
             missions={myMissions}
             onMarkDelivered={handleMarkDelivered}
             onUpdateStatus={handleStartTransit}
+            onCancelMission={handleCancelMission}
           />
         )}
 

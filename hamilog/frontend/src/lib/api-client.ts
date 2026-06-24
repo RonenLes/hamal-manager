@@ -222,6 +222,17 @@ export async function updateMission(
   });
 }
 
+// POST /api/missions/:id/cancel
+export async function cancelMission(
+  missionId: string,
+  reason: string,
+): Promise<Mission> {
+  return apiFetch<Mission>(`/api/missions/${missionId}/cancel`, {
+    method: 'POST',
+    body: JSON.stringify({ reason }),
+  });
+}
+
 // POST /api/assign (dispatcher force-assign)
 export async function assignMission(
   missionId: string,

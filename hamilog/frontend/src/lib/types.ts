@@ -35,6 +35,13 @@ export interface Location {
   address: string;
 }
 
+export interface CancellationRecord {
+  actor_role: 'driver' | 'dispatcher' | string;
+  actor_id: string;
+  reason?: string | null;
+  cancelled_at: string;
+}
+
 export interface Mission {
   id: string;
   title: string;
@@ -47,6 +54,7 @@ export interface Mission {
   priority: MissionPriority;
   ideal_delivery_time?: string | null;
   delivered_at?: string | null;
+  cancellation_history?: CancellationRecord[];
   created_at: string;
   updated_at: string;
   /** Computed by the constraint engine when fetching available missions for a driver */

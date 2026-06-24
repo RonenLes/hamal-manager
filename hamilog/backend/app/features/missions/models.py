@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -40,6 +40,13 @@ class CargoSpecifications(BaseModel):
     )
 
 
+class CancellationRecord(BaseModel):
+    actor_role: str
+    actor_id: str
+    reason: Optional[str] = None
+    cancelled_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
 class Mission(BaseModel):
     """A delivery mission from pickup to dropoff."""
 
@@ -54,5 +61,6 @@ class Mission(BaseModel):
     priority: Priority = Priority.medium
     ideal_delivery_time: Optional[datetime] = None
     delivered_at: Optional[datetime] = None
+    cancellation_history: List[CancellationRecord] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

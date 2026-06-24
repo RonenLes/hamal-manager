@@ -7,10 +7,19 @@ from ...database.state import db, manager
 from ...features.assignments.service import calculate_match_score, get_compatible_missions
 from ...features.drivers.models import DriverStatus
 from ...shared.serializers import serialize_missions, serialize_single
-from .models import Mission, MissionStatus
-from .schemas import CreateMissionRequest, StatusUpdateRequest, UpdateMissionRequest
+from .models import CancellationRecord, Mission, MissionStatus
+from .schemas import (
+    CancelMissionRequest,
+    CreateMissionRequest,
+    StatusUpdateRequest,
+    UpdateMissionRequest,
+)
 
 router = APIRouter(prefix="/api", tags=["Missions"])
+
+
+def get_actor_id(user: dict) -> str:
+    return user.get("driver_id") or user.get("sub") or user.get("username") or "unknown"
 
 
 @router.get("/missions")
@@ -90,11 +99,95 @@ async def update_mission_status(
 
     if body.status == MissionStatus.assigned and driver_id:
         db.update_driver_status(driver_id, DriverStatus.on_mission.value, mission_id)
-    elif body.status in (MissionStatus.delivered, MissionStatus.cancelled):
+    elif body.status == MissionStatus.delivered:
         if driver_id:
             db.update_driver_status(driver_id, DriverStatus.available.value, None)
+    elif body.status == MissionStatus.cancelled:
+        if user.get("role") != "dispatcher":
+            raise HTTPException(
+                status_code=403,
+                detail="Only dispatchers can cancel a mission",
+            )
+        if driver_id:
+            db.update_driver_status(driver_id, DriverStatus.available.value, None)
+        cancellation_record = CancellationRecord(
+            actor_role=user.get("role", "unknown"),
+            actor_id=get_actor_id(user),
+            reason=body.reason,
+        ).model_dump()
+        updated = db.cancel_mission_assignment(
+            mission_id,
+            cancellation_record,
+            final_status=MissionStatus.cancelled.value,
+        )
+        payload = {
+            "type": "mission_status_update",
+            "mission": serialize_single(updated),
+        }
+        await manager.broadcast_to_dispatchers(payload)
+        if driver_id:
+            await manager.send_to_driver(driver_id, payload)
+        return serialize_single(updated)
 
     updated = db.update_mission_status(mission_id, body.status.value, driver_id)
+    payload = {
+        "type": "mission_status_update",
+        "mission": serialize_single(updated),
+    }
+    await manager.broadcast_to_dispatchers(payload)
+    if driver_id:
+        await manager.send_to_driver(driver_id, payload)
+
+    return serialize_single(updated)
+
+
+@router.post("/missions/{mission_id}/cancel")
+async def cancel_mission(
+    mission_id: str,
+    body: CancelMissionRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    mission = db.get_mission_by_id(mission_id)
+    if mission is None:
+        raise HTTPException(status_code=404, detail="Mission not found")
+
+    driver_id = mission.get("assigned_driver_id")
+    if user.get("role") == "driver":
+        current_driver_id = user.get("driver_id")
+        if not current_driver_id or driver_id != current_driver_id:
+            raise HTTPException(
+                status_code=403,
+                detail="Drivers can only cancel their own assigned mission",
+            )
+        final_status = MissionStatus.available.value
+    elif user.get("role") == "dispatcher":
+        final_status = MissionStatus.cancelled.value
+    else:
+        raise HTTPException(status_code=403, detail="Invalid role")
+
+    if mission.get("status") not in (
+        MissionStatus.assigned.value,
+        MissionStatus.in_transit.value,
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Only active assigned missions can be cancelled",
+        )
+
+    cancellation_record = CancellationRecord(
+        actor_role=user.get("role", "unknown"),
+        actor_id=get_actor_id(user),
+        reason=body.reason,
+    ).model_dump()
+    updated = db.cancel_mission_assignment(
+        mission_id,
+        cancellation_record,
+        final_status=final_status,
+    )
+
+    if driver_id:
+        db.update_driver_status(driver_id, DriverStatus.available.value, None)
+
     payload = {
         "type": "mission_status_update",
         "mission": serialize_single(updated),

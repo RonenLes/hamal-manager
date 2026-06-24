@@ -211,6 +211,7 @@ class InMemoryDB:
                 status=DriverStatus.available,
                 current_location=Location(lat=32.0800, lng=34.7800, address="Central Tel Aviv"),
                 score=94,
+                joined_at=now,
             ),
             Driver(
                 id="drv_002",
@@ -221,6 +222,7 @@ class InMemoryDB:
                 status=DriverStatus.available,
                 current_location=Location(lat=31.7700, lng=35.2100, address="Jerusalem Center"),
                 score=82,
+                joined_at=now,
             ),
             Driver(
                 id="drv_003",
@@ -232,6 +234,7 @@ class InMemoryDB:
                 current_location=Location(lat=32.7900, lng=34.9900, address="Haifa Port Area"),
                 current_mission_id="msn_008",
                 score=88,
+                joined_at=now,
             ),
             Driver(
                 id="drv_004",
@@ -242,6 +245,7 @@ class InMemoryDB:
                 status=DriverStatus.available,
                 current_location=Location(lat=32.0900, lng=34.7850, address="North Tel Aviv"),
                 score=91,
+                joined_at=now,
             ),
             Driver(
                 id="drv_005",
@@ -252,6 +256,7 @@ class InMemoryDB:
                 status=DriverStatus.offline,
                 current_location=Location(lat=31.2520, lng=34.7860, address="Be'er Sheva"),
                 score=67,
+                joined_at=now,
             ),
             Driver(
                 id="drv_006",
@@ -262,6 +267,7 @@ class InMemoryDB:
                 status=DriverStatus.blacklisted,
                 current_location=Location(lat=32.1663, lng=34.8433, address="Herzliya"),
                 score=42,
+                joined_at=now,
             ),
         ]
 
@@ -271,6 +277,7 @@ class InMemoryDB:
                 mission.get("ideal_delivery_time")
                 or mission["created_at"] + timedelta(hours=2)
             )
+            mission.setdefault("cancellation_history", [])
             if mission.get("status") == MissionStatus.delivered.value:
                 mission["delivered_at"] = mission.get("updated_at")
             self.missions[m.id] = mission
@@ -310,6 +317,7 @@ class InMemoryDB:
             now + timedelta(hours=2),
         )
         mission_data.setdefault("delivered_at", None)
+        mission_data.setdefault("cancellation_history", [])
         mission_data.setdefault("created_at", now)
         mission_data["updated_at"] = now
         self.missions[mission_data["id"]] = mission_data
@@ -335,6 +343,23 @@ class InMemoryDB:
             mission["delivered_at"] = now
         if driver_id is not None:
             mission["assigned_driver_id"] = driver_id
+        return mission
+
+    def cancel_mission_assignment(
+        self,
+        mission_id: str,
+        cancellation_record: dict,
+        final_status: str = MissionStatus.available.value,
+    ) -> Optional[dict]:
+        mission = self.missions.get(mission_id)
+        if mission is None:
+            return None
+
+        now = datetime.now(timezone.utc)
+        mission.setdefault("cancellation_history", []).append(cancellation_record)
+        mission["status"] = final_status
+        mission["assigned_driver_id"] = None
+        mission["updated_at"] = now
         return mission
     
     def update_mission_details(self,mission_id:str, updates:dict)-> Optional[dict]:
@@ -378,6 +403,7 @@ class InMemoryDB:
 
     def create_driver(self, driver_data: dict) -> dict:
         """Insert a new driver into the store."""
+        driver_data.setdefault("joined_at", datetime.now(timezone.utc))
         self.drivers[driver_data["id"]] = driver_data
         return driver_data
 
@@ -395,8 +421,7 @@ class InMemoryDB:
         if driver is None:
             return None
         driver["status"] = status
-        if mission_id is not None:
-            driver["current_mission_id"] = mission_id
+        driver["current_mission_id"] = mission_id
         return driver
 
     def update_driver_location(
@@ -504,5 +529,4 @@ class InMemoryDB:
             ):
                 request["status"] = "declined"
                 request["reviewed_at"] = reviewed_at
-
 
