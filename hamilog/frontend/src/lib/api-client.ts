@@ -13,6 +13,7 @@ import type {
   AssignResponse,
   ApiError,
   DriverRequest,
+  MissionDeliveryRequest,
 } from './types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -31,6 +32,7 @@ export type {
   Location,
   Driver,
   DriverRequest,
+  MissionDeliveryRequest,
   LoginResponse,
   StoredUser,
   CargoAnalysisResponse,
@@ -193,6 +195,44 @@ export async function assignMission(
     method: 'POST',
     body: JSON.stringify({ mission_id: missionId, driver_id: driverId }),
   });
+}
+
+export async function createMissionRequest(
+  missionId: string,
+): Promise<MissionDeliveryRequest> {
+  return apiFetch<MissionDeliveryRequest>('/api/mission-requests', {
+    method: 'POST',
+    body: JSON.stringify({ mission_id: missionId }),
+  });
+}
+
+export async function getMissionRequests(
+  params?: { status?: 'pending' | 'approved' | 'declined' },
+): Promise<MissionDeliveryRequest[]> {
+  const query = new URLSearchParams();
+  if (params?.status) query.set('status', params.status);
+  const qs = query.toString();
+  return apiFetch<MissionDeliveryRequest[]>(
+    `/api/mission-requests${qs ? `?${qs}` : ''}`,
+  );
+}
+
+export async function approveMissionRequest(
+  requestId: string,
+): Promise<MissionDeliveryRequest> {
+  return apiFetch<MissionDeliveryRequest>(
+    `/api/mission-requests/${requestId}/approve`,
+    { method: 'POST' },
+  );
+}
+
+export async function declineMissionRequest(
+  requestId: string,
+): Promise<MissionDeliveryRequest> {
+  return apiFetch<MissionDeliveryRequest>(
+    `/api/mission-requests/${requestId}/decline`,
+    { method: 'POST' },
+  );
 }
 
 // POST /api/missions (create new mission)

@@ -8,9 +8,6 @@ from ..serializers import serialize_drivers, serialize_single
 from ..services.driver_requests import (
     DriverRequestNotFoundError,
     DriverRequestNotPendingError,
-    count_pending_driver_requests,
-    list_driver_requests as get_driver_requests,
-    review_driver_request,
 )
 from ..state import db
 
@@ -40,7 +37,7 @@ async def get_driver(
 async def get_pending_driver_requests_count(
     user: dict = Depends(require_role("dispatcher")),
 ) -> dict:
-    return {"count": count_pending_driver_requests()}
+    return {"count": db.count_pending_driver_requests()}
 
 
 @router.get("/driver-requests", tags=["Driver Requests"])
@@ -48,7 +45,7 @@ async def list_driver_requests(
     status_filter: Optional[str] = Query(None, alias="status"),
     user: dict = Depends(require_role("dispatcher")),
 ) -> List[dict]:
-    return get_driver_requests(status_filter)
+    return db.list_driver_requests(status_filter)
 
 
 @router.post("/driver-requests/{request_id}/approve", tags=["Driver Requests"])
@@ -57,7 +54,7 @@ async def approve_driver_request(
     user: dict = Depends(require_role("dispatcher")),
 ) -> dict:
     try:
-        return review_driver_request(request_id, "approved")
+        return _review_driver_request(request_id, "approved")
     except DriverRequestNotFoundError:
         raise HTTPException(status_code=404, detail="Driver request not found")
     except DriverRequestNotPendingError:
@@ -73,7 +70,7 @@ async def decline_driver_request(
     user: dict = Depends(require_role("dispatcher")),
 ) -> dict:
     try:
-        return review_driver_request(request_id, "declined")
+        return _review_driver_request(request_id, "declined")
     except DriverRequestNotFoundError:
         raise HTTPException(status_code=404, detail="Driver request not found")
     except DriverRequestNotPendingError:
@@ -81,3 +78,18 @@ async def decline_driver_request(
             status_code=400,
             detail="Only pending requests can be declined",
         )
+
+
+def _review_driver_request(request_id: str, next_status: str) -> dict:
+    request = db.get_driver_request_by_id(request_id)
+    if request is None:
+        raise DriverRequestNotFoundError
+
+    if request.get("status") != "pending":
+        raise DriverRequestNotPendingError
+
+    reviewed = db.review_driver_request(request_id, next_status)
+    if reviewed is None:
+        raise DriverRequestNotFoundError
+
+    return serialize_single(reviewed)

@@ -3,7 +3,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+
+import { clearToken } from "@/lib/api-client";
 
 const links = [
   { label: "Dashboard", href: "/dispatcher" },
@@ -13,6 +15,12 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  function handleLogout() {
+    clearToken();
+    router.replace("/login");
+  }
 
   return (
     <nav className="border-b border-app bg-app/90 px-6 py-4 backdrop-blur">
@@ -39,6 +47,14 @@ export default function Navbar() {
               </Link>
             );
           })}
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500 hover:text-white"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </nav>

@@ -4,15 +4,29 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter} from "next/navigation";
 import { login as apiLogin, getStoredUser, getToken } from "@/lib/api-client";
 
+type ThemeMode = "dark" | "light";
+
+const THEME_STORAGE_KEY = "hamilog-theme";
+
+function getSavedTheme(): ThemeMode {
+  if (typeof window === "undefined") return "dark";
+  return localStorage.getItem(THEME_STORAGE_KEY) === "light" ? "light" : "dark";
+}
+
+function applyTheme(theme: ThemeMode) {
+  document.documentElement.classList.remove("theme-dark", "theme-light");
+  document.documentElement.classList.add(theme === "dark" ? "theme-dark" : "theme-light");
+}
+
 // ---------------------------------------------------------------------------
-// Quick-login test accounts
+// Quick-login users seeded into Atlas for local development
 // ---------------------------------------------------------------------------
-const TEST_ACCOUNTS = [
-  { username: "dispatcher1", password: "dispatch123", role: "dispatcher", label: "Dispatcher 1" },
-  { username: "driver_sedan", password: "drive123", role: "driver", label: "Driver — Sedan" },
-  { username: "driver_suv", password: "drive123", role: "driver", label: "Driver — SUV" },
-  { username: "driver_van", password: "drive123", role: "driver", label: "Driver — Van" },
-  { username: "driver_refrigerated", password: "drive123", role: "driver", label: "Driver — Refrigerated" },
+const AVAILABLE_USERS = [
+  { username: "dispatcher1", password: "dispatch123", role: "dispatcher", label: "Dispatcher - Operations" },
+  { username: "driver_sedan", password: "drive123", role: "driver", label: "Alice Ronen - Sedan" },
+  { username: "driver_suv", password: "drive123", role: "driver", label: "Bob Levi - SUV" },
+  { username: "driver_van", password: "drive123", role: "driver", label: "Carol Mizrahi - Van" },
+  { username: "driver_refrigerated", password: "drive123", role: "driver", label: "Dan Shapira - Refrigerated Van" },
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -27,6 +41,11 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shaking, setShaking] = useState(false);
+  const [theme, setTheme] = useState<ThemeMode>(getSavedTheme);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -63,7 +82,7 @@ function LoginForm() {
   );
 
   const handleQuickLogin = useCallback(
-    async (account: (typeof TEST_ACCOUNTS)[number]) => {
+    async (account: (typeof AVAILABLE_USERS)[number]) => {
       setUsername(account.username);
       setPassword(account.password);
       setError(null);
@@ -87,11 +106,40 @@ function LoginForm() {
     [router],
   );
 
+  function handleThemeToggle() {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    applyTheme(nextTheme);
+  }
+
   return (
     <div
      className={`w-full max-w-md p-8 rounded-2xl border border-app bg-card text-main shadow-xl ${shaking ? "animate-shake" : ""}`}
       style={{ animation: "fade-up 0.6s ease-out forwards" }}
     >
+      <div className="mb-6 flex justify-end">
+        <button
+          type="button"
+          onClick={handleThemeToggle}
+          className="flex items-center gap-3 rounded-full border border-app bg-card-soft px-3 py-2 text-sm font-semibold text-main transition hover:opacity-90"
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+        >
+          <span className="text-muted">{theme === "dark" ? "Dark" : "Light"}</span>
+          <span
+            className={`flex h-6 w-11 items-center rounded-full border border-app p-0.5 transition ${
+              theme === "dark" ? "justify-start bg-slate-900" : "justify-end bg-blue-100"
+            }`}
+          >
+            <span
+              className={`h-5 w-5 rounded-full transition ${
+                theme === "dark" ? "bg-blue-400" : "bg-blue-600"
+              }`}
+            />
+          </span>
+        </button>
+      </div>
+
       {/* Header */}
       <div className="text-center mb-8">
         <h1
@@ -171,7 +219,7 @@ function LoginForm() {
                 className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
                 style={{ animation: "spin-slow 0.7s linear infinite" }}
               />
-              Signing in…
+              Signing in...
             </>
           ) : (
             "Sign In"
@@ -183,14 +231,14 @@ function LoginForm() {
       <div className="flex items-center gap-4 my-6">
         <div className="flex-1 h-px" style={{ background: "var(--border-subtle)" }} />
         <span className="text-xs uppercase tracking-wider" style={{ color: "var(--text-secondary)" }}>
-          Quick Access
+          Available Users
         </span>
         <div className="flex-1 h-px" style={{ background: "var(--border-subtle)" }} />
       </div>
 
       {/* Quick login buttons */}
       <div className="flex flex-col gap-2" id="quick-login-group">
-        {TEST_ACCOUNTS.map((account) => (
+        {AVAILABLE_USERS.map((account) => (
           <button
             key={account.username}
             type="button"

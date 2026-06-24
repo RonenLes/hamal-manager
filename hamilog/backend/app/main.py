@@ -4,7 +4,16 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import assignments, auth, cargo, drivers, missions, system, websockets
+from .routers import (
+    assignments,
+    auth,
+    cargo,
+    drivers,
+    mission_requests,
+    missions,
+    system,
+    websockets,
+)
 
 load_dotenv()
 
@@ -37,6 +46,7 @@ def create_app() -> FastAPI:
     app.include_router(auth.router)
     app.include_router(missions.router)
     app.include_router(drivers.router)
+    app.include_router(mission_requests.router)
     app.include_router(assignments.router)
     app.include_router(cargo.router)
     app.include_router(websockets.router)

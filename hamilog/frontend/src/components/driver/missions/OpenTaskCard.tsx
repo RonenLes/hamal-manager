@@ -137,12 +137,12 @@ export default function OpenTaskCard({
               onClick={() => setConfirming(true)}
               className="mt-5 w-full rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
             >
-              Accept Mission
+              Request Mission
             </button>
           ) : (
             <div className="mt-5 rounded-xl border border-orange-500/30 bg-orange-500/10 p-4">
               <p className="text-sm font-semibold text-orange-300">
-                Are you sure you want to accept this mission?
+                Send this mission request to the dispatcher?
               </p>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <button
@@ -158,7 +158,7 @@ export default function OpenTaskCard({
                   disabled={accepting}
                   className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {accepting ? "Accepting..." : "Confirm"}
+                  {accepting ? "Sending..." : "Send Request"}
                 </button>
               </div>
             </div>

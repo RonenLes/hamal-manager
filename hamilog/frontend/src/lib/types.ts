@@ -60,6 +60,7 @@ export interface Driver {
   status: DriverStatus;
   current_location: Location | null;
   current_mission_id: string | null;
+  score?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -157,6 +158,21 @@ export type DriverRequest = {
   car_type: CarType;
   status: "pending" | "approved" | "declined";
   created_at: string;
+  reviewed_at?: string;
+};
+
+export type MissionRequestStatus = "pending" | "approved" | "declined";
+
+export type MissionDeliveryRequest = {
+  id: string;
+  mission_id: string;
+  driver_id: string;
+  status: MissionRequestStatus;
+  created_at: string;
+  reviewed_at?: string | null;
+  mission: Mission | null;
+  driver: Driver | null;
+  driver_score: number;
 };
 
 export type WSDispatchMessage =

@@ -4,13 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
-  type Mission,
-  type Driver,
-  getMissions,
-  getDrivers,
   getToken,
   getStoredUser,
-  assignMission,
+  getMissionRequests,
+  approveMissionRequest,
+  declineMissionRequest,
 } from "@/lib/api-client";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
@@ -19,29 +17,21 @@ import PendingRequestEntry, {
   type RequestStatus,
 } from "@/components/dispatcher/pending-requests/PendingRequestEntry";
 
-function createMockRequests(missions: Mission[], drivers: Driver[]) {
-  const availableMissions = missions.filter(
-    (mission) => mission.status === "available"
-  );
+function toDeliveryRequest(request: Awaited<ReturnType<typeof getMissionRequests>>[number]) {
+  if (!request.driver || !request.mission) return null;
+  const driverScore =
+    request.driver_score > 0
+      ? Math.round(request.driver_score * 100)
+      : request.driver.score ?? 0;
 
-  const availableDrivers = drivers.filter(
-    (driver) => driver.status === "available"
-  );
-
-  return availableMissions
-    .slice(0, Math.min(availableMissions.length, availableDrivers.length))
-    .map((mission, index): DeliveryRequest => {
-      const driver = availableDrivers[index];
-
-      return {
-        id: `request-${mission.id}-${driver.id}`,
-        driver,
-        mission,
-        requestedAt: mission.created_at,
-        driverScore: mission.match_score ?? 70 + ((index * 7) % 25),
-        status: "pending",
-      };
-    });
+  return {
+    id: request.id,
+    driver: request.driver,
+    mission: request.mission,
+    requestedAt: request.created_at,
+    driverScore,
+    status: request.status,
+  } satisfies DeliveryRequest;
 }
 
 export default function PendingRequestsPage() {
@@ -63,27 +53,12 @@ export default function PendingRequestsPage() {
 
   async function fetchData() {
     try {
-      const [missionsData, driversData] = await Promise.all([
-        getMissions(),
-        getDrivers(),
-      ]);
-
-      setRequests((currentRequests) => {
-        const nextRequests = createMockRequests(missionsData, driversData);
-
-        return nextRequests.map((nextRequest) => {
-          const existing = currentRequests.find(
-            (request) => request.id === nextRequest.id
-          );
-
-          return existing
-            ? {
-                ...nextRequest,
-                status: existing.status,
-              }
-            : nextRequest;
-        });
-      });
+      const requestData = await getMissionRequests({ status: "pending" });
+      setRequests(
+        requestData
+          .map(toDeliveryRequest)
+          .filter((request): request is DeliveryRequest => Boolean(request))
+      );
     } finally {
       setLoading(false);
     }
@@ -101,7 +76,7 @@ export default function PendingRequestsPage() {
       total: requests.length,
       pending: requests.filter((request) => request.status === "pending")
         .length,
-      accepted: requests.filter((request) => request.status === "accepted")
+      approved: requests.filter((request) => request.status === "approved")
         .length,
       declined: requests.filter((request) => request.status === "declined")
         .length,
@@ -118,7 +93,7 @@ export default function PendingRequestsPage() {
 
     const statusOrder: Record<RequestStatus, number> = {
       pending: 0,
-      accepted: 1,
+      approved: 1,
       declined: 2,
     };
 
@@ -140,28 +115,38 @@ export default function PendingRequestsPage() {
     setActionLoadingId(request.id);
 
     try {
-      await assignMission(request.mission.id, request.driver.id);
+      await approveMissionRequest(request.id);
 
       setRequests((currentRequests) =>
         currentRequests.map((item) =>
-          item.id === request.id ? { ...item, status: "accepted" } : item
+          item.id === request.id ? { ...item, status: "approved" } : item
         )
       );
 
       await fetchData();
     } catch {
-      alert("Could not accept request. Make sure the backend is running.");
+      alert("Could not approve request. Make sure the backend is running.");
     } finally {
       setActionLoadingId(null);
     }
   }
 
-  function handleDecline(requestId: string) {
-    setRequests((currentRequests) =>
-      currentRequests.map((item) =>
-        item.id === requestId ? { ...item, status: "declined" } : item
-      )
-    );
+  async function handleDecline(requestId: string) {
+    setActionLoadingId(requestId);
+
+    try {
+      await declineMissionRequest(requestId);
+      setRequests((currentRequests) =>
+        currentRequests.map((item) =>
+          item.id === requestId ? { ...item, status: "declined" } : item
+        )
+      );
+      await fetchData();
+    } catch {
+      alert("Could not decline request. Make sure the backend is running.");
+    } finally {
+      setActionLoadingId(null);
+    }
   }
 
   if (loading) {
@@ -197,8 +182,8 @@ export default function PendingRequestsPage() {
             subtitle="Waiting for decision"
           />
           <DispatcherStatBox
-            title="Accepted"
-            value={stats.accepted}
+            title="Approved"
+            value={stats.approved}
             subtitle="Approved by dispatcher"
           />
           <DispatcherStatBox

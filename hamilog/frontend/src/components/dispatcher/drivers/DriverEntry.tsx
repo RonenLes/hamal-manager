@@ -2,9 +2,12 @@ import Link from "next/link";
 
 import type { Driver, Mission } from "@/lib/api-client";
 import { CAR_SPECS } from "@/lib/car-specs";
+import { formatDateTime24 } from "@/lib/date-format";
+import type { DriverScorePoint } from "@/lib/driver-metrics";
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
+import DriverScoreGraph from "./DriverScoreGraph";
 
 export type ExtendedDriver = Driver & {
   phone?: string;
@@ -17,28 +20,17 @@ type DriverEntryProps = {
   activeMission?: Mission;
   deliveriesMade: number;
   score: number;
+  scorePoints: DriverScorePoint[];
   isExpanded: boolean;
+  isGraphExpanded: boolean;
   copiedDriverId: string | null;
   onToggle: () => void;
+  onToggleGraph: () => void;
   onCopyPhone: (driverId: string, phone: string) => void;
 };
 
 function formatDateTime(dateValue?: string) {
-  if (!dateValue) return "Unknown";
-
-  const date = new Date(dateValue);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Unknown";
-  }
-
-  return date.toLocaleString([], {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatDateTime24(dateValue);
 }
 
 function getScoreClasses(score: number) {
@@ -75,9 +67,12 @@ export default function DriverEntry({
   activeMission,
   deliveriesMade,
   score,
+  scorePoints,
   isExpanded,
+  isGraphExpanded,
   copiedDriverId,
   onToggle,
+  onToggleGraph,
   onCopyPhone,
 }: DriverEntryProps) {
   const isActive = Boolean(activeMission);
@@ -133,11 +128,21 @@ export default function DriverEntry({
             History
           </Link>
 
+          <button
+            type="button"
+            onClick={onToggleGraph}
+            className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-4 py-2 text-xs font-bold text-blue-200 transition hover:bg-blue-500/20"
+          >
+            {isGraphExpanded ? "Hide graph" : "Score graph"}
+          </button>
+
           <button type="button" onClick={onToggle} className="text-xl text-muted">
             {isExpanded ? "^" : "v"}
           </button>
         </div>
       </div>
+
+      {isGraphExpanded && <DriverScoreGraph points={scorePoints} />}
 
       {isExpanded && (
         <div className="border-t border-app bg-card-soft px-5 py-5">

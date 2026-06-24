@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   type Mission,
   type StoredUser,
+  createMissionRequest,
   getMissions,
   updateMissionStatus,
   getToken,
@@ -117,16 +118,16 @@ export default function DriverMissionWorkspace({
       setAcceptingMissionId(missionId);
 
       try {
-        await updateMissionStatus(missionId, "assigned", user.driver_id);
+        await createMissionRequest(missionId);
         await fetchData();
-        router.push("/driver/my-missions");
+        alert("Request sent to dispatcher for approval.");
       } catch {
-        alert("Could not accept mission.");
+        alert("Could not request mission.");
       } finally {
         setAcceptingMissionId(null);
       }
     },
-    [fetchData, router]
+    [fetchData]
   );
 
   const pageCopy = {
@@ -138,7 +139,7 @@ export default function DriverMissionWorkspace({
     "open-tasks": {
       title: "Open Tasks",
       description:
-        "Review available missions, expand each entry, and accept matching tasks.",
+        "Review available missions, expand each entry, and request matching tasks.",
     },
     profile: {
       title: "Driver Profile",

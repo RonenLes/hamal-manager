@@ -2,17 +2,21 @@ from typing import Any, Dict
 
 from fastapi import APIRouter, HTTPException, status
 
-from auth import TEST_USERS, create_jwt
+from auth import create_jwt, verify_password
 
 from ..schemas import LoginRequest, LoginResponse
+from ..state import db
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post("/login", response_model=LoginResponse)
 async def login(body: LoginRequest) -> LoginResponse:
-    user_record = TEST_USERS.get(body.username)
-    if user_record is None or user_record["password"] != body.password:
+    user_record = db.get_user_by_username(body.username)
+    if user_record is None or not verify_password(
+        body.password,
+        user_record.get("password_hash", ""),
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",

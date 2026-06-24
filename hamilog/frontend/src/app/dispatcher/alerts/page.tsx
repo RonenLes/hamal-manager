@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -17,8 +17,14 @@ import AlertEntry, {
   type DispatcherAlert,
   getWaitingTime,
 } from "@/components/dispatcher/alerts/AlertEntry";
+import AlertPopup, { type PopupAlert } from "@/components/dispatcher/alerts/AlertPopup";
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import {
+  getSeenAlertPopupIds,
+  saveSeenAlertPopupIds,
+} from "@/lib/alert-popup-storage";
 import { CAR_SPECS } from "@/lib/car-specs";
+import { playAppSound } from "@/lib/sounds";
 
 function getLevelRank(level: AlertLevel) {
   switch (level) {
@@ -170,6 +176,24 @@ function buildAlerts(missions: Mission[], drivers: Driver[]) {
   });
 }
 
+function groupAlertsForPopup(alerts: DispatcherAlert[]): PopupAlert[] {
+  const groups = new Map<string, DispatcherAlert[]>();
+
+  alerts.forEach((alert) => {
+    const current = groups.get(alert.type) ?? [];
+    groups.set(alert.type, [...current, alert]);
+  });
+
+  return Array.from(groups.entries()).map(([type, group]) => ({
+    id: group.map((alert) => alert.id).join("|"),
+    title: group.length === 1 ? group[0].title : `${group.length} ${type} alerts`,
+    summary: group[0].summary,
+    summaries: group.map((alert) => `${alert.title}: ${alert.summary}`),
+    type,
+    level: group[0].level,
+  }));
+}
+
 export default function AlertsPage() {
   const router = useRouter();
 
@@ -177,6 +201,10 @@ export default function AlertsPage() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
+  const seenAlertIds = useRef<Set<string>>(getSeenAlertPopupIds());
+  const lastSoundAlertId = useRef<string | null>(null);
+  const [queuedAlerts, setQueuedAlerts] = useState<PopupAlert[]>([]);
+  const popupAlert = queuedAlerts[0] ?? null;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -225,6 +253,25 @@ export default function AlertsPage() {
     };
   }, [alerts]);
 
+  useEffect(() => {
+    const popupAlerts = groupAlertsForPopup(
+      alerts.filter((alert) => alert.level !== "success"),
+    ).filter((alert) => !seenAlertIds.current.has(alert.id));
+
+    if (popupAlerts.length === 0) return;
+
+    popupAlerts.forEach((alert) => seenAlertIds.current.add(alert.id));
+    saveSeenAlertPopupIds(seenAlertIds.current);
+    setQueuedAlerts((current) => [...current, ...popupAlerts]);
+  }, [alerts]);
+
+  useEffect(() => {
+    if (!popupAlert || lastSoundAlertId.current === popupAlert.id) return;
+
+    lastSoundAlertId.current = popupAlert.id;
+    playAppSound("alert");
+  }, [popupAlert]);
+
   function handleDismiss(alertId: string) {
     setDismissedIds((current) => [...current, alertId]);
     setExpandedId(null);
@@ -240,6 +287,13 @@ export default function AlertsPage() {
 
   return (
     <main className="min-h-screen bg-app p-6 text-main">
+      {popupAlert && (
+        <AlertPopup
+          alert={popupAlert}
+          onOk={() => setQueuedAlerts((current) => current.slice(1))}
+        />
+      )}
+
       <div className="mx-auto max-w-7xl">
         <header className="mb-6">
           <p className="text-sm font-semibold uppercase tracking-wider text-orange-400">

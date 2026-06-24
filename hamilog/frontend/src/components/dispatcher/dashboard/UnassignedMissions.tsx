@@ -1,6 +1,7 @@
 // src/components/dispatcher/dashboard/UnassignedMissions.tsx
 
 import type { Mission } from "@/lib/api-client";
+import { formatTime24FromValue } from "@/lib/date-format";
 import DashboardPanel from "./DashboardPanel";
 import PriorityBadge from "../shared/PriorityBadge";
 
@@ -9,18 +10,7 @@ type UnassignedMissionsProps = {
 };
 
 function formatTime(date?: string) {
-  if (!date) return "New";
-
-  const parsed = new Date(date);
-
-  if (Number.isNaN(parsed.getTime())) {
-    return "New";
-  }
-
-  return parsed.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatTime24FromValue(date, "New");
 }
 
 export default function UnassignedMissions({
