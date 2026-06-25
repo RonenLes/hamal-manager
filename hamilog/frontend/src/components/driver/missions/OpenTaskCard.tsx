@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import type { Mission } from "@/lib/api-client";
+import { formatIdealDeliveryTime } from "@/lib/mission-time";
 import DetailTile from "@/components/dispatcher/shared/DetailTile";
 import PriorityBadge from "@/components/dispatcher/shared/PriorityBadge";
 
@@ -89,6 +90,9 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "No cooling needed.
           <span className="rounded-full border border-app bg-card-soft px-3 py-1 text-xs font-bold text-cyan-300">
             {mission.cargo?.volume_liters ?? "?"} L
           </span>
+          <span className="rounded-full border border-app bg-card-soft px-3 py-1 text-xs font-bold text-orange-300">
+            {formatIdealDeliveryTime(mission.ideal_delivery_time)}
+          </span>
           {mission.cargo?.requires_cooling && (
             <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-300">
               Cooling
@@ -140,6 +144,12 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "No cooling needed.
               </p>
             </DetailTile>
 
+            <DetailTile label="Ideal Delivery Time">
+              <p className="font-semibold text-main">
+                {formatIdealDeliveryTime(mission.ideal_delivery_time)}
+              </p>
+            </DetailTile>
+
             <DetailTile label="Cooling">
               <p className="font-semibold text-main">
                 {mission.cargo?.requires_cooling
@@ -161,12 +171,12 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "No cooling needed.
               onClick={() => setConfirming(true)}
               className="mt-5 w-full rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
             >
-              Accept Mission
+              Request Mission
             </button>
           ) : (
             <div className="mt-5 rounded-xl border border-orange-500/30 bg-orange-500/10 p-4">
               <p className="text-sm font-semibold text-orange-300">
-                Are you sure you want to accept this mission?
+                Send this mission request to the dispatcher?
               </p>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <button
@@ -182,7 +192,7 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "No cooling needed.
                   disabled={accepting}
                   className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {accepting ? "Accepting..." : "Confirm"}
+                  {accepting ? "Sending..." : "Send Request"}
                 </button>
               </div>
             </div>

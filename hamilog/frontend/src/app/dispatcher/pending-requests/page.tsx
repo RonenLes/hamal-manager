@@ -4,56 +4,67 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
-  type Mission,
-  type Driver,
-  getMissions,
-  getDrivers,
-  getToken,
+  getMissionRequests,
   getStoredUser,
-  assignMission,
+  getToken,
 } from "@/lib/api-client";
 
+import PendingMissionRequestEntry, {
+  type MissionRequestGroup,
+} from "@/components/dispatcher/pending-requests/PendingMissionRequestEntry";
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
-import PendingRequestEntry, {
-  type DeliveryRequest,
-  type RequestStatus,
-} from "@/components/dispatcher/pending-requests/PendingRequestEntry";
-
 
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
-function createMockRequests(missions: Mission[], drivers: Driver[]) {
-  const availableMissions = missions.filter(
-    (mission) => mission.status === "available"
-  );
+type MissionDeliveryRequest = Awaited<
+  ReturnType<typeof getMissionRequests>
+>[number];
 
-  const availableDrivers = drivers.filter(
-    (driver) => driver.status === "available"
-  );
+function toMatchPercentage(score: number) {
+  return Math.round(score * 100);
+}
 
-  return availableMissions
-    .slice(0, Math.min(availableMissions.length, availableDrivers.length))
-    .map((mission, index): DeliveryRequest => {
-      const driver = availableDrivers[index];
+function groupRequestsByMission(
+  requests: MissionDeliveryRequest[]
+): MissionRequestGroup[] {
+  const groups = new Map<string, MissionRequestGroup>();
 
-      return {
-        id: `request-${mission.id}-${driver.id}`,
-        driver,
-        mission,
-        requestedAt: mission.created_at,
-        driverScore: mission.match_score ?? 70 + ((index * 7) % 25),
-        status: "pending",
-      };
+  for (const request of requests) {
+    if (!request.driver || !request.mission) continue;
+    if (request.mission.status !== "available") continue;
+    if (request.mission.assigned_driver_id) continue;
+
+    const existing = groups.get(request.mission.id);
+    const group =
+      existing ??
+      ({
+        mission: request.mission,
+        requests: [],
+      } satisfies MissionRequestGroup);
+
+    group.requests.push({
+      id: request.id,
+      driver: request.driver,
+      requestedAt: request.created_at,
+      matchScore: toMatchPercentage(request.match_score),
+      status: request.status,
     });
+
+    groups.set(request.mission.id, group);
+  }
+
+  return [...groups.values()].map((group) => ({
+    ...group,
+    requests: [...group.requests].sort((a, b) => b.matchScore - a.matchScore),
+  }));
 }
 
 export default function PendingRequestsPage() {
   const router = useRouter();
 
-  const [requests, setRequests] = useState<DeliveryRequest[]>([]);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [groups, setGroups] = useState<MissionRequestGroup[]>([]);
+  const [expandedMissionId, setExpandedMissionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
     const token = getToken();
@@ -66,27 +77,8 @@ export default function PendingRequestsPage() {
 
   async function fetchData() {
     try {
-      const [missionsData, driversData] = await Promise.all([
-        getMissions(),
-        getDrivers(),
-      ]);
-
-      setRequests((currentRequests) => {
-        const nextRequests = createMockRequests(missionsData, driversData);
-
-        return nextRequests.map((nextRequest) => {
-          const existing = currentRequests.find(
-            (request) => request.id === nextRequest.id
-          );
-
-          return existing
-            ? {
-                ...nextRequest,
-                status: existing.status,
-              }
-            : nextRequest;
-        });
-      });
+      const requestData = await getMissionRequests({ status: "pending" });
+      setGroups(groupRequestsByMission(requestData));
     } finally {
       setLoading(false);
     }
@@ -99,19 +91,7 @@ export default function PendingRequestsPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const stats = useMemo(() => {
-    return {
-      total: requests.length,
-      pending: requests.filter((request) => request.status === "pending")
-        .length,
-      accepted: requests.filter((request) => request.status === "accepted")
-        .length,
-      declined: requests.filter((request) => request.status === "declined")
-        .length,
-    };
-  }, [requests]);
-
-  const sortedRequests = useMemo(() => {
+  const sortedGroups = useMemo(() => {
     const priorityOrder = {
       critical: 0,
       high: 1,
@@ -119,53 +99,42 @@ export default function PendingRequestsPage() {
       low: 3,
     };
 
-    const statusOrder: Record<RequestStatus, number> = {
-      pending: 0,
-      accepted: 1,
-      declined: 2,
-    };
-
-    return [...requests].sort((a, b) => {
-      const statusDiff = statusOrder[a.status] - statusOrder[b.status];
-
-      if (statusDiff !== 0) return statusDiff;
-
+    return [...groups].sort((a, b) => {
       const priorityDiff =
         priorityOrder[a.mission.priority] - priorityOrder[b.mission.priority];
 
       if (priorityDiff !== 0) return priorityDiff;
 
-      return b.driverScore - a.driverScore;
+      const bestA = Math.max(...a.requests.map((request) => request.matchScore));
+      const bestB = Math.max(...b.requests.map((request) => request.matchScore));
+
+      return bestB - bestA;
     });
-  }, [requests]);
+  }, [groups]);
 
-  async function handleAccept(request: DeliveryRequest) {
-    setActionLoadingId(request.id);
-
-    try {
-      await assignMission(request.mission.id, request.driver.id);
-
-      setRequests((currentRequests) =>
-        currentRequests.map((item) =>
-          item.id === request.id ? { ...item, status: "accepted" } : item
-        )
-      );
-
-      await fetchData();
-    } catch {
-      alert("Could not accept request. Make sure the backend is running.");
-    } finally {
-      setActionLoadingId(null);
-    }
-  }
-
-  function handleDecline(requestId: string) {
-    setRequests((currentRequests) =>
-      currentRequests.map((item) =>
-        item.id === requestId ? { ...item, status: "declined" } : item
-      )
+  const stats = useMemo(() => {
+    const totalRequests = groups.reduce(
+      (total, group) => total + group.requests.length,
+      0
     );
-  }
+    const criticalMissions = groups.filter(
+      (group) => group.mission.priority === "critical"
+    ).length;
+    const bestMatch = groups.length
+      ? Math.max(
+          ...groups.flatMap((group) =>
+            group.requests.map((request) => request.matchScore)
+          )
+        )
+      : 0;
+
+    return {
+      missions: groups.length,
+      requests: totalRequests,
+      criticalMissions,
+      bestMatch,
+    };
+  }, [groups]);
 
   if (loading) {
     return (
@@ -187,62 +156,59 @@ export default function PendingRequestsPage() {
           </p>
           <h1 className="mt-1 text-3xl font-black">Pending Requests</h1>
           <p className="mt-2 text-muted">
-            Drivers requesting to deliver packages from the delivery pool.
+            Unassigned missions with drivers waiting for dispatcher approval.
           </p>
         </header>
 
         <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <DispatcherStatBox
-            title="Total Requests"
-            value={stats.total}
-            subtitle="All driver requests"
+            title="Requested Missions"
+            value={stats.missions}
+            subtitle="Unassigned missions with requests"
           />
           <DispatcherStatBox
-            title="Pending"
-            value={stats.pending}
-            subtitle="Waiting for decision"
+            title="Driver Requests"
+            value={stats.requests}
+            subtitle="Pending driver offers"
           />
           <DispatcherStatBox
-            title="Accepted"
-            value={stats.accepted}
-            subtitle="Approved by dispatcher"
+            title="Critical"
+            value={stats.criticalMissions}
+            subtitle="Urgent missions waiting"
           />
           <DispatcherStatBox
-            title="Declined"
-            value={stats.declined}
-            subtitle="Rejected requests"
+            title="Best Match"
+            value={stats.bestMatch}
+            subtitle="Highest compatibility (%)"
           />
         </section>
 
         <section className="rounded-2xl border border-app bg-card shadow-xl">
           <div className="border-b border-app px-5 py-4">
-            <h2 className="text-xl font-bold">Driver Requests</h2>
+            <h2 className="text-xl font-bold">Missions With Driver Requests</h2>
             <p className="mt-1 text-sm text-muted">
-              Click a request to expand the full delivery information.
+              Open a mission to review its details and compare requesting drivers.
             </p>
           </div>
 
           <div className="divide-y divide-white/10">
-            {sortedRequests.length === 0 && (
+            {sortedGroups.length === 0 && (
               <div className="p-8 text-center text-muted">
-                No pending driver requests yet.
+                No unassigned missions have pending driver requests.
               </div>
             )}
 
-            {sortedRequests.map((request) => {
-              const isExpanded = expandedId === request.id;
+            {sortedGroups.map((group) => {
+              const isExpanded = expandedMissionId === group.mission.id;
 
               return (
-                <PendingRequestEntry
-                  key={request.id}
-                  request={request}
+                <PendingMissionRequestEntry
+                  key={group.mission.id}
+                  group={group}
                   isExpanded={isExpanded}
-                  isActionLoading={actionLoadingId === request.id}
-                  onToggle={() =>
-                    setExpandedId(isExpanded ? null : request.id)
-                  }
-                  onAccept={handleAccept}
-                  onDecline={handleDecline}
+                  onToggleMission={() => {
+                    setExpandedMissionId(isExpanded ? null : group.mission.id);
+                  }}
                 />
               );
             })}

@@ -1,6 +1,8 @@
-from missions_DB_module import InMemoryDB
+"""Backward-compatible application state imports.
 
-from .websocket_manager import ConnectionManager
+New code should import from app.database.state.
+"""
 
-db = InMemoryDB()
-manager = ConnectionManager()
+from .database.state import db, manager
+
+__all__ = ["db", "manager"]

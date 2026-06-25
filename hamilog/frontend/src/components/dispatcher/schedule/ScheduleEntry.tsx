@@ -1,5 +1,6 @@
 import type { Mission } from "@/lib/api-client";
 import { formatTime24FromValue } from "@/lib/date-format";
+import { formatIdealDeliveryTime, getMissionDeliveredAt } from "@/lib/mission-time";
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
@@ -75,6 +76,8 @@ export default function ScheduleEntry({
   isExpanded,
   onToggle,
 }: ScheduleEntryProps) {
+  const deliveredAt = getMissionDeliveredAt(mission);
+
   return (
     <article className="bg-card">
       <button
@@ -170,6 +173,18 @@ export default function ScheduleEntry({
                 {state === "unassigned"
                   ? "Not started"
                   : formatTime(mission.created_at)}
+              </p>
+            </DetailTile>
+
+            <DetailTile label="Ideal Delivery Time">
+              <p className="font-semibold text-main">
+                {formatIdealDeliveryTime(mission.ideal_delivery_time)}
+              </p>
+            </DetailTile>
+
+            <DetailTile label="Delivered At">
+              <p className="font-semibold text-main">
+                {deliveredAt ? formatTime(deliveredAt) : "Not delivered"}
               </p>
             </DetailTile>
 

@@ -19,14 +19,14 @@ function applyTheme(theme: ThemeMode) {
 }
 
 // ---------------------------------------------------------------------------
-// Quick-login test accounts
+// Quick-login users seeded into Atlas for local development
 // ---------------------------------------------------------------------------
-const TEST_ACCOUNTS = [
-  { username: "dispatcher1", password: "dispatch123", role: "dispatcher", label: "Dispatcher 1" },
-  { username: "driver_sedan", password: "drive123", role: "driver", label: "Driver — Sedan" },
-  { username: "driver_suv", password: "drive123", role: "driver", label: "Driver — SUV" },
-  { username: "driver_van", password: "drive123", role: "driver", label: "Driver — Van" },
-  { username: "driver_refrigerated", password: "drive123", role: "driver", label: "Driver — Refrigerated" },
+const AVAILABLE_USERS = [
+  { username: "dispatcher1", password: "dispatch123", role: "dispatcher", label: "Dispatcher - Operations" },
+  { username: "driver_sedan", password: "drive123", role: "driver", label: "Alice Ronen - Sedan" },
+  { username: "driver_suv", password: "drive123", role: "driver", label: "Bob Levi - SUV" },
+  { username: "driver_van", password: "drive123", role: "driver", label: "Carol Mizrahi - Van" },
+  { username: "driver_refrigerated", password: "drive123", role: "driver", label: "Dan Shapira - Refrigerated Van" },
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -41,13 +41,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shaking, setShaking] = useState(false);
-  const [theme, setTheme] = useState<ThemeMode>("dark");
-
-  useEffect(() => {
-    const saved = getSavedTheme();
-    setTheme(saved);
-    applyTheme(saved);
-  }, []);
+  const [theme, setTheme] = useState<ThemeMode>(getSavedTheme);
 
   useEffect(() => {
     applyTheme(theme);
@@ -88,7 +82,7 @@ function LoginForm() {
   );
 
   const handleQuickLogin = useCallback(
-    async (account: (typeof TEST_ACCOUNTS)[number]) => {
+    async (account: (typeof AVAILABLE_USERS)[number]) => {
       setUsername(account.username);
       setPassword(account.password);
       setError(null);
@@ -225,7 +219,7 @@ function LoginForm() {
                 className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
                 style={{ animation: "spin-slow 0.7s linear infinite" }}
               />
-              Signing in…
+              Signing in...
             </>
           ) : (
             "Sign In"
@@ -237,14 +231,14 @@ function LoginForm() {
       <div className="flex items-center gap-4 my-6">
         <div className="flex-1 h-px border-t border-app" />
         <span className="text-xs uppercase tracking-wider text-muted">
-          Quick Access
+          Available Users
         </span>
         <div className="flex-1 h-px border-t border-app" />
       </div>
 
       {/* Quick login buttons */}
       <div className="flex flex-col gap-2" id="quick-login-group">
-        {TEST_ACCOUNTS.map((account) => (
+        {AVAILABLE_USERS.map((account) => (
           <button
             key={account.username}
             type="button"

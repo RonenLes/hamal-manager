@@ -7,7 +7,6 @@ import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 import {
   type Mission,
-  type Driver,
   getMissions,
   getDrivers,
   getToken,
@@ -19,37 +18,12 @@ import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox"
 import DriverEntry, {
   type ExtendedDriver,
 } from "@/components/dispatcher/drivers/DriverEntry";
-
-function getDriverScore(driver: ExtendedDriver, index: number) {
-  if (typeof driver.score === "number") return driver.score;
-
-  // Temporary fallback score until backend sends real driver score.
-  return 90 - ((index * 7) % 28);
-}
-
-function getActiveMissionForDriver(driver: Driver, missions: Mission[]) {
-  if (driver.current_mission_id) {
-    const missionFromDriver = missions.find(
-      (mission) => mission.id === driver.current_mission_id
-    );
-
-    if (missionFromDriver) return missionFromDriver;
-  }
-
-  return missions.find(
-    (mission) =>
-      mission.assigned_driver_id === driver.id &&
-      (mission.status === "assigned" || mission.status === "in_transit")
-  );
-}
-
-function getDeliveriesMade(driver: Driver, missions: Mission[]) {
-  return missions.filter(
-    (mission) =>
-      mission.assigned_driver_id === driver.id &&
-      mission.status === "delivered"
-  ).length;
-}
+import {
+  getActiveMissionForDriver,
+  getDeliveriesMade,
+  getDriverScore,
+  getDriverScoreTimeline,
+} from "@/lib/driver-metrics";
 
 function getInitialStatusFilter() {
   if (typeof window === "undefined") return null;
@@ -62,6 +36,7 @@ export default function DriversPage() {
   const [drivers, setDrivers] = useState<ExtendedDriver[]>([]);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedGraphId, setExpandedGraphId] = useState<string | null>(null);
   const [copiedDriverId, setCopiedDriverId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [statusFilter] = useState<string | null>(getInitialStatusFilter);
@@ -101,24 +76,28 @@ export default function DriversPage() {
   }, []);
 
   const stats = useMemo(() => {
-    const activeDrivers = drivers.filter((driver) =>
+    const visibleDrivers = drivers.filter(
+      (driver) => driver.status !== "blacklisted"
+    );
+
+    const activeDrivers = visibleDrivers.filter((driver) =>
       Boolean(getActiveMissionForDriver(driver, missions))
     ).length;
 
-    const availableDrivers = drivers.filter(
+    const availableDrivers = visibleDrivers.filter(
       (driver) => driver.status === "available"
     ).length;
 
-    const offlineDrivers = drivers.filter(
+    const offlineDrivers = visibleDrivers.filter(
       (driver) => driver.status === "offline"
     ).length;
 
-    const totalDeliveries = drivers.reduce((sum, driver) => {
+    const totalDeliveries = visibleDrivers.reduce((sum, driver) => {
       return sum + getDeliveriesMade(driver, missions);
     }, 0);
 
     return {
-      total: drivers.length,
+      total: visibleDrivers.length,
       active: activeDrivers,
       available: availableDrivers,
       offline: offlineDrivers,
@@ -129,6 +108,7 @@ export default function DriversPage() {
   const sortedDrivers = useMemo(() => {
     return drivers
       .filter((driver) => {
+        if (driver.status === "blacklisted") return false;
         if (statusFilter === "available") return driver.status === "available";
         if (statusFilter === "on_mission") {
           return (
@@ -192,15 +172,24 @@ export default function DriversPage() {
             </p>
           </div>
 
-          <Link
-            href="/dispatcher/drivers/new-drivers"
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-500"
-          >
-            Pending new drivers
-            <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-black text-white">
-              {pendingDriverRequestsCount}
-            </span>
-          </Link>
+          <div className="flex flex-col items-stretch gap-2 sm:items-end">
+            <Link
+              href="/dispatcher/drivers/new-drivers"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-500"
+            >
+              Pending new drivers
+              <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-black text-white">
+                {pendingDriverRequestsCount}
+              </span>
+            </Link>
+
+            <Link
+              href="/dispatcher/drivers/blacklisted"
+              className="inline-flex items-center justify-center rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-2.5 text-sm font-bold text-red-200 transition hover:bg-red-500/20"
+            >
+              Blacklisted drivers
+            </Link>
+          </div>
         </header>
 
         <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -248,6 +237,7 @@ export default function DriversPage() {
 
             {sortedDrivers.map((driver, index) => {
               const isExpanded = expandedId === driver.id;
+              const score = getDriverScore(driver, index);
 
               return (
                 <DriverEntry
@@ -255,11 +245,22 @@ export default function DriversPage() {
                   driver={driver}
                   activeMission={getActiveMissionForDriver(driver, missions)}
                   deliveriesMade={getDeliveriesMade(driver, missions)}
-                  score={getDriverScore(driver, index)}
+                  score={score}
+                  scorePoints={getDriverScoreTimeline({
+                    driver,
+                    missions,
+                    score,
+                  })}
                   isExpanded={isExpanded}
+                  isGraphExpanded={expandedGraphId === driver.id}
                   copiedDriverId={copiedDriverId}
                   onToggle={() =>
                     setExpandedId(isExpanded ? null : driver.id)
+                  }
+                  onToggleGraph={() =>
+                    setExpandedGraphId(
+                      expandedGraphId === driver.id ? null : driver.id
+                    )
                   }
                   onCopyPhone={handleCopyPhone}
                 />

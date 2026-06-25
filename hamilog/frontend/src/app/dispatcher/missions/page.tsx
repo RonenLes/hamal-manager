@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 import {
+  type CreateMissionPayload,
   type Mission,
   type MissionPriority,
+  createMission as createMissionApi,
   getMissions,
   getToken,
   getStoredUser,
-  createMission as apiCreateMission,
+  updateMission,
 } from "@/lib/api-client";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
@@ -61,6 +63,8 @@ const initialForm: NewMissionForm = {
   from: "",
   to: "",
   urgency: "medium",
+  idealDeliveryDate: "",
+  idealDeliveryTime: "",
   cooling: "no",
   heavyLoad: "no",
 };
@@ -114,7 +118,15 @@ function getPriorityRank(priority: MissionPriority) {
   }
 }
 
-async function createMission(body: NewMissionForm) {
+function getIdealDeliveryIso(body: NewMissionForm) {
+  if (!body.idealDeliveryDate || !body.idealDeliveryTime) return null;
+
+  return new Date(
+    `${body.idealDeliveryDate}T${body.idealDeliveryTime}:00`
+  ).toISOString();
+}
+
+function buildMissionPayload(body: NewMissionForm): CreateMissionPayload {
   const isHeavyLoad = body.heavyLoad === "yes";
   const requiresCooling = body.cooling === "yes";
   const missionTitle =
@@ -122,10 +134,11 @@ async function createMission(body: NewMissionForm) {
     body.cargoDescription.trim().slice(0, 40) ||
     "New Delivery Mission";
 
-  return apiCreateMission({
+  return {
     title: missionTitle,
     description: body.cargoDescription,
     priority: body.urgency,
+    ideal_delivery_time: getIdealDeliveryIso(body),
     cargo: {
       weight_kg: isHeavyLoad ? 120 : 20,
       volume_liters: isHeavyLoad ? 250 : 60,
@@ -141,7 +154,49 @@ async function createMission(body: NewMissionForm) {
       lng: 0,
       address: body.to,
     },
-  });
+  };
+}
+
+function toDateInputValue(dateValue?: string | null) {
+  if (!dateValue) return "";
+
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function toTimeInputValue(dateValue?: string | null) {
+  if (!dateValue) return "";
+
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+}
+
+function missionToForm(mission: Mission): NewMissionForm {
+  const isHeavyLoad =
+    mission.cargo.weight_kg >= 80 || mission.cargo.volume_liters >= 150;
+
+  return {
+    title: mission.title,
+    cargoDescription: mission.description,
+    from: mission.pickup.address,
+    to: mission.dropoff.address,
+    urgency: mission.priority,
+    idealDeliveryDate: toDateInputValue(mission.ideal_delivery_time),
+    idealDeliveryTime: toTimeInputValue(mission.ideal_delivery_time),
+    cooling: mission.cargo.requires_cooling ? "yes" : "no",
+    heavyLoad: isHeavyLoad ? "yes" : "no",
+  };
 }
 
 export default function MissionsPage() {
@@ -158,6 +213,7 @@ export default function MissionsPage() {
   const [form, setForm] = useState<NewMissionForm>(initialForm);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
+  const [editingMissionId, setEditingMissionId] = useState<string | null>(null);
 
   useEffect(() => {
     const token = getToken();
@@ -230,8 +286,11 @@ export default function MissionsPage() {
 
     result = [...result].sort((a, b) => {
       if (filters.orderByDeliveryDate) {
+        const firstDate = a.ideal_delivery_time || a.created_at;
+        const secondDate = b.ideal_delivery_time || b.created_at;
+
         return (
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          new Date(secondDate).getTime() - new Date(firstDate).getTime()
         );
       }
 
@@ -258,7 +317,19 @@ export default function MissionsPage() {
     }));
   }
 
-  async function handlePostMission() {
+  function resetMissionForm() {
+    setForm(initialForm);
+    setEditingMissionId(null);
+  }
+
+  function handleEditMission(mission: Mission) {
+    setForm(missionToForm(mission));
+    setEditingMissionId(mission.id);
+    setExpandedMissionId(mission.id);
+    setIsAddOpen(true);
+  }
+
+  async function handleSubmitMission() {
     if (!form.cargoDescription.trim() || !form.from.trim() || !form.to.trim()) {
       alert("Please fill cargo description, from, and to.");
       return;
@@ -267,12 +338,23 @@ export default function MissionsPage() {
     setPosting(true);
 
     try {
-      await createMission(form);
-      setForm(initialForm);
+      const payload = buildMissionPayload(form);
+
+      if (editingMissionId) {
+        await updateMission(editingMissionId, payload);
+      } else {
+        await createMissionApi(payload);
+      }
+
+      resetMissionForm();
       setIsAddOpen(false);
       await fetchData();
     } catch {
-      alert("Could not post mission. Make sure the backend is running.");
+      alert(
+        editingMissionId
+          ? "Could not update mission. Make sure it is still unassigned."
+          : "Could not post mission. Make sure the backend is running."
+      );
     } finally {
       setPosting(false);
     }
@@ -305,7 +387,14 @@ export default function MissionsPage() {
 
           <button
             type="button"
-            onClick={() => setIsAddOpen((current) => !current)}
+            onClick={() => {
+              if (isAddOpen) {
+                setIsAddOpen(false);
+                resetMissionForm();
+              } else {
+                setIsAddOpen(true);
+              }
+            }}
             className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-main transition hover:bg-emerald-500"
           >
             {isAddOpen ? "Close Mission Form" : "+ Add New Mission"}
@@ -345,7 +434,19 @@ export default function MissionsPage() {
             form={form}
             posting={posting}
             onUpdate={updateForm}
-            onSubmit={handlePostMission}
+            onSubmit={handleSubmitMission}
+            onCancel={() => {
+              resetMissionForm();
+              setIsAddOpen(false);
+            }}
+            title={editingMissionId ? "Edit Mission" : "Add New Mission"}
+            description={
+              editingMissionId
+                ? "Update the unassigned mission details before a driver is attached."
+                : "Fill the delivery information and post it to the mission pool."
+            }
+            submitLabel={editingMissionId ? "Update Mission" : "Post Mission"}
+            submittingLabel={editingMissionId ? "Updating..." : "Posting..."}
           />
         )}
 
@@ -378,6 +479,7 @@ export default function MissionsPage() {
                     onToggle={() =>
                       setExpandedMissionId(isExpanded ? null : mission.id)
                     }
+                    onEdit={handleEditMission}
                     getStateClasses={getStateClasses}
                   />
                 );

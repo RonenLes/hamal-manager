@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import {
   type Mission,
   type StoredUser,
+  cancelMission,
   clearToken,
   getMissions,
   getStoredUser,
@@ -89,6 +90,11 @@ export default function DriverDashboardPage() {
     await refreshDashboard();
   }
 
+  async function handleCancelMission(missionId: string, reason: string) {
+    await cancelMission(missionId, reason);
+    await refreshDashboard();
+  }
+
   const activeMission = missions.find(
     (mission) => mission.status === "assigned" || mission.status === "in_transit"
   );
@@ -160,6 +166,7 @@ export default function DriverDashboardPage() {
                 mission={activeMission}
                 onMarkDelivered={handleMarkDelivered}
                 onUpdateStatus={handleStartTransit}
+                onCancelMission={handleCancelMission}
               />
             ) : (
               <div className="rounded-2xl border border-app bg-card p-8 text-center shadow-xl">

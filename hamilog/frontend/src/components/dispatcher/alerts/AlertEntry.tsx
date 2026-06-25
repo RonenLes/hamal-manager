@@ -1,6 +1,10 @@
 import type { Driver, Mission } from "@/lib/api-client";
 import { CAR_SPECS } from "@/lib/car-specs";
 import { formatDateTime24 } from "@/lib/date-format";
+import {
+  formatIdealDeliveryTime,
+  getMissionDeliveredAt,
+} from "@/lib/mission-time";
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
@@ -96,6 +100,7 @@ export default function AlertEntry({
 }: AlertEntryProps) {
   const mission = alert.mission;
   const driver = alert.driver;
+  const deliveredAt = mission ? getMissionDeliveredAt(mission) : null;
 
   return (
     <article className="bg-card">
@@ -177,6 +182,20 @@ export default function AlertEntry({
                 <DetailTile label="Waiting Time">
                   <p className="font-semibold text-main">
                     {getWaitingTime(mission.created_at)}
+                  </p>
+                </DetailTile>
+
+                <DetailTile label="Ideal Delivery Time">
+                  <p className="font-semibold text-main">
+                    {formatIdealDeliveryTime(mission.ideal_delivery_time)}
+                  </p>
+                </DetailTile>
+
+                <DetailTile label="Delivered At">
+                  <p className="font-semibold text-main">
+                    {deliveredAt
+                      ? formatAlertDateTime(deliveredAt)
+                      : "Not delivered"}
                   </p>
                 </DetailTile>
 

@@ -35,6 +35,13 @@ export interface Location {
   address: string;
 }
 
+export interface CancellationRecord {
+  actor_role: 'driver' | 'dispatcher' | string;
+  actor_id: string;
+  reason?: string | null;
+  cancelled_at: string;
+}
+
 export interface Mission {
   id: string;
   title: string;
@@ -45,6 +52,9 @@ export interface Mission {
   dropoff: Location;
   assigned_driver_id: string | null;
   priority: MissionPriority;
+  ideal_delivery_time?: string | null;
+  delivered_at?: string | null;
+  cancellation_history?: CancellationRecord[];
   created_at: string;
   updated_at: string;
   /** Computed by the constraint engine when fetching available missions for a driver */
@@ -60,6 +70,7 @@ export interface Driver {
   status: DriverStatus;
   current_location: Location | null;
   current_mission_id: string | null;
+  score?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -157,6 +168,21 @@ export type DriverRequest = {
   car_type: CarType;
   status: "pending" | "approved" | "declined";
   created_at: string;
+  reviewed_at?: string;
+};
+
+export type MissionRequestStatus = "pending" | "approved" | "declined";
+
+export type MissionDeliveryRequest = {
+  id: string;
+  mission_id: string;
+  driver_id: string;
+  status: MissionRequestStatus;
+  created_at: string;
+  reviewed_at?: string | null;
+  mission: Mission | null;
+  driver: Driver | null;
+  match_score: number;
 };
 
 export type WSDispatchMessage =

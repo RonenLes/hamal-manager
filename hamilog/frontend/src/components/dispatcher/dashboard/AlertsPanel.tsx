@@ -23,7 +23,7 @@ type DashboardAlert = {
 };
 
 function groupAlertsForPopup(alerts: DashboardAlert[]): PopupAlert[] {
-  const groups = new Map<string, DashboardAlert[]>();
+  const groups = new Map<DashboardAlert["type"], DashboardAlert[]>();
 
   alerts.forEach((alert) => {
     const current = groups.get(alert.type) ?? [];
@@ -31,7 +31,7 @@ function groupAlertsForPopup(alerts: DashboardAlert[]): PopupAlert[] {
   });
 
   return Array.from(groups.entries()).map(([type, group]) => {
-    const level = (type === "danger" ? "critical" : type) as PopupAlert["level"];
+    const level: PopupAlert["level"] = type === "danger" ? "critical" : type;
     const label =
       type === "danger" ? "Critical Alert" : type === "warning" ? "Warning" : "Info";
 
