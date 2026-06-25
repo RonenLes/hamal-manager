@@ -1,17 +1,16 @@
 // src/components/dispatcher/dashboard/PendingRequests.tsx
 
+import Link from "next/link";
 import type { Mission } from "@/lib/api-client";
 import DashboardPanel from "./DashboardPanel";
 import PriorityBadge from "../shared/PriorityBadge";
 
 type PendingRequestsProps = {
   missions: Mission[];
-  onPreview?: (mission: Mission) => void;
 };
 
 export default function PendingRequests({
   missions,
-  onPreview,
 }: PendingRequestsProps) {
   return (
     <DashboardPanel
@@ -59,12 +58,12 @@ export default function PendingRequests({
               </p>
             </div>
 
-            <button
-              onClick={() => onPreview?.(mission)}
-              className="mt-4 w-full rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-main hover:bg-orange-400"
+            <Link
+              href="/dispatcher/missions"
+              className="mt-4 block w-full rounded-xl bg-orange-500 px-4 py-2 text-center text-sm font-bold text-white transition hover:bg-orange-400"
             >
               Preview
-            </button>
+            </Link>
           </article>
         ))}
       </div>

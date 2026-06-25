@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import HelpPageCard from "@/components/dispatcher/help/HelpPageCard";
+import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 const helpPages = [
   {
@@ -100,13 +101,9 @@ export default function DispatcherHelpPage() {
     <main className="min-h-screen bg-app p-6 text-main">
       <div className="mx-auto max-w-7xl">
         <header className="mb-6">
-          <Link
-            href="/dispatcher/menu"
-            className="text-sm font-bold text-blue-400 hover:underline"
-          >
-            Back to Menu
-          </Link>
-
+          <div className="mb-4">
+            <BackToMenuButton href="/dispatcher/menu" />
+          </div>
           <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-blue-400">
             Dispatcher Guide
           </p>

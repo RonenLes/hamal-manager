@@ -19,10 +19,7 @@ import ActiveMissionCard from "@/components/driver/missions/ActiveMissionCard";
 export default function DriverDashboardPage() {
   const router = useRouter();
 
-  const [user] = useState<StoredUser | null>(() => {
-    const storedUser = getStoredUser();
-    return storedUser?.role === "driver" ? storedUser : null;
-  });
+  const [user, setUser] = useState<StoredUser | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [openMissions, setOpenMissions] = useState<Mission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,23 +33,18 @@ export default function DriverDashboardPage() {
       return;
     }
 
-  }, [router]);
-
-  useEffect(() => {
-    if (!user?.driver_id) return;
+    setUser(storedUser);
 
     async function fetchData() {
-      if (!user?.driver_id) return;
-
       try {
         const [myData, openData] = await Promise.all([
-          getMissions({ driverUid: user.driver_id }),
+          getMissions({ driverUid: storedUser.driver_id }),
           getMissions({ status: "available" }),
         ]);
 
         setMissions(
           myData.filter(
-            (mission) => mission.assigned_driver_id === user.driver_id
+            (mission) => mission.assigned_driver_id === storedUser.driver_id
           )
         );
         setOpenMissions(
@@ -66,7 +58,7 @@ export default function DriverDashboardPage() {
     fetchData();
     const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [router]);
 
   function handleLogout() {
     clearToken();

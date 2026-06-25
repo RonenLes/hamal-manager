@@ -1,4 +1,5 @@
 import type { Mission } from "@/lib/api-client";
+import { formatTime24FromValue } from "@/lib/date-format";
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
@@ -64,18 +65,7 @@ function getStateDotClasses(state: DeliveryState) {
 }
 
 function formatTime(dateValue?: string) {
-  if (!dateValue) return "Not started";
-
-  const date = new Date(dateValue);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Not started";
-  }
-
-  return date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatTime24FromValue(dateValue, "Not started");
 }
 
 export default function ScheduleEntry({

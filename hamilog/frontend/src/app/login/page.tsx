@@ -1,8 +1,22 @@
 "use client";
 
 import { useState, useEffect, useCallback, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter} from "next/navigation";
 import { login as apiLogin, getStoredUser, getToken } from "@/lib/api-client";
+
+type ThemeMode = "dark" | "light";
+
+const THEME_STORAGE_KEY = "hamilog-theme";
+
+function getSavedTheme(): ThemeMode {
+  if (typeof window === "undefined") return "dark";
+  return localStorage.getItem(THEME_STORAGE_KEY) === "light" ? "light" : "dark";
+}
+
+function applyTheme(theme: ThemeMode) {
+  document.documentElement.classList.remove("theme-dark", "theme-light");
+  document.documentElement.classList.add(theme === "dark" ? "theme-dark" : "theme-light");
+}
 
 // ---------------------------------------------------------------------------
 // Quick-login test accounts
@@ -20,16 +34,24 @@ const TEST_ACCOUNTS = [
 // ---------------------------------------------------------------------------
 function LoginForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const initialRole = searchParams.get("role") === "driver" ? "driver" : "dispatcher";
+  
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"dispatcher" | "driver">(initialRole);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shaking, setShaking] = useState(false);
+  const [theme, setTheme] = useState<ThemeMode>("dark");
+
+  useEffect(() => {
+    const saved = getSavedTheme();
+    setTheme(saved);
+    applyTheme(saved);
+  }, []);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -69,7 +91,6 @@ function LoginForm() {
     async (account: (typeof TEST_ACCOUNTS)[number]) => {
       setUsername(account.username);
       setPassword(account.password);
-      setRole(account.role as "dispatcher" | "driver");
       setError(null);
       setLoading(true);
 
@@ -91,11 +112,40 @@ function LoginForm() {
     [router],
   );
 
+  function handleThemeToggle() {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    applyTheme(nextTheme);
+  }
+
   return (
     <div
-      className={`glass-card w-full max-w-md p-8 ${shaking ? "animate-shake" : ""}`}
+     className={`w-full max-w-md p-8 rounded-2xl border border-app bg-card text-main shadow-xl ${shaking ? "animate-shake" : ""}`}
       style={{ animation: "fade-up 0.6s ease-out forwards" }}
     >
+      <div className="mb-6 flex justify-end">
+        <button
+          type="button"
+          onClick={handleThemeToggle}
+          className="flex items-center gap-3 rounded-full border border-app bg-card-soft px-3 py-2 text-sm font-semibold text-main transition hover:opacity-90"
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+        >
+          <span className="text-muted">{theme === "dark" ? "Dark" : "Light"}</span>
+          <span
+            className={`flex h-6 w-11 items-center rounded-full border border-app p-0.5 transition ${
+              theme === "dark" ? "justify-start bg-slate-900" : "justify-end bg-blue-100"
+            }`}
+          >
+            <span
+              className={`h-5 w-5 rounded-full transition ${
+                theme === "dark" ? "bg-blue-400" : "bg-blue-600"
+              }`}
+            />
+          </span>
+        </button>
+      </div>
+
       {/* Header */}
       <div className="text-center mb-8">
         <h1
@@ -108,34 +158,16 @@ function LoginForm() {
           }}
           id="login-title"
         >
-          HAMILOG
+          LOGIN
         </h1>
-        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+        <p className="text-sm text-muted"  >
           Sign in to continue
         </p>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        {/* Role selector */}
-        <div className="flex gap-2" id="role-selector">
-          {(["dispatcher", "driver"] as const).map((r) => (
-            <button
-              key={r}
-              type="button"
-              onClick={() => setRole(r)}
-              className="flex-1 py-2.5 rounded-lg text-sm font-semibold capitalize transition-all cursor-pointer"
-              style={{
-                background: role === r ? "var(--gradient-blue)" : "rgba(255,255,255,0.05)",
-                color: role === r ? "#fff" : "var(--text-secondary)",
-                border: role === r ? "none" : "1px solid var(--border-subtle)",
-              }}
-              id={`role-btn-${r}`}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
+      
 
         {/* Username */}
         <div className="relative">
@@ -143,7 +175,7 @@ function LoginForm() {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="glass-input w-full px-4 py-3 text-sm"
+            className="w-full px-4 py-3 text-sm rounded-lg border border-app bg-input text-main placeholder:text-soft outline-none focus:border-blue-500"
             placeholder="Username"
             autoComplete="username"
             required
@@ -157,7 +189,7 @@ function LoginForm() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="glass-input w-full px-4 py-3 text-sm"
+            className="w-full px-4 py-3 text-sm rounded-lg border border-app bg-input text-main placeholder:text-soft outline-none focus:border-blue-500"
             placeholder="Password"
             autoComplete="current-password"
             required
@@ -203,11 +235,11 @@ function LoginForm() {
 
       {/* Divider */}
       <div className="flex items-center gap-4 my-6">
-        <div className="flex-1 h-px" style={{ background: "var(--border-subtle)" }} />
-        <span className="text-xs uppercase tracking-wider" style={{ color: "var(--text-secondary)" }}>
+        <div className="flex-1 h-px border-t border-app" />
+        <span className="text-xs uppercase tracking-wider text-muted">
           Quick Access
         </span>
-        <div className="flex-1 h-px" style={{ background: "var(--border-subtle)" }} />
+        <div className="flex-1 h-px border-t border-app" />
       </div>
 
       {/* Quick login buttons */}
@@ -218,10 +250,10 @@ function LoginForm() {
             type="button"
             onClick={() => handleQuickLogin(account)}
             disabled={loading}
-            className="glass-panel px-4 py-2.5 text-sm flex items-center justify-between cursor-pointer hover:border-white/15 transition-all disabled:opacity-50"
+            className="px-4 py-2.5 text-sm flex items-center justify-between cursor-pointer transition-all disabled:opacity-50 rounded-xl border border-app bg-card-soft hover:opacity-90"
             id={`quick-login-${account.username}`}
           >
-            <span style={{ color: "var(--text-primary)" }}>{account.label}</span>
+            <span className="text-main font-semibold">{account.label}</span>
             <span
               className="badge"
               style={{
@@ -254,7 +286,7 @@ function LoginForm() {
 // ---------------------------------------------------------------------------
 export default function LoginPage() {
   return (
-    <main className="relative min-h-screen flex items-center justify-center px-4">
+    <main className="relative min-h-screen flex items-center justify-center px-4 bg-app text-main">
       {/* Background */}
       <div className="absolute inset-0 bg-dot-pattern pointer-events-none" />
       <div

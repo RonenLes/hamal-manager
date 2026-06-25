@@ -53,7 +53,7 @@ export class GPSWebSocket {
       };
 
       this.ws.onerror = (event: Event) => {
-        console.error('[WS] Error:', event);
+        console.warn('[WS] Connection error (server may be unavailable)');
         this.onErrorCb(event);
       };
 

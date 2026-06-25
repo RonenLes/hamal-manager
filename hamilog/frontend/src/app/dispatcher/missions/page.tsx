@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 import {
   type Mission,
@@ -9,6 +10,7 @@ import {
   getMissions,
   getToken,
   getStoredUser,
+  createMission as apiCreateMission,
 } from "@/lib/api-client";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
@@ -31,6 +33,27 @@ const initialFilters: MissionStatusFilter = {
   urgencyCritical: false,
   orderByDeliveryDate: true,
 };
+
+function getInitialFiltersFromQuery(): MissionStatusFilter {
+  if (typeof window === "undefined") return initialFilters;
+
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get("status");
+  const priority = params.get("priority");
+
+  if (!status && !priority) return initialFilters;
+
+  return {
+    ...initialFilters,
+    unassigned: status === "open",
+    assigned: status === "open",
+    active: status === "active",
+    urgencyLow: priority === "low",
+    urgencyMedium: priority === "medium",
+    urgencyHigh: priority === "high",
+    urgencyCritical: priority === "critical",
+  };
+}
 
 const initialForm: NewMissionForm = {
   title: "",
@@ -92,8 +115,6 @@ function getPriorityRank(priority: MissionPriority) {
 }
 
 async function createMission(body: NewMissionForm) {
-  const token = getToken();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
   const isHeavyLoad = body.heavyLoad === "yes";
   const requiresCooling = body.cooling === "yes";
   const missionTitle =
@@ -101,39 +122,26 @@ async function createMission(body: NewMissionForm) {
     body.cargoDescription.trim().slice(0, 40) ||
     "New Delivery Mission";
 
-  const response = await fetch(`${apiUrl}/api/missions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+  return apiCreateMission({
+    title: missionTitle,
+    description: body.cargoDescription,
+    priority: body.urgency,
+    cargo: {
+      weight_kg: isHeavyLoad ? 120 : 20,
+      volume_liters: isHeavyLoad ? 250 : 60,
+      requires_cooling: requiresCooling,
     },
-    body: JSON.stringify({
-      title: missionTitle,
-      description: body.cargoDescription,
-      priority: body.urgency,
-      cargo: {
-        weight_kg: isHeavyLoad ? 120 : 20,
-        volume_liters: isHeavyLoad ? 250 : 60,
-        requires_cooling: requiresCooling,
-      },
-      pickup: {
-        lat: 0,
-        lng: 0,
-        address: body.from,
-      },
-      dropoff: {
-        lat: 0,
-        lng: 0,
-        address: body.to,
-      },
-    }),
+    pickup: {
+      lat: 0,
+      lng: 0,
+      address: body.from,
+    },
+    dropoff: {
+      lat: 0,
+      lng: 0,
+      address: body.to,
+    },
   });
-
-  if (!response.ok) {
-    throw new Error("Failed to create mission");
-  }
-
-  return response.json();
 }
 
 export default function MissionsPage() {
@@ -144,7 +152,9 @@ export default function MissionsPage() {
     null
   );
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [filters, setFilters] = useState<MissionStatusFilter>(initialFilters);
+  const [filters, setFilters] = useState<MissionStatusFilter>(
+    getInitialFiltersFromQuery,
+  );
   const [form, setForm] = useState<NewMissionForm>(initialForm);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
@@ -281,6 +291,9 @@ export default function MissionsPage() {
       <div className="mx-auto max-w-7xl">
         <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
+            <div className="mb-4">
+              <BackToMenuButton href="/dispatcher/menu" />
+            </div>
             <p className="text-sm font-semibold uppercase tracking-wider text-red-400">
               Mission Management
             </p>

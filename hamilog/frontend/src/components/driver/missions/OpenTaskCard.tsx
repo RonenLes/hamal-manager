@@ -8,6 +8,9 @@ import PriorityBadge from "@/components/dispatcher/shared/PriorityBadge";
 
 import MatchScoreBar from "../shared/MatchScoreBar";
 
+import TextToSpeechButton from "@/components/shared/TextToSpeechButton";
+
+
 type OpenTaskCardProps = {
   mission: Mission;
   isExpanded: boolean;
@@ -25,6 +28,17 @@ export default function OpenTaskCard({
 }: OpenTaskCardProps) {
   const [confirming, setConfirming] = useState(false);
 
+  const missionSpeechText = `
+Mission: ${mission.title}.
+Description: ${mission.description || "No description provided"}.
+Priority: ${mission.priority}.
+Pickup: ${mission.pickup?.address || "Pickup location TBD"}.
+Dropoff: ${mission.dropoff?.address || "Dropoff location TBD"}.
+Cargo: ${mission.cargo?.weight_kg ?? "unknown"} kilograms, ${mission.cargo?.volume_liters ?? "unknown"
+    } liters.
+${mission.cargo?.requires_cooling ? "Cooling is required." : "No cooling needed."}
+`;
+
   const handleToggle = () => {
     if (isExpanded) {
       setConfirming(false);
@@ -35,11 +49,18 @@ export default function OpenTaskCard({
 
   return (
     <article className="rounded-2xl border border-app bg-card p-5 shadow-xl transition hover:bg-card-soft">
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={handleToggle}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleToggle();
+          }
+        }}
         aria-expanded={isExpanded}
-        className="w-full text-left"
+        className="w-full cursor-pointer text-left"
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
@@ -51,7 +72,10 @@ export default function OpenTaskCard({
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <TextToSpeechButton text={missionSpeechText} />
+
             <PriorityBadge priority={mission.priority} />
+
             <span className="rounded-full border border-app bg-card-soft px-2.5 py-1 text-xs font-black text-muted">
               {isExpanded ? "Hide" : "Details"}
             </span>
@@ -75,7 +99,7 @@ export default function OpenTaskCard({
         {mission.match_score != null && (
           <MatchScoreBar score={mission.match_score} />
         )}
-      </button>
+      </div>
 
       {isExpanded && (
         <div className="mt-5 border-t border-app pt-5">

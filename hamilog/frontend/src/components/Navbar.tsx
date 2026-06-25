@@ -4,9 +4,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ThemeToggleButton from "@/components/shared/ThemeToggleButton";
 
 const links = [
   { label: "Dashboard", href: "/dispatcher" },
+  { label: "Reports", href: "/dispatcher/reports" },
   { label: "Menu", href: "/dispatcher/menu" },
 ];
 
@@ -38,6 +40,7 @@ export default function Navbar() {
               </Link>
             );
           })}
+            <ThemeToggleButton />
         </div>
       </div>
     </nav>

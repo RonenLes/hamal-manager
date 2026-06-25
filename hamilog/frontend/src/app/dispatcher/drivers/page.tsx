@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 import {
   type Mission,
@@ -50,6 +51,11 @@ function getDeliveriesMade(driver: Driver, missions: Mission[]) {
   ).length;
 }
 
+function getInitialStatusFilter() {
+  if (typeof window === "undefined") return null;
+  return new URLSearchParams(window.location.search).get("status");
+}
+
 export default function DriversPage() {
   const router = useRouter();
 
@@ -58,6 +64,7 @@ export default function DriversPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [copiedDriverId, setCopiedDriverId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [statusFilter] = useState<string | null>(getInitialStatusFilter);
   const [pendingDriverRequestsCount, setPendingDriverRequestsCount] =
     useState(0);
 
@@ -120,19 +127,31 @@ export default function DriversPage() {
   }, [drivers, missions]);
 
   const sortedDrivers = useMemo(() => {
-    return [...drivers].sort((a, b) => {
-      const aActive = Boolean(getActiveMissionForDriver(a, missions));
-      const bActive = Boolean(getActiveMissionForDriver(b, missions));
+    return drivers
+      .filter((driver) => {
+        if (statusFilter === "available") return driver.status === "available";
+        if (statusFilter === "on_mission") {
+          return (
+            driver.status === "on_mission" ||
+            Boolean(getActiveMissionForDriver(driver, missions))
+          );
+        }
 
-      if (aActive && !bActive) return -1;
-      if (!aActive && bActive) return 1;
+        return true;
+      })
+      .sort((a, b) => {
+        const aActive = Boolean(getActiveMissionForDriver(a, missions));
+        const bActive = Boolean(getActiveMissionForDriver(b, missions));
 
-      if (a.status === "available" && b.status !== "available") return -1;
-      if (a.status !== "available" && b.status === "available") return 1;
+        if (aActive && !bActive) return -1;
+        if (!aActive && bActive) return 1;
 
-      return a.name.localeCompare(b.name);
-    });
-  }, [drivers, missions]);
+        if (a.status === "available" && b.status !== "available") return -1;
+        if (a.status !== "available" && b.status === "available") return 1;
+
+        return a.name.localeCompare(b.name);
+      });
+  }, [drivers, missions, statusFilter]);
 
   async function handleCopyPhone(driverId: string, phone: string) {
     try {
@@ -160,6 +179,9 @@ export default function DriversPage() {
       <div className="mx-auto max-w-7xl">
         <header className="mb-6 flex items-start justify-between gap-4">
           <div>
+            <div className="mb-4">
+              <BackToMenuButton href="/dispatcher/menu" />
+            </div>
             <p className="text-sm font-semibold uppercase tracking-wider text-emerald-400">
               Driver Management
             </p>

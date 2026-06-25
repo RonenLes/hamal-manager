@@ -19,6 +19,9 @@ import PendingRequestEntry, {
   type RequestStatus,
 } from "@/components/dispatcher/pending-requests/PendingRequestEntry";
 
+
+import BackToMenuButton from "@/components/shared/BackToMenuButton";
+
 function createMockRequests(missions: Mission[], drivers: Driver[]) {
   const availableMissions = missions.filter(
     (mission) => mission.status === "available"
@@ -176,6 +179,9 @@ export default function PendingRequestsPage() {
     <main className="min-h-screen bg-app p-6 text-main">
       <div className="mx-auto max-w-7xl">
         <header className="mb-6">
+          <div className="mb-4">
+              <BackToMenuButton href="/dispatcher/menu" />
+            </div>
           <p className="text-sm font-semibold uppercase tracking-wider text-orange-400">
             Delivery Pool Requests
           </p>

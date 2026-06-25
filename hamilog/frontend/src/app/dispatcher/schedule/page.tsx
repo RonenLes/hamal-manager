@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 import {
   type Mission,
@@ -11,6 +12,7 @@ import {
   getToken,
   getStoredUser,
 } from "@/lib/api-client";
+import { formatDateDisplay } from "@/lib/date-format";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
 import ScheduleEntry, {
@@ -36,13 +38,7 @@ function toLocalDateInputValue(date: Date) {
 
 function formatReadableDate(dateString: string) {
   const date = new Date(`${dateString}T00:00:00`);
-
-  return date.toLocaleDateString([], {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  return formatDateDisplay(date);
 }
 
 function isSameLocalDate(dateValue: string | undefined, selectedDate: string) {
@@ -170,6 +166,9 @@ export default function TodaysSchedulePage() {
       <div className="mx-auto max-w-7xl">
         <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
+            <div className="mb-4">
+              <BackToMenuButton href="/dispatcher/menu" />
+            </div>
             <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
               Date Schedule
             </p>

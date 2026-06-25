@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import type { Driver, Mission } from "@/lib/api-client";
 import { CAR_SPECS } from "@/lib/car-specs";
+import { formatDateTime24 } from "@/lib/date-format";
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
@@ -24,21 +25,7 @@ type DriverEntryProps = {
 };
 
 function formatDateTime(dateValue?: string) {
-  if (!dateValue) return "Unknown";
-
-  const date = new Date(dateValue);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Unknown";
-  }
-
-  return date.toLocaleString([], {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatDateTime24(dateValue);
 }
 
 function getScoreClasses(score: number) {

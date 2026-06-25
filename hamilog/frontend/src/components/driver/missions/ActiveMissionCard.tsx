@@ -4,6 +4,8 @@ import PriorityBadge from "@/components/dispatcher/shared/PriorityBadge";
 
 import StatusProgress from "../shared/StatusProgress";
 
+import TextToSpeechButton from "@/components/shared/TextToSpeechButton";
+
 type ActiveMissionCardProps = {
   mission: Mission;
   onMarkDelivered: (id: string) => void;
@@ -15,6 +17,17 @@ export default function ActiveMissionCard({
   onMarkDelivered,
   onUpdateStatus,
 }: ActiveMissionCardProps) {
+  const missionSpeechText = `
+Mission: ${mission.title}.
+Description: ${mission.description}.
+Priority: ${mission.priority}.
+Status: ${mission.status}.
+Pickup location: ${mission.pickup?.address || "Pickup location TBD"}.
+Dropoff location: ${mission.dropoff?.address || "Dropoff location TBD"}.
+Cargo: ${mission.cargo?.weight_kg ?? "unknown"} kilograms, ${mission.cargo?.volume_liters ?? "unknown"
+    } liters.
+${mission.cargo?.requires_cooling ? "Cooling is required." : "Cooling is not required."}
+`;
   return (
     <article className="rounded-2xl border border-app bg-card p-5 shadow-xl">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -22,7 +35,10 @@ export default function ActiveMissionCard({
           <h2 className="text-xl font-black text-main">{mission.title}</h2>
           <p className="mt-1 text-sm text-muted">{mission.description}</p>
         </div>
-        <PriorityBadge priority={mission.priority} />
+        <div className="flex items-center gap-2">
+          <TextToSpeechButton text={missionSpeechText} />
+          <PriorityBadge priority={mission.priority} />
+        </div>
       </div>
 
       <div className="mb-5">
@@ -53,9 +69,8 @@ export default function ActiveMissionCard({
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <a
-          href={`https://waze.com/ul?ll=${mission.dropoff?.lat || 32.08},${
-            mission.dropoff?.lng || 34.78
-          }&navigate=yes`}
+          href={`https://waze.com/ul?ll=${mission.dropoff?.lat || 32.08},${mission.dropoff?.lng || 34.78
+            }&navigate=yes`}
           target="_blank"
           rel="noopener noreferrer"
           className="rounded-xl border border-app bg-card-soft px-5 py-2.5 text-center text-sm font-bold text-main transition hover:bg-card-soft"

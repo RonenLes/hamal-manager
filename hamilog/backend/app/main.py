@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import assignments, auth, cargo, drivers, missions, system, websockets
+from .routers import assignments, auth, cargo, drivers, missions, system, websockets, chatbot
 
 load_dotenv()
 
@@ -41,7 +41,7 @@ def create_app() -> FastAPI:
     app.include_router(cargo.router)
     app.include_router(websockets.router)
     app.include_router(system.router)
-
+    app.include_router(chatbot.router)
     return app
 
 

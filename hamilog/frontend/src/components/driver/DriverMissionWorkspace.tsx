@@ -10,6 +10,7 @@ import {
   updateMissionStatus,
   getToken,
   getStoredUser,
+  getWsBase,
 } from "@/lib/api-client";
 import { GPSWebSocket } from "@/lib/websocket-client";
 
@@ -36,7 +37,7 @@ export default function DriverMissionWorkspace({
   );
 
   const wsRef = useRef<GPSWebSocket | null>(null);
-  const userRef = useRef<StoredUser | null>(getStoredUser());
+  const userRef = useRef<StoredUser | null>(null);
 
   useEffect(() => {
     const token = getToken();
@@ -86,7 +87,7 @@ export default function DriverMissionWorkspace({
     if (!user?.driver_id) return;
 
     const ws = new GPSWebSocket(
-      `ws://localhost:8000/ws/gps/${user.driver_id}`,
+      `${getWsBase()}/ws/gps/${user.driver_id}`,
       () => undefined,
       () => undefined
     );

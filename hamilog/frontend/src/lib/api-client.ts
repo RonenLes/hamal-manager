@@ -17,6 +17,11 @@ import type {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+/** Derive WebSocket base URL from API_BASE (http→ws, https→wss). */
+export function getWsBase(): string {
+  return API_BASE.replace(/^http/, 'ws');
+}
+
 // ---------------------------------------------------------------------------
 // Re-export types for convenience
 // ---------------------------------------------------------------------------
@@ -61,6 +66,7 @@ export function clearToken(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
+  sessionStorage.removeItem('hamilog-seen-alert-popups');
 }
 
 export function getStoredUser(): StoredUser | null {
@@ -261,5 +267,12 @@ export async function analyzeCargo(
   return apiFetch<CargoAnalysisResponse>('/api/analyze-cargo', {
     method: 'POST',
     body: JSON.stringify({ description }),
+  });
+}
+
+export async function sendChatbotMessage(message: string): Promise<{ reply: string }> {
+  return apiFetch<{ reply: string }>("/api/chatbot", {
+    method: "POST",
+    body: JSON.stringify({ message }),
   });
 }

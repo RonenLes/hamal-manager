@@ -29,10 +29,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} ${inter.variable} dark`}>
+    <html lang="en" className={`${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('hamilog-theme') || 'dark';
+                  document.documentElement.classList.add('theme-' + theme);
+                } catch(e) {
+                  document.documentElement.classList.add('theme-dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
-        className="font-[family-name:var(--font-inter)] antialiased"
-        style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}
+        className="font-[family-name:var(--font-inter)] antialiased bg-app text-main"
+        suppressHydrationWarning
       >
         {children}
       </body>

@@ -83,7 +83,7 @@ export default function DispatcherPage() {
 
       <button
         onClick={handleLogout}
-        className="rounded-xl border border-app bg-card-soft px-4 py-2 text-sm text-main hover:bg-card-soft"
+        className="rounded-xl border border-app bg-card-soft px-4 py-2 text-sm text-main transition hover:opacity-80"
       >
         Logout
       </button>

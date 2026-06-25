@@ -82,9 +82,17 @@ function OptionButton({
 }
 
 export default function SettingsPanel({ audience }: SettingsPanelProps) {
-  const [theme, setTheme] = useState<ThemeMode>(getSavedTheme);
-  const [fontSize, setFontSize] = useState<FontSize>(getSavedFontSize);
+  const [theme, setTheme] = useState<ThemeMode>("dark");
+  const [fontSize, setFontSize] = useState<FontSize>("medium");
   const [savedMessage, setSavedMessage] = useState("");
+
+  useEffect(() => {
+    const savedTheme = getSavedTheme();
+    const savedFs = getSavedFontSize();
+    setTheme(savedTheme);
+    setFontSize(savedFs);
+    applySettings(savedTheme, savedFs);
+  }, []);
 
   useEffect(() => {
     applySettings(theme, fontSize);

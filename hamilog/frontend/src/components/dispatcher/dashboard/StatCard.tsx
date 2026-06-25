@@ -7,9 +7,9 @@ type StatCardProps = {
 };
 
 const colorClasses = {
-  green: "bg-emerald-500/15 text-emerald-400",
-  orange: "bg-orange-500/15 text-orange-400",
-  blue: "bg-blue-500/15 text-blue-400",
+  green: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+  orange: "bg-orange-500/15 text-orange-600 dark:text-orange-400",
+  blue: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
 };
 
 export default function StatCard({

@@ -24,7 +24,7 @@ export default function DashboardPanel({
       <header
         className={`flex items-center justify-between bg-gradient-to-r ${accentClasses[accent]} px-5 py-4`}
       >
-        <h2 className="text-lg font-bold text-main">{title}</h2>
+        <h2 className="text-lg font-bold text-white">{title}</h2>
 
         {count !== undefined && (
           <span className="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-slate-900">

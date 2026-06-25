@@ -1,6 +1,7 @@
 // src/components/dispatcher/dashboard/TodaysSchedule.tsx
 
 import type { Mission, Driver } from "@/lib/api-client";
+import { formatTime24FromValue } from "@/lib/date-format";
 import DashboardPanel from "./DashboardPanel";
 
 type TodaysScheduleProps = {
@@ -9,18 +10,7 @@ type TodaysScheduleProps = {
 };
 
 function formatTime(date?: string) {
-  if (!date) return "Now";
-
-  const parsed = new Date(date);
-
-  if (Number.isNaN(parsed.getTime())) {
-    return "Now";
-  }
-
-  return parsed.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatTime24FromValue(date, "Now");
 }
 
 export default function TodaysSchedule({
@@ -62,7 +52,7 @@ export default function TodaysSchedule({
                 {formatTime(mission.created_at)}
               </div>
 
-              <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium capitalize text-blue-300">
+              <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium capitalize text-blue-600 dark:text-blue-300">
                 {mission.status.replace("_", " ")}
               </span>
             </div>

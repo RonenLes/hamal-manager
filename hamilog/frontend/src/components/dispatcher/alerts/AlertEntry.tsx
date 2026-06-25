@@ -1,5 +1,6 @@
 import type { Driver, Mission } from "@/lib/api-client";
 import { CAR_SPECS } from "@/lib/car-specs";
+import { formatDateTime24 } from "@/lib/date-format";
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
@@ -25,21 +26,7 @@ type AlertEntryProps = {
 };
 
 export function formatAlertDateTime(dateValue?: string) {
-  if (!dateValue) return "Unknown";
-
-  const date = new Date(dateValue);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Unknown";
-  }
-
-  return date.toLocaleString([], {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatDateTime24(dateValue);
 }
 
 export function getWaitingTime(dateValue?: string) {
@@ -65,13 +52,13 @@ export function getWaitingTime(dateValue?: string) {
 export function getAlertClasses(level: AlertLevel) {
   switch (level) {
     case "critical":
-      return "border-red-500/30 bg-red-500/10 text-red-300";
+      return "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300";
     case "warning":
-      return "border-orange-500/30 bg-orange-500/10 text-orange-300";
+      return "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300";
     case "info":
-      return "border-blue-500/30 bg-blue-500/10 text-blue-300";
+      return "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300";
     case "success":
-      return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
+      return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
   }
 }
 
