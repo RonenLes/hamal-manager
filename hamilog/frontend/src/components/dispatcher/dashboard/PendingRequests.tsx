@@ -1,30 +1,66 @@
 // src/components/dispatcher/dashboard/PendingRequests.tsx
 
 import Link from "next/link";
-import type { Mission } from "@/lib/api-client";
+import type { Mission, MissionDeliveryRequest } from "@/lib/api-client";
 import { formatIdealDeliveryTime } from "@/lib/mission-time";
 import DashboardPanel from "./DashboardPanel";
 import PriorityBadge from "../shared/PriorityBadge";
 
 type PendingRequestsProps = {
-  missions: Mission[];
+  missionRequests: MissionDeliveryRequest[];
 };
 
-export default function PendingRequests({
-  missions,
-}: PendingRequestsProps) {
+type PendingMissionGroup = {
+  mission: Mission;
+  requestCount: number;
+};
+
+function getPendingMissionGroups(
+  missionRequests: MissionDeliveryRequest[]
+): PendingMissionGroup[] {
+  const groups = new Map<string, PendingMissionGroup>();
+
+  for (const request of missionRequests) {
+    if (!request.mission) continue;
+    if (request.mission.status !== "available") continue;
+    if (request.mission.assigned_driver_id) continue;
+
+    const existing = groups.get(request.mission.id);
+
+    groups.set(request.mission.id, {
+      mission: request.mission,
+      requestCount: (existing?.requestCount ?? 0) + 1,
+    });
+  }
+
+  return [...groups.values()].sort((a, b) => {
+    const requestDiff = b.requestCount - a.requestCount;
+    if (requestDiff !== 0) return requestDiff;
+
+    return (
+      new Date(b.mission.created_at).getTime() -
+      new Date(a.mission.created_at).getTime()
+    );
+  });
+}
+
+export default function PendingRequests({ missionRequests }: PendingRequestsProps) {
+  const pendingMissionGroups = getPendingMissionGroups(missionRequests);
+  const visibleGroups = pendingMissionGroups.slice(0, 5);
+
   return (
     <DashboardPanel
       title="Pending Requests"
-      count={missions.length}
+      count={pendingMissionGroups.length}
       accent="orange"
+      seeAllHref="/dispatcher/pending-requests"
     >
       <div className="space-y-4">
-        {missions.length === 0 && (
+        {visibleGroups.length === 0 && (
           <p className="text-sm text-muted">No pending requests.</p>
         )}
 
-        {missions.map((mission) => (
+        {visibleGroups.map(({ mission, requestCount }) => (
           <article
             key={mission.id}
             className="rounded-xl border border-app bg-app/70 p-4"
@@ -37,7 +73,12 @@ export default function PendingRequests({
                 </p>
               </div>
 
-              <PriorityBadge priority={mission.priority} />
+              <div className="flex shrink-0 flex-col items-end gap-2">
+                <PriorityBadge priority={mission.priority} />
+                <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-300">
+                  {requestCount} request{requestCount === 1 ? "" : "s"}
+                </span>
+              </div>
             </div>
 
             <div className="space-y-2 text-sm text-muted">
@@ -65,7 +106,7 @@ export default function PendingRequests({
             </div>
 
             <Link
-              href="/dispatcher/missions"
+              href={`/dispatcher/pending-requests/${mission.id}`}
               className="mt-4 block w-full rounded-xl bg-orange-500 px-4 py-2 text-center text-sm font-bold text-white transition hover:bg-orange-400"
             >
               Preview

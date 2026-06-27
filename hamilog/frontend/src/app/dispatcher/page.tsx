@@ -6,11 +6,15 @@ import { useRouter } from "next/navigation";
 import {
   type Mission,
   type Driver,
+  type DriverRequest,
+  type MissionDeliveryRequest,
+  type StoredUser,
   getMissions,
   getDrivers,
+  getMissionRequests,
+  getPendingDriverRequests,
   getToken,
   getStoredUser,
-  clearToken,
 } from "@/lib/api-client";
 
 import TodaysSchedule from "@/components/dispatcher/dashboard/TodaysSchedule";
@@ -21,11 +25,25 @@ import DriverStatusPanel from "@/components/dispatcher/dashboard/DriverStatusPan
 import RecentActivity from "@/components/dispatcher/dashboard/RecentActivity";
 import StatCard from "@/components/dispatcher/dashboard/StatCard";
 
+function getDisplayName(user: StoredUser | null) {
+  if (user?.name) return user.name;
+  if (!user?.username) return "Dispatcher";
+
+  return user.username
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 export default function DispatcherPage() {
   const router = useRouter();
 
+  const [user] = useState<StoredUser | null>(() => getStoredUser());
   const [missions, setMissions] = useState<Mission[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [missionRequests, setMissionRequests] = useState<
+    MissionDeliveryRequest[]
+  >([]);
+  const [driverRequests, setDriverRequests] = useState<DriverRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,13 +57,22 @@ export default function DispatcherPage() {
 
   async function fetchData() {
     try {
-      const [missionsData, driversData] = await Promise.all([
+      const [
+        missionsData,
+        driversData,
+        missionRequestsData,
+        driverRequestsData,
+      ] = await Promise.all([
         getMissions(),
         getDrivers(),
+        getMissionRequests({ status: "pending" }),
+        getPendingDriverRequests(),
       ]);
 
       setMissions(missionsData);
       setDrivers(driversData);
+      setMissionRequests(missionRequestsData);
+      setDriverRequests(driverRequestsData);
     } finally {
       setLoading(false);
     }
@@ -58,11 +85,6 @@ export default function DispatcherPage() {
     return () => clearInterval(interval);
   }, []);
 
-  function handleLogout() {
-    clearToken();
-    router.push("/");
-  }
-
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-app text-main">
@@ -73,20 +95,16 @@ export default function DispatcherPage() {
 
   return (
       <main className="min-h-screen bg-app p-6 text-main">
-    <header className="mb-6 flex items-center justify-between">
+    <header className="mb-6">
       <div>
+        <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
+          Hello, {getDisplayName(user)}
+        </p>
         <h1 className="text-3xl font-black">Dispatcher Dashboard</h1>
         <p className="text-sm text-muted">
           Real-time delivery operations
         </p>
       </div>
-
-      <button
-        onClick={handleLogout}
-        className="rounded-xl border border-app bg-card-soft px-4 py-2 text-sm text-main transition hover:opacity-80"
-      >
-        Logout
-      </button>
     </header>
 
     <section className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -115,7 +133,7 @@ export default function DispatcherPage() {
       <TodaysSchedule missions={missions} drivers={drivers} />
 
       <PendingRequests
-        missions={missions.filter((mission) => mission.status === "available")}
+        missionRequests={missionRequests}
       />
 
       <UnassignedMissions missions={missions} />
@@ -124,7 +142,12 @@ export default function DispatcherPage() {
 
       <DriverStatusPanel drivers={drivers} />
 
-      <RecentActivity missions={missions} drivers={drivers} />
+      <RecentActivity
+        missions={missions}
+        drivers={drivers}
+        missionRequests={missionRequests}
+        driverRequests={driverRequests}
+      />
     </section>
   </main>
   );

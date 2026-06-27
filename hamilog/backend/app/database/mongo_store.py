@@ -47,11 +47,14 @@ class MongoDB:
         self.drivers: Collection = self.database["drivers"]
         self.driver_requests: Collection = self.database["driver_requests"]
         self.mission_requests: Collection = self.database["mission_requests"]
+        self.messages: Collection = self.database["messages"]
+        self.support_tickets: Collection = self.database["support_tickets"]
         self.users: Collection = self.database["users"]
         self._ensure_indexes()
         self._seed_if_empty()
         self._ensure_mission_fields()
         self._ensure_driver_fields()
+        self._ensure_user_fields()
 
     def _ensure_indexes(self) -> None:
         self.missions.create_index("id", unique=True)
@@ -65,6 +68,15 @@ class MongoDB:
         self.mission_requests.create_index("status")
         self.mission_requests.create_index("mission_id")
         self.mission_requests.create_index("driver_id")
+        self.messages.create_index("id", unique=True)
+        self.messages.create_index([("sender_role", 1), ("sender_id", 1)])
+        self.messages.create_index([("recipient_role", 1), ("recipient_id", 1)])
+        self.messages.create_index("created_at")
+        self.messages.create_index("read_at")
+        self.support_tickets.create_index("id", unique=True)
+        self.support_tickets.create_index("user_id")
+        self.support_tickets.create_index("status")
+        self.support_tickets.create_index("created_at")
         self.users.create_index("username", unique=True)
         self.users.create_index("role")
 
@@ -134,6 +146,18 @@ class MongoDB:
         self.drivers.update_many(
             {"joined_at": {"$exists": False}},
             {"$set": {"joined_at": datetime.now(timezone.utc)}},
+        )
+
+    def _ensure_user_fields(self) -> None:
+        for user in get_seed_users().values():
+            self.users.update_one(
+                {"username": user["username"]},
+                {"$setOnInsert": _to_mongo_value(user)},
+                upsert=True,
+            )
+        self.users.update_one(
+            {"username": "dispatcher1", "name": {"$exists": False}},
+            {"$set": {"name": "Operations Dispatcher"}},
         )
 
     def _all(self, collection: Collection, query: Optional[Dict[str, Any]] = None) -> List[dict]:
@@ -285,9 +309,98 @@ class MongoDB:
             },
         )
         return self.get_driver_request_by_id(request_id)
+    
+    def update_driver_score(self,driver_id:str,score:int)->Optional[dict]:
+        self.drivers.update_one(
+            {"id": driver_id},
+            {"$set":{"score":score}}
+        )
+        return self._one(self.drivers,{"id":driver_id})
 
     def get_user_by_username(self, username: str) -> Optional[dict]:
         return self._one(self.users, {"username": username})
+
+    def list_users(self, role_filter: Optional[str] = None) -> List[dict]:
+        query = {"role": role_filter} if role_filter else None
+        return self._all(self.users, query)
+
+    def create_message(self, message_data: dict) -> dict:
+        message_data = _to_mongo_value(message_data)
+        self.messages.insert_one(message_data)
+        return self._one(self.messages, {"id": message_data["id"]}) or message_data
+
+    def list_messages_for_user(self, user_id: str, user_role: str) -> List[dict]:
+        return [
+            _without_object_id(document)
+            for document in self.messages.find(
+                {
+                    "$or": [
+                        {"sender_id": user_id, "sender_role": user_role},
+                        {"recipient_id": user_id, "recipient_role": user_role},
+                    ],
+                }
+            ).sort("created_at", -1)
+        ]
+
+    def list_conversation_messages(
+        self,
+        user_id: str,
+        user_role: str,
+        participant_id: str,
+        participant_role: str,
+    ) -> List[dict]:
+        return [
+            _without_object_id(document)
+            for document in self.messages.find(
+                {
+                    "$or": [
+                        {
+                            "sender_id": user_id,
+                            "sender_role": user_role,
+                            "recipient_id": participant_id,
+                            "recipient_role": participant_role,
+                        },
+                        {
+                            "sender_id": participant_id,
+                            "sender_role": participant_role,
+                            "recipient_id": user_id,
+                            "recipient_role": user_role,
+                        },
+                    ],
+                }
+            ).sort("created_at", 1)
+        ]
+
+    def mark_conversation_messages_read(
+        self,
+        user_id: str,
+        user_role: str,
+        participant_id: str,
+        participant_role: str,
+        read_at: datetime,
+    ) -> int:
+        result = self.messages.update_many(
+            {
+                "sender_id": participant_id,
+                "sender_role": participant_role,
+                "recipient_id": user_id,
+                "recipient_role": user_role,
+                "read_at": None,
+            },
+            {"$set": {"read_at": read_at}},
+        )
+        return result.modified_count
+
+    def create_support_ticket(self, ticket_data: dict) -> dict:
+        ticket_data = _to_mongo_value(ticket_data)
+        self.support_tickets.insert_one(ticket_data)
+        return self._one(self.support_tickets, {"id": ticket_data["id"]}) or ticket_data
+
+    def list_support_tickets(self) -> List[dict]:
+        return [
+            _without_object_id(document)
+            for document in self.support_tickets.find({}).sort("created_at", -1)
+        ]
 
     def create_mission_request(self, request_data: dict) -> dict:
         existing = self.mission_requests.find_one({
@@ -337,5 +450,7 @@ class MongoDB:
         self.drivers.delete_many({})
         self.driver_requests.delete_many({})
         self.mission_requests.delete_many({})
+        self.messages.delete_many({})
+        self.support_tickets.delete_many({})
         self.users.delete_many({})
         self._seed_if_empty()

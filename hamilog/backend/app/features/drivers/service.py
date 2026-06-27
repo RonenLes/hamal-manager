@@ -1,3 +1,4 @@
+import math
 from typing import List, Optional
 from datetime import datetime, timezone
 
@@ -18,6 +19,11 @@ PRIORITY_MULTIPLIER = {
     "high": 1.3,
     "critical": 1.8,
 }
+
+DISTANCE_BONUS_KM_STEP = 10
+MAX_DISTANCE_BONUS = 10
+
+
 def driver_cancelled_mission(mission: dict, driver_id: str) -> List[dict]:
     return [
         record
@@ -57,22 +63,77 @@ def calc_time_diff(bigger_time,smaller_time):
     return total_minutes,hours,minutes
 
 
+def get_location_value(location, key: str) -> Optional[float]:
+    if location is None:
+        return None
+
+    if isinstance(location, dict):
+        value = location.get(key)
+    else:
+        value = getattr(location, key, None)
+
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def calculate_delivery_distance_km(mission: dict) -> float:
+    pickup = mission.get("pickup")
+    dropoff = mission.get("dropoff")
+
+    pickup_lat = get_location_value(pickup, "lat")
+    pickup_lng = get_location_value(pickup, "lng")
+    dropoff_lat = get_location_value(dropoff, "lat")
+    dropoff_lng = get_location_value(dropoff, "lng")
+
+    if None in (pickup_lat, pickup_lng, dropoff_lat, dropoff_lng):
+        return 0
+
+    earth_radius_km = 6371
+    lat_delta = math.radians(dropoff_lat - pickup_lat)
+    lng_delta = math.radians(dropoff_lng - pickup_lng)
+    pickup_lat_rad = math.radians(pickup_lat)
+    dropoff_lat_rad = math.radians(dropoff_lat)
+
+    a = (
+        math.sin(lat_delta / 2) ** 2
+        + math.cos(pickup_lat_rad)
+        * math.cos(dropoff_lat_rad)
+        * math.sin(lng_delta / 2) ** 2
+    )
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return earth_radius_km * c
+
+
+def get_distance_bonus(mission: dict) -> int:
+    distance_km = calculate_delivery_distance_km(mission)
+    return min(MAX_DISTANCE_BONUS, int(distance_km // DISTANCE_BONUS_KM_STEP))
+
+
 def mission_delivered_score(mission,driver_score) -> int:
     minutes_penalty =0.07
     hours_penalty=0.4
+    distance_bonus = get_distance_bonus(mission)
     
         
     actual_delivery_time = parse_to_datetime(mission.get("delivered_at"))
     ideal_delivery_time = parse_to_datetime(mission.get("ideal_delivery_time"))
 
     if actual_delivery_time is None or ideal_delivery_time is None:
-        return min(100, driver_score + 10)
+        return min(100, driver_score + 10 + distance_bonus)
 
     total_minutes,hours,minutes = calc_time_diff(actual_delivery_time,ideal_delivery_time)
 
-    if total_minutes <= 0: return min(100, driver_score + 5)
-    elif hours ==0 and minutes > 30: return driver_score-(minutes*minutes_penalty)
-    else: return max(0,driver_score-(minutes_penalty*minutes+hours_penalty*hours))
+    if total_minutes <= 0:
+        return min(100, driver_score + 5 + distance_bonus)
+    elif hours ==0 and minutes > 30:
+        return driver_score - (minutes * minutes_penalty) + distance_bonus
+    else:
+        return max(
+            0,
+            driver_score - (minutes_penalty * minutes + hours_penalty * hours) + distance_bonus,
+        )
 
 
 def get_time_penalty(minutes_before_deadline: float) -> int:
@@ -165,4 +226,3 @@ def calculate_driver_trust_score(driver: dict, missions: List[dict]) -> int:
             score = mission_delivered_score(mission, score)
 
     return round(max(0, min(score, 100)))
-

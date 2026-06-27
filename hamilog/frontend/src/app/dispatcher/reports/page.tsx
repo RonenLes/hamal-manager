@@ -64,8 +64,8 @@ const driverGraphLabels: Record<DriverGraph, string> = {
 };
 
 const missionGraphLabels: Record<MissionGraph, string> = {
-  priorityByDate: "Priority by date",
-  completionByDate: "Mission completion by date",
+  createdByDate: "Missions created by date",
+  completedByDate: "Missions completed by date",
 };
 
 function getInitialDate(daysAgo: number) {
@@ -86,7 +86,7 @@ export default function DispatcherReportsPage() {
   const [toDate, setToDate] = useState(() => toDateInputValue(new Date()));
   const [includeCancelled, setIncludeCancelled] = useState(false);
   const [driverGraph, setDriverGraph] = useState<DriverGraph>("deliveries");
-  const [missionGraph, setMissionGraph] = useState<MissionGraph>("priorityByDate");
+  const [missionGraph, setMissionGraph] = useState<MissionGraph>("createdByDate");
   const [cargoGraph, setCargoGraph] = useState<CargoGraph>("cargoByDate");
   const [missionDetailStatus, setMissionDetailStatus] =
     useState<MissionDetailStatus>("all");
@@ -331,7 +331,7 @@ export default function DispatcherReportsPage() {
     [range.end, range.start],
   );
 
-  const priorityByDateGroups = useMemo(() => {
+  const missionCreatedByDateGroups = useMemo(() => {
     return dateBuckets.map((date) => {
       const dayMissions = filteredMissions.filter(
         (mission) => toDayKey(mission.created_at) === date,
@@ -348,20 +348,25 @@ export default function DispatcherReportsPage() {
     });
   }, [dateBuckets, filteredMissions]);
 
-  const missionCompletionGroups = useMemo(() => {
-    return dateBuckets.map((date) => ({
-      label: formatDateDisplay(new Date(`${date}T00:00:00`)),
-      values: {
-        created: filteredMissions.filter((mission) => toDayKey(mission.created_at) === date)
-          .length,
-        completed: filteredMissions.filter(
-          (mission) =>
-            mission.status === "delivered" &&
-            toDayKey(getMissionDeliveredAt(mission) ?? mission.updated_at) === date,
-        ).length,
-      },
-    }));
-  }, [dateBuckets, filteredMissions]);
+  const missionCompletedByDateGroups = useMemo(() => {
+    return dateBuckets.map((date) => {
+      const dayMissions = missions.filter(
+        (mission) =>
+          mission.status === "delivered" &&
+          toDayKey(getMissionDeliveredAt(mission) ?? mission.updated_at) === date,
+      );
+
+      return {
+        label: formatDateDisplay(new Date(`${date}T00:00:00`)),
+        values: {
+          critical: dayMissions.filter((mission) => mission.priority === "critical").length,
+          high: dayMissions.filter((mission) => mission.priority === "high").length,
+          medium: dayMissions.filter((mission) => mission.priority === "medium").length,
+          low: dayMissions.filter((mission) => mission.priority === "low").length,
+        },
+      };
+    });
+  }, [dateBuckets, missions]);
 
   const cargoByDateGroups = useMemo(() => {
     return dateBuckets.map((date) => {
@@ -379,34 +384,24 @@ export default function DispatcherReportsPage() {
   }, [dateBuckets, filteredMissions]);
 
   const selectedMissionGraphLabel = missionGraphLabels[missionGraph];
-  const selectedMissionGraphColumns: ExportColumn[] =
-    missionGraph === "priorityByDate"
-      ? [
-          { key: "date", label: "Date" },
-          { key: "critical", label: "Critical" },
-          { key: "high", label: "High" },
-          { key: "medium", label: "Medium" },
-          { key: "low", label: "Low" },
-        ]
-      : [
-          { key: "date", label: "Date" },
-          { key: "created", label: "Created" },
-          { key: "completed", label: "Completed" },
-        ];
+  const selectedMissionGraphColumns: ExportColumn[] = [
+    { key: "date", label: "Date" },
+    { key: "critical", label: "Critical" },
+    { key: "high", label: "High" },
+    { key: "medium", label: "Medium" },
+    { key: "low", label: "Low" },
+  ];
   const selectedMissionGraphRows: ExportRow[] =
-    missionGraph === "priorityByDate"
-      ? priorityByDateGroups.map((group) => ({
-          date: group.label,
-          critical: group.values.critical,
-          high: group.values.high,
-          medium: group.values.medium,
-          low: group.values.low,
-        }))
-      : missionCompletionGroups.map((group) => ({
-          date: group.label,
-          created: group.values.created,
-          completed: group.values.completed,
-        }));
+    (missionGraph === "createdByDate"
+      ? missionCreatedByDateGroups
+      : missionCompletedByDateGroups
+    ).map((group) => ({
+      date: group.label,
+      critical: group.values.critical,
+      high: group.values.high,
+      medium: group.values.medium,
+      low: group.values.low,
+    }));
 
   const cargoGraphRows: ExportRow[] = cargoByDateGroups.map((group) => ({
     date: group.label,
@@ -679,8 +674,8 @@ export default function DispatcherReportsPage() {
               filteredMissions={filteredMissions}
               stats={stats}
               missionGraph={missionGraph}
-              priorityByDateGroups={priorityByDateGroups}
-              missionCompletionGroups={missionCompletionGroups}
+              missionCreatedByDateGroups={missionCreatedByDateGroups}
+              missionCompletedByDateGroups={missionCompletedByDateGroups}
               filterProps={filterProps}
               missionDetailFromDate={missionDetailFromDate}
               missionDetailToDate={missionDetailToDate}

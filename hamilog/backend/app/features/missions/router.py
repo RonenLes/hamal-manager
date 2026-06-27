@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-
+from ...features.drivers.service import calculate_driver_trust_score
 from ...core.security import get_current_user, require_role
 from ...database.state import db, manager
 from ...features.assignments.service import calculate_match_score, get_compatible_missions
@@ -102,6 +102,7 @@ async def update_mission_status(
     elif body.status == MissionStatus.delivered:
         if driver_id:
             db.update_driver_status(driver_id, DriverStatus.available.value, None)
+                     
     elif body.status == MissionStatus.cancelled:
         if user.get("role") != "dispatcher":
             raise HTTPException(

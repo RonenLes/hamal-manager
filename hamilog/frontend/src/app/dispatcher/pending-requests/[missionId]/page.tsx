@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { use, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -17,6 +16,7 @@ import PendingRequestDriverEntry, {
 } from "@/components/dispatcher/pending-requests/PendingRequestDriverEntry";
 import DetailTile from "@/components/dispatcher/shared/DetailTile";
 import PriorityBadge from "@/components/dispatcher/shared/PriorityBadge";
+import BackToMenuButton from "@/components/shared/BackToMenuButton";
 import type { Mission } from "@/lib/types";
 import { formatDateTime24 } from "@/lib/date-format";
 import { formatIdealDeliveryTime, getMissionDeliveredAt } from "@/lib/mission-time";
@@ -155,12 +155,7 @@ export default function MissionRequestsPage({ params }: MissionRequestsPageProps
     return (
       <main className="min-h-screen bg-app p-6 text-main">
         <div className="mx-auto max-w-5xl">
-          <Link
-            href="/dispatcher/pending-requests"
-            className="text-sm font-bold text-blue-300 transition hover:text-blue-200"
-          >
-            Back to pending requests
-          </Link>
+          <BackToMenuButton href="/dispatcher/pending-requests" />
           <div className="mt-6 rounded-2xl border border-app bg-card p-8 text-center text-muted">
             No pending requests were found for this mission.
           </div>
@@ -173,12 +168,7 @@ export default function MissionRequestsPage({ params }: MissionRequestsPageProps
     <main className="min-h-screen bg-app p-6 text-main">
       <div className="mx-auto max-w-7xl">
         <header className="mb-6">
-          <Link
-            href="/dispatcher/pending-requests"
-            className="text-sm font-bold text-blue-300 transition hover:text-blue-200"
-          >
-            Back to pending requests
-          </Link>
+          <BackToMenuButton href="/dispatcher/pending-requests" />
           <p className="mt-4 text-sm font-semibold uppercase tracking-wider text-orange-400">
             Mission Requests
           </p>

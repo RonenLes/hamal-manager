@@ -25,6 +25,7 @@ import {
   saveSeenAlertPopupIds,
 } from "@/lib/alert-popup-storage";
 import { CAR_SPECS } from "@/lib/car-specs";
+import { getLatestDriverCancellation } from "@/lib/mission-alerts";
 import { playAppSound } from "@/lib/sounds";
 
 function getLevelRank(level: AlertLevel) {
@@ -127,6 +128,30 @@ function buildAlerts(missions: Mission[], drivers: Driver[]) {
         summary: `${mission.title} has no available compatible driver.`,
         createdAt: mission.created_at,
         mission,
+      });
+    }
+
+    const driverCancellation = getLatestDriverCancellation(mission);
+
+    if (driverCancellation) {
+      const driver = drivers.find(
+        (item) => item.id === driverCancellation.actor_id
+      );
+      const reason = driverCancellation.reason
+        ? ` Reason: ${driverCancellation.reason}`
+        : "";
+
+      alerts.push({
+        id: `driver-cancelled-${mission.id}-${driverCancellation.cancelled_at}`,
+        level: "warning",
+        type: "Driver Cancelled Mission",
+        title: "Driver cancelled a mission",
+        summary: `${driver?.name || "A driver"} cancelled ${
+          mission.title
+        }.${reason}`,
+        createdAt: driverCancellation.cancelled_at,
+        mission,
+        driver,
       });
     }
   });

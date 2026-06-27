@@ -21,6 +21,8 @@ class InMemoryDB:
         self.drivers: Dict[str, dict] = {}
         self.driver_requests: Dict[str, dict] = {}
         self.mission_requests: Dict[str, dict] = {}
+        self.messages: Dict[str, dict] = {}
+        self.support_tickets: Dict[str, dict] = {}
         self.users: Dict[str, dict] = {}
         self._seed()
 
@@ -479,6 +481,97 @@ class InMemoryDB:
         """Fetch a user login record by username, or ``None``."""
         return self.users.get(username)
 
+    def list_users(self, role_filter: Optional[str] = None) -> List[dict]:
+        users = list(self.users.values())
+        if role_filter is None:
+            return users
+        return [user for user in users if user.get("role") == role_filter]
+
+    # ----- Message CRUD ----------------------------------------------------
+
+    def create_message(self, message_data: dict) -> dict:
+        self.messages[message_data["id"]] = message_data
+        return message_data
+
+    def list_messages_for_user(self, user_id: str, user_role: str) -> List[dict]:
+        messages = [
+            message
+            for message in self.messages.values()
+            if (
+                message.get("sender_id") == user_id
+                and message.get("sender_role") == user_role
+            )
+            or (
+                message.get("recipient_id") == user_id
+                and message.get("recipient_role") == user_role
+            )
+        ]
+        return sorted(
+            messages,
+            key=lambda message: message.get("created_at"),
+            reverse=True,
+        )
+
+    def list_conversation_messages(
+        self,
+        user_id: str,
+        user_role: str,
+        participant_id: str,
+        participant_role: str,
+    ) -> List[dict]:
+        messages = [
+            message
+            for message in self.messages.values()
+            if (
+                message.get("sender_id") == user_id
+                and message.get("sender_role") == user_role
+                and message.get("recipient_id") == participant_id
+                and message.get("recipient_role") == participant_role
+            )
+            or (
+                message.get("sender_id") == participant_id
+                and message.get("sender_role") == participant_role
+                and message.get("recipient_id") == user_id
+                and message.get("recipient_role") == user_role
+            )
+        ]
+        return sorted(messages, key=lambda message: message.get("created_at"))
+
+    def mark_conversation_messages_read(
+        self,
+        user_id: str,
+        user_role: str,
+        participant_id: str,
+        participant_role: str,
+        read_at: datetime,
+    ) -> int:
+        updated = 0
+        for message in self.messages.values():
+            if (
+                message.get("sender_id") == participant_id
+                and message.get("sender_role") == participant_role
+                and message.get("recipient_id") == user_id
+                and message.get("recipient_role") == user_role
+                and message.get("read_at") is None
+            ):
+                message["read_at"] = read_at
+                updated += 1
+
+        return updated
+
+    # ----- Support Ticket CRUD --------------------------------------------
+
+    def create_support_ticket(self, ticket_data: dict) -> dict:
+        self.support_tickets[ticket_data["id"]] = ticket_data
+        return ticket_data
+
+    def list_support_tickets(self) -> List[dict]:
+        return sorted(
+            self.support_tickets.values(),
+            key=lambda ticket: ticket.get("created_at"),
+            reverse=True,
+        )
+
     # ----- Mission Request CRUD -------------------------------------------
 
     def create_mission_request(self, request_data: dict) -> dict:
@@ -529,4 +622,3 @@ class InMemoryDB:
             ):
                 request["status"] = "declined"
                 request["reviewed_at"] = reviewed_at
-

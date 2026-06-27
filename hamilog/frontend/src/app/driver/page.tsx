@@ -35,17 +35,18 @@ export default function DriverDashboardPage() {
     }
 
     setUser(storedUser);
+    const driverId = storedUser.driver_id;
 
     async function fetchData() {
       try {
         const [myData, openData] = await Promise.all([
-          getMissions({ driverUid: storedUser.driver_id }),
+          getMissions({ driverUid: driverId }),
           getMissions({ status: "available" }),
         ]);
 
         setMissions(
           myData.filter(
-            (mission) => mission.assigned_driver_id === storedUser.driver_id
+            (mission) => mission.assigned_driver_id === driverId
           )
         );
         setOpenMissions(

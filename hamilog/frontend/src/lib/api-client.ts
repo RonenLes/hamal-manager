@@ -14,6 +14,11 @@ import type {
   ApiError,
   DriverRequest,
   MissionDeliveryRequest,
+  Message,
+  MessageConversation,
+  MessageParticipantsResponse,
+  CreateSupportTicketPayload,
+  SupportTicket,
 } from './types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -38,6 +43,15 @@ export type {
   Driver,
   DriverRequest,
   MissionDeliveryRequest,
+  Message,
+  MessageConversation,
+  MessageParticipant,
+  MessageParticipantsResponse,
+  TicketMainSubject,
+  TicketSubSubject,
+  CreateSupportTicketPayload,
+  SupportTicket,
+  UserRole,
   LoginResponse,
   StoredUser,
   CargoAnalysisResponse,
@@ -340,6 +354,55 @@ export async function declineDriverRequest(
 // ---------------------------------------------------------------------------
 // AI Cargo Analysis — POST /api/analyze-cargo
 // ---------------------------------------------------------------------------
+
+export async function getMessageParticipants(): Promise<MessageParticipantsResponse> {
+  return apiFetch<MessageParticipantsResponse>('/api/messages/participants');
+}
+
+export async function getMessageConversations(): Promise<MessageConversation[]> {
+  return apiFetch<MessageConversation[]>('/api/messages/conversations');
+}
+
+export async function getMessages(
+  participantRole: 'dispatcher' | 'driver',
+  participantId: string,
+): Promise<Message[]> {
+  return apiFetch<Message[]>(`/api/messages/${participantRole}/${participantId}`);
+}
+
+export async function sendMessage(
+  recipientRole: 'dispatcher' | 'driver',
+  recipientId: string,
+  body: string,
+): Promise<Message> {
+  return apiFetch<Message>('/api/messages', {
+    method: 'POST',
+    body: JSON.stringify({
+      recipient_role: recipientRole,
+      recipient_id: recipientId,
+      body,
+    }),
+  });
+}
+
+export async function markMessagesRead(
+  participantRole: 'dispatcher' | 'driver',
+  participantId: string,
+): Promise<{ updated: number }> {
+  return apiFetch<{ updated: number }>(
+    `/api/messages/${participantRole}/${participantId}/read`,
+    { method: 'POST' },
+  );
+}
+
+export async function createSupportTicket(
+  data: CreateSupportTicketPayload,
+): Promise<SupportTicket> {
+  return apiFetch<SupportTicket>('/api/support-ticket', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
 
 export async function analyzeCargo(
   description: string,

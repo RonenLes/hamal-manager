@@ -1,7 +1,10 @@
+import Link from "next/link";
+
 type DashboardPanelProps = {
   title: string;
   count?: number;
   accent?: "blue" | "orange" | "red" | "green" | "purple";
+  seeAllHref?: string;
   children: React.ReactNode;
 };
 
@@ -17,6 +20,7 @@ export default function DashboardPanel({
   title,
   count,
   accent = "blue",
+  seeAllHref,
   children,
 }: DashboardPanelProps) {
   return (
@@ -26,11 +30,22 @@ export default function DashboardPanel({
       >
         <h2 className="text-lg font-bold text-white">{title}</h2>
 
-        {count !== undefined && (
-          <span className="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-slate-900">
-            {count}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {count !== undefined && (
+            <span className="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-slate-900">
+              {count}
+            </span>
+          )}
+
+          {seeAllHref && (
+            <Link
+              href={seeAllHref}
+              className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white transition hover:bg-white/25"
+            >
+              See all
+            </Link>
+          )}
+        </div>
       </header>
 
       <div className="max-h-[340px] overflow-y-auto p-5">

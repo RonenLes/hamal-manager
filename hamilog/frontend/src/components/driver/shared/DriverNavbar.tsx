@@ -1,20 +1,50 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import ThemeToggleButton from "@/components/shared/ThemeToggleButton";
 
-import { clearToken } from "@/lib/api-client";
+import { clearToken, getMessageConversations, getToken } from "@/lib/api-client";
 
 const links = [
   { label: "Dashboard", href: "/driver" },
+  { label: "Messages", href: "/driver/messages" },
   { label: "Menu", href: "/driver/menu" },
-  { label: "History", href: "/driver/history" },
 ];
 
 export default function DriverNavbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [unreadMessages, setUnreadMessages] = useState(0);
+
+  useEffect(() => {
+    if (!getToken()) return;
+
+    async function fetchUnread() {
+      try {
+        const conversations = await getMessageConversations();
+        setUnreadMessages(
+          conversations.reduce(
+            (total, conversation) => total + conversation.unread_count,
+            0
+          )
+        );
+      } catch {
+        setUnreadMessages(0);
+      }
+    }
+
+    const initialLoad = window.setTimeout(() => {
+      void fetchUnread();
+    }, 0);
+    const interval = window.setInterval(fetchUnread, 10000);
+
+    return () => {
+      window.clearTimeout(initialLoad);
+      window.clearInterval(interval);
+    };
+  }, []);
 
   function handleLogout() {
     clearToken();
@@ -30,7 +60,10 @@ export default function DriverNavbar() {
 
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:items-center lg:gap-3">
           {links.map((link) => {
-            const isActive = pathname === link.href;
+            const isMessages = link.href.endsWith("/messages");
+            const isActive =
+              pathname === link.href ||
+              (isMessages && pathname.startsWith(link.href));
 
             return (
               <Link
@@ -43,6 +76,11 @@ export default function DriverNavbar() {
                 }`}
               >
                 {link.label}
+                {isMessages && unreadMessages > 0 && (
+                  <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-black text-white">
+                    {unreadMessages}
+                  </span>
+                )}
               </Link>
             );
           })}

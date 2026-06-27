@@ -39,6 +39,12 @@ TEST_USERS: Dict[str, Dict[str, Any]] = {
     "dispatcher1": {
         "password": "dispatch123",
         "role": "dispatcher",
+        "name": "Operations Dispatcher",
+    },
+    "dispatcher2": {
+        "password": "dispatch123",
+        "role": "dispatcher",
+        "name": "Field Dispatcher",
     },
     "driver_sedan": {
         "password": "drive123",

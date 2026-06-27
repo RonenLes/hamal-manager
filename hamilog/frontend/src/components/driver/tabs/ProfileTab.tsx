@@ -14,7 +14,6 @@ type DriverProfileDetails = {
   address: string;
   city: string;
   zipcode: string;
-  score: number;
 };
 
 const DEFAULT_PROFILE: DriverProfileDetails = {
@@ -23,7 +22,6 @@ const DEFAULT_PROFILE: DriverProfileDetails = {
   address: "120 Logistics Way",
   city: "Tel Aviv",
   zipcode: "6100001",
-  score: 92,
 };
 
 function getProfileStorageKey(user: StoredUser | null) {
@@ -176,24 +174,6 @@ export default function ProfileTab() {
             editing={editing}
             onChange={(value) => updateProfileField("zipcode", value)}
           />
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-app bg-card p-6 text-center shadow-xl">
-        <h2 className="text-xl font-black text-main">My Driver Score</h2>
-        <p className="mt-1 text-sm text-muted">
-          Based on delivery completion and active mission performance.
-        </p>
-
-        <div className="mx-auto mt-6 flex h-36 w-36 items-center justify-center rounded-full border-8 border-blue-500/30 bg-blue-500/10">
-          <div>
-            <p className="text-4xl font-black text-blue-300">
-              {profile.score}
-            </p>
-            <p className="text-xs font-bold uppercase tracking-wider text-muted">
-              Score
-            </p>
-          </div>
         </div>
       </div>
 

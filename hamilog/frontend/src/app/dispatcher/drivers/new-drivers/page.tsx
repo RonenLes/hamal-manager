@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -14,6 +13,7 @@ import {
 } from "@/lib/api-client";
 
 import NewDriverRequestEntry from "@/components/dispatcher/drivers/NewDriverRequestEntry";
+import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 export default function NewDriversPage() {
   const router = useRouter();
@@ -76,12 +76,7 @@ export default function NewDriversPage() {
     <main className="min-h-screen bg-app p-6 text-main">
       <div className="mx-auto max-w-7xl">
         <header className="mb-6">
-          <Link
-            href="/dispatcher/drivers"
-            className="text-sm font-bold text-blue-400 hover:underline"
-          >
-            Back to Drivers
-          </Link>
+          <BackToMenuButton href="/dispatcher/drivers" />
 
           <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-emerald-400">
             New Driver Requests

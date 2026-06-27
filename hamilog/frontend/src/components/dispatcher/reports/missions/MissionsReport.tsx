@@ -19,16 +19,16 @@ import type {
 } from "../shared/types";
 
 const missionGraphOptions: { id: MissionGraph; label: string }[] = [
-  { id: "priorityByDate", label: "Priority by date" },
-  { id: "completionByDate", label: "Mission completion by date" },
+  { id: "createdByDate", label: "Missions created by date" },
+  { id: "completedByDate", label: "Missions completed by date" },
 ];
 
 type MissionsReportProps = {
   filteredMissions: Mission[];
   stats: ReportStats;
   missionGraph: MissionGraph;
-  priorityByDateGroups: GroupedBarGroup[];
-  missionCompletionGroups: GroupedBarGroup[];
+  missionCreatedByDateGroups: GroupedBarGroup[];
+  missionCompletedByDateGroups: GroupedBarGroup[];
   filterProps: ReportFilterProps;
   missionDetailFromDate: string;
   missionDetailToDate: string;
@@ -52,8 +52,8 @@ export default function MissionsReport({
   filteredMissions,
   stats,
   missionGraph,
-  priorityByDateGroups,
-  missionCompletionGroups,
+  missionCreatedByDateGroups,
+  missionCompletedByDateGroups,
   filterProps,
   missionDetailFromDate,
   missionDetailToDate,
@@ -235,11 +235,11 @@ export default function MissionsReport({
             </div>
           </section>
 
-          {missionGraph === "priorityByDate" ? (
+          {missionGraph === "createdByDate" ? (
             <GroupedBarChart
-              title="Priority By Date"
-              description="Each date shows four bars: critical, high, medium, and low mission counts."
-              groups={priorityByDateGroups}
+              title="Missions Created By Date"
+              description="Each date shows created missions split into critical, high, medium, and low priority."
+              groups={missionCreatedByDateGroups}
               series={[
                 { key: "critical", label: "Critical", color: "bg-red-500" },
                 { key: "high", label: "High", color: "bg-orange-500" },
@@ -249,12 +249,14 @@ export default function MissionsReport({
             />
           ) : (
             <GroupedBarChart
-              title="Mission Completion By Date"
-              description="Compares missions created with missions completed on each date."
-              groups={missionCompletionGroups}
+              title="Missions Completed By Date"
+              description="Each date shows completed missions split into critical, high, medium, and low priority."
+              groups={missionCompletedByDateGroups}
               series={[
-                { key: "created", label: "Created", color: "bg-blue-500" },
-                { key: "completed", label: "Completed", color: "bg-emerald-500" },
+                { key: "critical", label: "Critical", color: "bg-red-500" },
+                { key: "high", label: "High", color: "bg-orange-500" },
+                { key: "medium", label: "Medium", color: "bg-blue-500" },
+                { key: "low", label: "Low", color: "bg-slate-500" },
               ]}
             />
           )}

@@ -1,9 +1,6 @@
-import Link from "next/link";
+import HelpPage, { type HelpPageItem } from "@/components/shared/HelpPage";
 
-import HelpPageCard from "@/components/dispatcher/help/HelpPageCard";
-import BackToMenuButton from "@/components/shared/BackToMenuButton";
-
-const helpPages = [
+const dispatcherHelpPages: HelpPageItem[] = [
   {
     title: "Dashboard",
     href: "/dispatcher",
@@ -30,7 +27,7 @@ const helpPages = [
     description: "Driver requests to take delivery-pool missions.",
     features: [
       "Review pending, accepted, and declined delivery requests.",
-      "Compare driver score, mission urgency, pickup, dropoff, and cargo details.",
+      "Compare mission urgency, pickup, dropoff, cargo details, and requesting drivers.",
       "Accept or decline a pending delivery request.",
     ],
   },
@@ -49,9 +46,9 @@ const helpPages = [
     href: "/dispatcher/drivers",
     description: "Driver availability and performance overview.",
     features: [
-      "Review all drivers, their status, vehicle type, score, and completed deliveries.",
+      "Review all drivers, their status, vehicle type, and completed deliveries.",
       "Open a driver entry to see contact information, vehicle capacity, active delivery, and ID.",
-      "Open driver history or pending new driver requests from this area.",
+      "Open driver history, message a driver, or review pending new driver requests from this area.",
     ],
   },
   {
@@ -65,12 +62,22 @@ const helpPages = [
     ],
   },
   {
+    title: "Messages",
+    href: "/dispatcher/messages",
+    description: "Conversation center for drivers and dispatchers.",
+    features: [
+      "Filter people by driver or dispatcher role.",
+      "See unread message counts and open direct conversations.",
+      "Review on-mission drivers with links to the related mission details.",
+    ],
+  },
+  {
     title: "Alerts",
     href: "/dispatcher/alerts",
     description: "Operational warnings and urgent situations.",
     features: [
       "Review critical, warning, info, and OK alerts.",
-      "Inspect alerts related to unassigned missions, cooling needs, unavailable drivers, and compatibility issues.",
+      "Inspect alerts related to unassigned missions, cooling needs, unavailable drivers, and driver cancellations.",
       "Dismiss alerts once they have been handled.",
     ],
   },
@@ -98,66 +105,11 @@ const helpPages = [
 
 export default function DispatcherHelpPage() {
   return (
-    <main className="min-h-screen bg-app p-6 text-main">
-      <div className="mx-auto max-w-7xl">
-        <header className="mb-6">
-          <div className="mb-4">
-            <BackToMenuButton href="/dispatcher/menu" />
-          </div>
-          <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-blue-400">
-            Dispatcher Guide
-          </p>
-
-          <h1 className="mt-1 text-3xl font-black">Help</h1>
-
-          <p className="mt-2 max-w-3xl text-muted">
-            A quick reference for what each dispatcher page is used for.
-          </p>
-        </header>
-
-        <section className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          {helpPages.map((page) => (
-            <HelpPageCard
-              key={page.href}
-              title={page.title}
-              href={page.href}
-              description={page.description}
-              features={page.features}
-            />
-          ))}
-        </section>
-
-        <section className="mt-8 rounded-2xl border border-app bg-card p-5 shadow-xl">
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_360px]">
-            <div>
-              <h2 className="text-xl font-black text-main">
-                Contact Support
-              </h2>
-              <p className="mt-2 text-sm text-muted">
-                For now this is a placeholder contact form. Later it can be
-                connected to email, tickets, or an internal support workflow.
-              </p>
-            </div>
-
-            <form className="space-y-3">
-              <label className="block text-sm font-semibold text-muted">
-                Email
-              </label>
-              <input
-                type="email"
-                placeholder="dispatcher@example.com"
-                className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-blue-500"
-              />
-              <button
-                type="button"
-                className="w-full rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
-              >
-                Contact Support
-              </button>
-            </form>
-          </div>
-        </section>
-      </div>
-    </main>
+    <HelpPage
+      guideLabel="Dispatcher Guide"
+      intro="A quick reference for what each dispatcher page is used for."
+      backHref="/dispatcher/menu"
+      pages={dispatcherHelpPages}
+    />
   );
 }

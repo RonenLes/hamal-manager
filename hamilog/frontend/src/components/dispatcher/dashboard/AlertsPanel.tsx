@@ -2,11 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Mission, Driver } from "@/lib/api-client";
+import type { CancellationRecord } from "@/lib/types";
 import AlertPopup, { type PopupAlert } from "@/components/dispatcher/alerts/AlertPopup";
 import {
   getSeenAlertPopupIds,
   saveSeenAlertPopupIds,
 } from "@/lib/alert-popup-storage";
+import { getLatestDriverCancellation } from "@/lib/mission-alerts";
 import { playAppSound } from "@/lib/sounds";
 import DashboardPanel from "./DashboardPanel";
 
@@ -20,6 +22,11 @@ type DashboardAlert = {
   type: "warning" | "danger" | "info";
   title: string;
   summary: string;
+};
+
+type DriverCancelledMission = {
+  mission: Mission;
+  cancellation: CancellationRecord;
 };
 
 function groupAlertsForPopup(alerts: DashboardAlert[]): PopupAlert[] {
@@ -64,6 +71,17 @@ export default function AlertsPanel({ missions, drivers }: AlertsPanelProps) {
       mission.status === "available" && mission.cargo?.requires_cooling
   );
 
+  const driverCancelledMissions = useMemo<DriverCancelledMission[]>(
+    () =>
+      missions.flatMap((mission) => {
+        const cancellation = getLatestDriverCancellation(mission);
+        if (!cancellation) return [];
+
+        return [{ mission, cancellation }];
+      }),
+    [missions]
+  );
+
   const seenAlertIds = useRef<Set<string>>(getSeenAlertPopupIds());
   const lastSoundAlertId = useRef<string | null>(null);
   const [queuedAlerts, setQueuedAlerts] = useState<PopupAlert[]>([]);
@@ -94,7 +112,19 @@ export default function AlertsPanel({ missions, drivers }: AlertsPanelProps) {
       title: `${mission.title} requires cooling`,
       summary: "Use a vehicle that supports refrigerated cargo.",
     })),
-  ], [coolingMissions, offlineDrivers, unassignedCount]);
+
+    ...driverCancelledMissions.map(({ mission, cancellation }) => {
+      const driver = drivers.find((item) => item.id === cancellation.actor_id);
+      const reason = cancellation.reason ? ` Reason: ${cancellation.reason}` : "";
+
+      return {
+        id: `dashboard-driver-cancelled-${mission.id}-${cancellation.cancelled_at}`,
+        type: "warning" as const,
+        title: `${driver?.name || "A driver"} cancelled ${mission.title}`,
+        summary: `Mission needs dispatcher review.${reason}`,
+      };
+    }),
+  ], [coolingMissions, driverCancelledMissions, drivers, offlineDrivers, unassignedCount]);
 
   useEffect(() => {
     const groupedAlerts = groupAlertsForPopup(alerts);
@@ -122,30 +152,35 @@ export default function AlertsPanel({ missions, drivers }: AlertsPanelProps) {
         />
       )}
 
-      <DashboardPanel title="Alerts" count={alerts.length} accent="orange">
+      <DashboardPanel
+        title="Alerts"
+        count={alerts.length}
+        accent="orange"
+        seeAllHref="/dispatcher/alerts"
+      >
         <div className="space-y-3">
           {alerts.length === 0 && (
             <p className="text-sm text-muted">No alerts right now.</p>
           )}
 
           {alerts.map((alert, index) => {
-          const classes =
-            alert.type === "danger"
-              ? "alert-danger"
-              : alert.type === "warning"
-                ? "alert-warning"
-                : "alert-info";
+            const classes =
+              alert.type === "danger"
+                ? "alert-danger"
+                : alert.type === "warning"
+                  ? "alert-warning"
+                  : "alert-info";
 
-          return (
-            <div
-              key={`${alert.title}-${index}`}
-              className={`rounded-xl border p-4 ${classes}`}
-            >
-              <p className="font-semibold">{alert.title}</p>
-              <p className="mt-1 text-sm opacity-80">{alert.summary}</p>
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={`${alert.title}-${index}`}
+                className={`rounded-xl border p-4 ${classes}`}
+              >
+                <p className="font-semibold">{alert.title}</p>
+                <p className="mt-1 text-sm opacity-80">{alert.summary}</p>
+              </div>
+            );
+          })}
         </div>
       </DashboardPanel>
     </>

@@ -37,6 +37,12 @@ const menuItems = [
     icon: "⚙️",
     href: "/driver/settings",
   },
+  {
+    title: "Help",
+    description: "Driver guide and support tickets.",
+    icon: "?",
+    href: "/driver/help",
+  },
 ];
 
 export default function DriverMenuPage() {

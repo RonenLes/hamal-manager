@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -22,6 +21,7 @@ import DriverEntry, {
   type ExtendedDriver,
 } from "@/components/dispatcher/drivers/DriverEntry";
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 export default function BlacklistedDriversPage() {
   const router = useRouter();
@@ -116,12 +116,7 @@ export default function BlacklistedDriversPage() {
       <div className="mx-auto max-w-7xl">
         <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <Link
-              href="/dispatcher/drivers"
-              className="text-sm font-bold text-blue-400 hover:underline"
-            >
-              Back to Drivers
-            </Link>
+            <BackToMenuButton href="/dispatcher/drivers" />
 
             <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-red-300">
               Driver Management

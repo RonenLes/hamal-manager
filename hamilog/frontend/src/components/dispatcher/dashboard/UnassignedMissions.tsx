@@ -27,6 +27,7 @@ export default function UnassignedMissions({
       title="Unassigned"
       count={unassigned.length}
       accent="red"
+      seeAllHref="/dispatcher/missions"
     >
       <div className="space-y-4">
         {unassigned.length === 0 && (

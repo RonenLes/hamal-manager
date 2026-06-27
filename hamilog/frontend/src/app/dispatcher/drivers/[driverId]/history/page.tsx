@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
@@ -17,6 +16,7 @@ import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox"
 import DriverHistoryEntry, {
   type DriverHistoryState,
 } from "@/components/dispatcher/drivers/DriverHistoryEntry";
+import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 function getParamString(value: string | string[] | undefined) {
   if (Array.isArray(value)) return value[0];
@@ -31,17 +31,6 @@ function getDeliveryState(mission: Mission): DriverHistoryState {
   if (mission.status === "cancelled") return "cancelled";
 
   return "other";
-}
-
-function BackToDriversLink() {
-  return (
-    <Link
-      href="/dispatcher/drivers"
-      className="text-sm font-bold text-blue-400 hover:underline"
-    >
-      Back to Drivers
-    </Link>
-  );
 }
 
 export default function DriverHistoryPage() {
@@ -135,7 +124,7 @@ export default function DriverHistoryPage() {
     return (
       <main className="min-h-screen bg-app p-6 text-main">
         <div className="mx-auto max-w-7xl">
-          <BackToDriversLink />
+          <BackToMenuButton href="/dispatcher/drivers" />
 
           <div className="mt-6 rounded-2xl border border-app bg-card p-8 text-center">
             <h1 className="text-3xl font-black">Driver not found</h1>
@@ -152,7 +141,7 @@ export default function DriverHistoryPage() {
     <main className="min-h-screen bg-app p-6 text-main">
       <div className="mx-auto max-w-7xl">
         <header className="mb-6">
-          <BackToDriversLink />
+          <BackToMenuButton href="/dispatcher/drivers" />
 
           <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-emerald-400">
             Driver History

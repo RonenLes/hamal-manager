@@ -123,6 +123,13 @@ export default function DriverEntry({
           </span>
 
           <Link
+            href={`/dispatcher/messages/driver/${driver.id}`}
+            className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-4 py-2 text-xs font-bold text-blue-200 transition hover:bg-blue-500/20"
+          >
+            Message
+          </Link>
+
+          <Link
             href={`/dispatcher/drivers/${driver.id}/history`}
             className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-500"
           >

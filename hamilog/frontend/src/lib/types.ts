@@ -82,6 +82,7 @@ export interface LoginResponse {
   user: {
     username: string;
     role: 'dispatcher' | 'driver';
+    name?: string;
     car_type?: CarType;
     driver_id?: string;
   };
@@ -90,6 +91,7 @@ export interface LoginResponse {
 export interface StoredUser {
   username: string;
   role: 'dispatcher' | 'driver';
+  name?: string;
   car_type?: CarType;
   driver_id?: string;
 }
@@ -183,6 +185,79 @@ export type MissionDeliveryRequest = {
   mission: Mission | null;
   driver: Driver | null;
   match_score: number;
+};
+
+export type UserRole = "dispatcher" | "driver";
+
+export type Message = {
+  id: string;
+  sender_id: string;
+  sender_role: UserRole;
+  sender_name: string;
+  recipient_id: string;
+  recipient_role: UserRole;
+  recipient_name: string;
+  body: string;
+  created_at: string;
+  read_at?: string | null;
+};
+
+export type MessageConversation = {
+  participant_id: string;
+  participant_role: UserRole;
+  participant_name: string;
+  last_message: Message;
+  unread_count: number;
+};
+
+export type MessageParticipant = {
+  id: string;
+  role: UserRole;
+  name: string;
+  status: "online" | "offline" | DriverStatus;
+  is_online: boolean;
+  current_mission_id?: string | null;
+  current_mission?: Mission | null;
+};
+
+export type MessageParticipantsResponse = {
+  drivers: MessageParticipant[];
+  dispatchers: MessageParticipant[];
+};
+
+export type TicketMainSubject =
+  | "technical"
+  | "account"
+  | "mission"
+  | "driver"
+  | "other";
+
+export type TicketSubSubject =
+  | "login_problem"
+  | "map_problem"
+  | "mission_assignment"
+  | "driver_status"
+  | "message_problem"
+  | "other";
+
+export type SupportTicket = {
+  id: string;
+  user_id: string;
+  user_role: UserRole;
+  main_subject: TicketMainSubject;
+  sub_subject: TicketSubSubject;
+  title: string;
+  description: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateSupportTicketPayload = {
+  main_subject: TicketMainSubject;
+  sub_subject: TicketSubSubject;
+  title: string;
+  description: string;
 };
 
 export type WSDispatchMessage =

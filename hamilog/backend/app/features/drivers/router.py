@@ -116,3 +116,5 @@ def _review_driver_request(request_id: str, next_status: str) -> dict:
             })
 
     return serialize_single(reviewed)
+
+

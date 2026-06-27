@@ -52,6 +52,12 @@ const menuItems = [
     href: "/dispatcher/live-map",
   },
   {
+    title: "Messages",
+    description: "Message drivers and dispatchers.",
+    icon: "✉️",
+    href: "/dispatcher/messages",
+  },
+  {
     title: "AI Cargo Analysis",
     description: "Analyze cargo size, weight, and cooling.",
     icon: "🤖",
@@ -88,7 +94,6 @@ export default function DispatcherMenuPage() {
               description={item.description}
               icon={item.icon}
               href={item.href}
-              disabled={item.disabled}
             />
           ))}
         </section>

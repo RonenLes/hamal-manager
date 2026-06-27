@@ -33,6 +33,8 @@ async def login(body: LoginRequest) -> LoginResponse:
         "username": body.username,
         "role": user_record["role"],
     }
+    if user_record.get("name"):
+        user_info["name"] = user_record["name"]
     if user_record.get("car_type"):
         user_info["car_type"] = user_record["car_type"]
     if user_record.get("driver_id"):

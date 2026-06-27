@@ -36,6 +36,7 @@ export default function TodaysSchedule({
       title="Today's Schedule"
       count={activeMissions.length}
       accent="blue"
+      seeAllHref="/dispatcher/schedule"
     >
       <div className="space-y-4">
         {activeMissions.length === 0 && (
