@@ -21,11 +21,11 @@ export default function StatCard({
   color = "blue",
 }: StatCardProps) {
   return (
-    <div className="rounded-2xl border border-app bg-card p-3 shadow-xl sm:p-5">
-      <div className="flex min-h-28 flex-col justify-between gap-3 sm:min-h-0 sm:flex-row sm:items-start">
+    <div className="min-h-24 w-40 shrink-0 rounded-xl border border-app bg-card p-3 shadow-sm sm:min-h-0 sm:w-52 sm:p-4 lg:flex-1">
+      <div className="flex min-h-20 flex-col justify-between gap-2 sm:min-h-0 sm:flex-row sm:items-start">
         <div className="min-w-0">
           <p className="text-xs font-semibold leading-tight text-muted sm:text-sm">{title}</p>
-          <p className="mt-2 text-2xl font-black leading-none text-main sm:text-3xl">{value}</p>
+          <p className="mt-1.5 text-xl font-black leading-none text-main sm:mt-2 sm:text-2xl">{value}</p>
           <p className="mt-2 text-xs leading-snug text-muted sm:text-sm">{subtitle}</p>
         </div>
 

@@ -15,6 +15,7 @@ import {
 import { formatDateTime24 } from "@/lib/date-format";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 import DeliveryDetailsPanel from "@/components/dispatcher/live-map/DeliveryDetailsPanel";
 import LiveMapCanvas from "@/components/dispatcher/live-map/LiveMapCanvas";
 import LiveMapFiltersPanel, {
@@ -136,7 +137,7 @@ export default function LiveDeliveryMapPage() {
           </p>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+        <DispatcherStatsWindow>
           <DispatcherStatBox
             title="Deliveries"
             value={stats.total}
@@ -166,7 +167,7 @@ export default function LiveDeliveryMapPage() {
             value={stats.delivered}
             subtitle="Completed"
           />
-        </section>
+        </DispatcherStatsWindow>
 
         <section className="grid grid-cols-1 gap-5 xl:grid-cols-[2fr_1fr]">
           <div className="rounded-2xl border border-app bg-card p-3 shadow-xl sm:p-4">

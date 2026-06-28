@@ -20,6 +20,7 @@ import AlertEntry, {
 } from "@/components/dispatcher/alerts/AlertEntry";
 import AlertPopup, { type PopupAlert } from "@/components/dispatcher/alerts/AlertPopup";
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 import {
   getSeenAlertPopupIds,
   saveSeenAlertPopupIds,
@@ -391,7 +392,7 @@ export default function AlertsPage() {
           </button>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+        <DispatcherStatsWindow>
           <DispatcherStatBox
             title="Alerts"
             value={stats.total}
@@ -417,7 +418,7 @@ export default function AlertsPage() {
             value={stats.success}
             subtitle="Normal status"
           />
-        </section>
+        </DispatcherStatsWindow>
 
         <section className="rounded-2xl border border-app bg-card shadow-xl">
           <div className="border-b border-app px-5 py-4">

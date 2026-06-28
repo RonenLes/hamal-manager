@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { analyzeCargo } from "@/lib/api-client";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 
 type CargoResult = {
   source: string;
@@ -116,10 +117,10 @@ export default function CargoAnalysisPage() {
                 Analysis Result
               </h2>
 
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+              <DispatcherStatsWindow className="mb-0">
                 {/* Weight */}
-                <div className="rounded-xl border border-app bg-card-soft p-4 text-center">
-                  <div className="text-3xl font-black text-blue-400">
+                <div className="min-h-24 w-36 shrink-0 rounded-xl border border-app bg-card-soft p-3 text-center sm:w-44 sm:p-4 lg:flex-1">
+                  <div className="text-xl font-black sm:text-2xl text-blue-400">
                     {result.cargo.weight_kg}
                   </div>
                   <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-muted">
@@ -128,8 +129,8 @@ export default function CargoAnalysisPage() {
                 </div>
 
                 {/* Volume */}
-                <div className="rounded-xl border border-app bg-card-soft p-4 text-center">
-                  <div className="text-3xl font-black text-cyan-400">
+                <div className="min-h-24 w-36 shrink-0 rounded-xl border border-app bg-card-soft p-3 text-center sm:w-44 sm:p-4 lg:flex-1">
+                  <div className="text-xl font-black sm:text-2xl text-cyan-400">
                     {result.cargo.volume_liters}
                   </div>
                   <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-muted">
@@ -138,9 +139,9 @@ export default function CargoAnalysisPage() {
                 </div>
 
                 {/* Cooling */}
-                <div className="rounded-xl border border-app bg-card-soft p-4 text-center">
+                <div className="min-h-24 w-36 shrink-0 rounded-xl border border-app bg-card-soft p-3 text-center sm:w-44 sm:p-4 lg:flex-1">
                   <div
-                    className={`text-3xl font-black ${
+                    className={`text-xl font-black sm:text-2xl ${
                       result.cargo.requires_cooling
                         ? "text-amber-400"
                         : "text-emerald-400"
@@ -152,7 +153,7 @@ export default function CargoAnalysisPage() {
                     Cooling Required
                   </div>
                 </div>
-              </div>
+              </DispatcherStatsWindow>
 
               {/* Source badge */}
               <div className="mt-5 flex items-center gap-2">

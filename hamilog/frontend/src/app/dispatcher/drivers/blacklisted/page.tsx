@@ -22,6 +22,7 @@ import DriverEntry, {
   type ExtendedDriver,
 } from "@/components/dispatcher/drivers/DriverEntry";
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 // Renders the blacklisted drivers page component.
@@ -133,7 +134,7 @@ export default function BlacklistedDriversPage() {
           </div>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+        <DispatcherStatsWindow>
           <DispatcherStatBox
             title="Blacklisted"
             value={stats.total}
@@ -149,7 +150,7 @@ export default function BlacklistedDriversPage() {
             value={stats.deliveries}
             subtitle="Completed before blacklist"
           />
-        </section>
+        </DispatcherStatsWindow>
 
         <section className="rounded-2xl border border-app bg-card shadow-xl">
           <div className="border-b border-app px-5 py-4">

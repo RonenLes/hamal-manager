@@ -13,6 +13,7 @@ import PendingMissionRequestEntry, {
   type MissionRequestGroup,
 } from "@/components/dispatcher/pending-requests/PendingMissionRequestEntry";
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
@@ -164,7 +165,7 @@ export default function PendingRequestsPage() {
           </p>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        <DispatcherStatsWindow>
           <DispatcherStatBox
             title="Requested Missions"
             value={stats.missions}
@@ -185,7 +186,7 @@ export default function PendingRequestsPage() {
             value={stats.bestMatch}
             subtitle="Highest compatibility (%)"
           />
-        </section>
+        </DispatcherStatsWindow>
 
         <section className="rounded-2xl border border-app bg-card shadow-xl">
           <div className="border-b border-app px-5 py-4">

@@ -15,6 +15,7 @@ import {
 } from "@/lib/api-client";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 import DriverEntry, {
   type ExtendedDriver,
 } from "@/components/dispatcher/drivers/DriverEntry";
@@ -197,7 +198,7 @@ export default function DriversPage() {
           </div>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+        <DispatcherStatsWindow>
           <DispatcherStatBox
             title="Drivers"
             value={stats.total}
@@ -223,7 +224,7 @@ export default function DriversPage() {
             value={stats.deliveries}
             subtitle="Completed total"
           />
-        </section>
+        </DispatcherStatsWindow>
 
         <section className="rounded-2xl border border-app bg-card shadow-xl">
           <div className="border-b border-app px-5 py-4">

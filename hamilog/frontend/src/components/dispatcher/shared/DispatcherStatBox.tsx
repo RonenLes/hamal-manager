@@ -11,9 +11,9 @@ export default function DispatcherStatBox({
   subtitle,
 }: DispatcherStatBoxProps) {
   return (
-    <div className="min-h-28 rounded-2xl border border-app bg-card p-3 shadow-xl sm:min-h-0 sm:p-5">
+    <div className="min-h-24 w-36 shrink-0 rounded-xl border border-app bg-card p-3 shadow-sm sm:min-h-0 sm:w-44 sm:p-4 lg:flex-1">
       <p className="text-xs font-semibold leading-tight text-muted sm:text-sm">{title}</p>
-      <p className="mt-2 text-2xl font-black leading-none text-main sm:text-3xl">{value}</p>
+      <p className="mt-1.5 text-xl font-black leading-none text-main sm:mt-2 sm:text-2xl">{value}</p>
       <p className="mt-1 text-xs leading-snug text-soft">{subtitle}</p>
     </div>
   );

@@ -24,6 +24,7 @@ import AlertsPanel from "@/components/dispatcher/dashboard/AlertsPanel";
 import DriverStatusPanel from "@/components/dispatcher/dashboard/DriverStatusPanel";
 import RecentActivity from "@/components/dispatcher/dashboard/RecentActivity";
 import StatCard from "@/components/dispatcher/dashboard/StatCard";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 
 // Returns the display name.
 function getDisplayName(user: StoredUser | null) {
@@ -110,7 +111,7 @@ export default function DispatcherPage() {
       </div>
     </header>
 
-    <section className="mb-4 grid grid-cols-2 gap-3 sm:mb-6 sm:gap-4">
+    <DispatcherStatsWindow>
       <StatCard
         title="Deliveries Today"
         value={`${
@@ -130,7 +131,7 @@ export default function DispatcherPage() {
         icon="👥"
         color="orange"
       />
-    </section>
+    </DispatcherStatsWindow>
 
     <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5">
       <TodaysSchedule missions={missions} drivers={drivers} />

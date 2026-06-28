@@ -16,6 +16,7 @@ import {
 import { formatDateDisplay } from "@/lib/date-format";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 import ScheduleEntry, {
   type DeliveryState,
 } from "@/components/dispatcher/schedule/ScheduleEntry";
@@ -207,8 +208,7 @@ export default function TodaysSchedulePage() {
 
         </header>
 
-        <section className="mb-4 rounded-2xl border border-app bg-card p-3 shadow-xl sm:mb-6 sm:p-4">
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+        <DispatcherStatsWindow>
           <DispatcherStatBox
             title="Selected Date"
             value={stats.total}
@@ -234,8 +234,7 @@ export default function TodaysSchedulePage() {
             value={stats.delivered}
             subtitle="Completed"
           />
-          </div>
-        </section>
+        </DispatcherStatsWindow>
 
         <section className="mb-6 rounded-2xl border border-app bg-card p-3 shadow-xl sm:p-4">
           <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-end">

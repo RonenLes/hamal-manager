@@ -13,6 +13,7 @@ import {
 } from "@/lib/api-client";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 import DriverHistoryEntry, {
   type DriverHistoryState,
 } from "@/components/dispatcher/drivers/DriverHistoryEntry";
@@ -157,7 +158,7 @@ export default function DriverHistoryPage() {
           </p>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+        <DispatcherStatsWindow>
           <DispatcherStatBox
             title="Total"
             value={stats.total}
@@ -183,7 +184,7 @@ export default function DriverHistoryPage() {
             value={stats.cancelled}
             subtitle="Cancelled deliveries"
           />
-        </section>
+        </DispatcherStatsWindow>
 
         <section className="rounded-2xl border border-app bg-card shadow-xl">
           <div className="border-b border-app px-5 py-4">

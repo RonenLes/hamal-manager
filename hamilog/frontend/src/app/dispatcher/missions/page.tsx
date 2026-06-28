@@ -16,6 +16,7 @@ import {
 } from "@/lib/api-client";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 import MissionEntry from "@/components/dispatcher/missions/MissionEntry";
 import MissionFilters, {
   type MissionStatusFilter,
@@ -402,7 +403,7 @@ export default function MissionsPage() {
           </div>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+        <DispatcherStatsWindow>
           <DispatcherStatBox
             title="Missions"
             value={stats.total}
@@ -428,7 +429,7 @@ export default function MissionsPage() {
             value={stats.cooling}
             subtitle="Requires cooling"
           />
-        </section>
+        </DispatcherStatsWindow>
 
         <section className="mb-6 rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
