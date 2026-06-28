@@ -71,6 +71,14 @@ export interface Driver {
   current_location: Location | null;
   current_mission_id: string | null;
   score?: number;
+  history_score?: DriverScoreRecord[];
+}
+
+export interface DriverScoreRecord {
+  score: number;
+  date: string;
+  mission_id?: string | null;
+  mission_title?: string | null;
 }
 
 // ---------------------------------------------------------------------------

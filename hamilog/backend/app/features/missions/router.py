@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from ...features.drivers.service import calculate_driver_trust_score
+from ...features.drivers.service import calculate_driver_score_for_mission
 from ...core.security import get_current_user, require_role
 from ...database.state import db, manager
 from ...features.assignments.service import calculate_match_score, get_compatible_missions
@@ -97,11 +97,10 @@ async def update_mission_status(
 
     driver_id = body.driver_id or mission.get("assigned_driver_id")
 
+    previous_status = mission.get("status")
+
     if body.status == MissionStatus.assigned and driver_id:
         db.update_driver_status(driver_id, DriverStatus.on_mission.value, mission_id)
-    elif body.status == MissionStatus.delivered:
-        if driver_id:
-            db.update_driver_status(driver_id, DriverStatus.available.value, None)
                      
     elif body.status == MissionStatus.cancelled:
         if user.get("role") != "dispatcher":
@@ -131,6 +130,15 @@ async def update_mission_status(
         return serialize_single(updated)
 
     updated = db.update_mission_status(mission_id, body.status.value, driver_id)
+
+    if body.status == MissionStatus.delivered and driver_id:
+        db.update_driver_status(driver_id, DriverStatus.available.value, None)
+        if previous_status != MissionStatus.delivered.value:
+            driver = db.get_driver_by_id(driver_id)
+            if driver is not None:
+                new_score = calculate_driver_score_for_mission(driver, updated)
+                db.update_driver_score(driver_id, new_score, updated)
+
     payload = {
         "type": "mission_status_update",
         "mission": serialize_single(updated),
@@ -188,6 +196,11 @@ async def cancel_mission(
 
     if driver_id:
         db.update_driver_status(driver_id, DriverStatus.available.value, None)
+        if user.get("role") == "driver":
+            driver = db.get_driver_by_id(driver_id)
+            if driver is not None:
+                new_score = calculate_driver_score_for_mission(driver, updated)
+                db.update_driver_score(driver_id, new_score, updated)
 
     payload = {
         "type": "mission_status_update",

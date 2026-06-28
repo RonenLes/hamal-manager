@@ -26,7 +26,7 @@ import {
 } from "@/lib/alert-popup-storage";
 import { CAR_SPECS } from "@/lib/car-specs";
 import { getLatestDriverCancellation } from "@/lib/mission-alerts";
-import { playAppSound } from "@/lib/sounds";
+import { isNotificationsDisabled, playAppSound } from "@/lib/sounds";
 
 function getLevelRank(level: AlertLevel) {
   switch (level) {
@@ -39,6 +39,32 @@ function getLevelRank(level: AlertLevel) {
     case "success":
       return 3;
   }
+}
+
+type AlertLevelFilter = AlertLevel | "all";
+type RelatedAlertFilter = "all" | "mission" | "driver" | "cargo" | "system";
+
+const alertLevelFilters: { id: AlertLevelFilter; label: string }[] = [
+  { id: "all", label: "All levels" },
+  { id: "critical", label: "Critical" },
+  { id: "warning", label: "Warnings" },
+  { id: "info", label: "Info" },
+  { id: "success", label: "OK" },
+];
+
+const relatedAlertFilters: { id: RelatedAlertFilter; label: string }[] = [
+  { id: "all", label: "All related alerts" },
+  { id: "mission", label: "Missions" },
+  { id: "driver", label: "Drivers" },
+  { id: "cargo", label: "Cargo" },
+  { id: "system", label: "System" },
+];
+
+function getRelatedAlertFilter(alert: DispatcherAlert): RelatedAlertFilter {
+  if (alert.type.toLowerCase().includes("cooling")) return "cargo";
+  if (alert.driver) return "driver";
+  if (alert.mission) return "mission";
+  return "system";
 }
 
 function getCompatibleDrivers(mission: Mission, drivers: Driver[]) {
@@ -227,6 +253,8 @@ export default function AlertsPage() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
+  const [levelFilter, setLevelFilter] = useState<AlertLevelFilter>("all");
+  const [relatedFilter, setRelatedFilter] = useState<RelatedAlertFilter>("all");
   const seenAlertIds = useRef<Set<string>>(getSeenAlertPopupIds());
   const lastSoundAlertId = useRef<string | null>(null);
   const [queuedAlerts, setQueuedAlerts] = useState<PopupAlert[]>([]);
@@ -263,25 +291,38 @@ export default function AlertsPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const alerts = useMemo(() => {
+  const activeAlerts = useMemo(() => {
     return buildAlerts(missions, drivers).filter(
       (alert) => !dismissedIds.includes(alert.id)
     );
   }, [missions, drivers, dismissedIds]);
 
+  const alerts = useMemo(() => {
+    return activeAlerts.filter((alert) => {
+      const levelMatches = levelFilter === "all" || alert.level === levelFilter;
+      const relatedMatches =
+        relatedFilter === "all" ||
+        getRelatedAlertFilter(alert) === relatedFilter;
+
+      return levelMatches && relatedMatches;
+    });
+  }, [activeAlerts, levelFilter, relatedFilter]);
+
   const stats = useMemo(() => {
     return {
-      total: alerts.length,
-      critical: alerts.filter((alert) => alert.level === "critical").length,
-      warning: alerts.filter((alert) => alert.level === "warning").length,
-      info: alerts.filter((alert) => alert.level === "info").length,
-      success: alerts.filter((alert) => alert.level === "success").length,
+      total: activeAlerts.length,
+      critical: activeAlerts.filter((alert) => alert.level === "critical").length,
+      warning: activeAlerts.filter((alert) => alert.level === "warning").length,
+      info: activeAlerts.filter((alert) => alert.level === "info").length,
+      success: activeAlerts.filter((alert) => alert.level === "success").length,
     };
-  }, [alerts]);
+  }, [activeAlerts]);
 
   useEffect(() => {
+    if (isNotificationsDisabled()) return;
+
     const popupAlerts = groupAlertsForPopup(
-      alerts.filter((alert) => alert.level !== "success"),
+      activeAlerts.filter((alert) => alert.level !== "success"),
     ).filter((alert) => !seenAlertIds.current.has(alert.id));
 
     if (popupAlerts.length === 0) return;
@@ -289,9 +330,10 @@ export default function AlertsPage() {
     popupAlerts.forEach((alert) => seenAlertIds.current.add(alert.id));
     saveSeenAlertPopupIds(seenAlertIds.current);
     setQueuedAlerts((current) => [...current, ...popupAlerts]);
-  }, [alerts]);
+  }, [activeAlerts]);
 
   useEffect(() => {
+    if (isNotificationsDisabled()) return;
     if (!popupAlert || lastSoundAlertId.current === popupAlert.id) return;
 
     lastSoundAlertId.current = popupAlert.id;
@@ -300,6 +342,13 @@ export default function AlertsPage() {
 
   function handleDismiss(alertId: string) {
     setDismissedIds((current) => [...current, alertId]);
+    setExpandedId(null);
+  }
+
+  function handleDismissAll() {
+    setDismissedIds((current) => [
+      ...new Set([...current, ...activeAlerts.map((alert) => alert.id)]),
+    ]);
     setExpandedId(null);
   }
 
@@ -321,17 +370,28 @@ export default function AlertsPage() {
       )}
 
       <div className="mx-auto max-w-7xl">
-        <header className="mb-6">
-          <div className="mb-4">
-            <BackToMenuButton href="/dispatcher/menu" />
+        <header className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <div className="mb-4">
+              <BackToMenuButton href="/dispatcher/menu" />
+            </div>
+            <p className="text-sm font-semibold uppercase tracking-wider text-orange-400">
+              Operations Monitoring
+            </p>
+            <h1 className="mt-1 text-3xl font-black">Alerts</h1>
+            <p className="mt-2 text-muted">
+              Review urgent mission, driver, cargo, and system alerts.
+            </p>
           </div>
-          <p className="text-sm font-semibold uppercase tracking-wider text-orange-400">
-            Operations Monitoring
-          </p>
-          <h1 className="mt-1 text-3xl font-black">Alerts</h1>
-          <p className="mt-2 text-muted">
-            Review urgent mission, driver, cargo, and system alerts.
-          </p>
+
+          <button
+            type="button"
+            onClick={handleDismissAll}
+            disabled={activeAlerts.length === 0}
+            className="rounded-xl border border-app bg-card-soft px-5 py-3 text-sm font-black text-main transition hover:bg-card-soft disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Dismiss All
+          </button>
         </header>
 
         <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -364,9 +424,57 @@ export default function AlertsPage() {
 
         <section className="rounded-2xl border border-app bg-card shadow-xl">
           <div className="border-b border-app px-5 py-4">
-            <h2 className="text-xl font-bold">Alert Entries</h2>
-            <p className="mt-1 text-sm text-muted">
-              Click an alert to expand full details.
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <h2 className="text-xl font-bold">Alert Entries</h2>
+                <p className="mt-1 text-sm text-muted">
+                  Click an alert to expand full details.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <label className="block">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted">
+                    Severity
+                  </span>
+                  <select
+                    value={levelFilter}
+                    onChange={(event) =>
+                      setLevelFilter(event.target.value as AlertLevelFilter)
+                    }
+                    className="mt-1 w-full rounded-xl border border-app bg-input px-3 py-2 text-sm text-main outline-none focus:border-blue-500"
+                  >
+                    {alertLevelFilters.map((filter) => (
+                      <option key={filter.id} value={filter.id}>
+                        {filter.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted">
+                    Related to
+                  </span>
+                  <select
+                    value={relatedFilter}
+                    onChange={(event) =>
+                      setRelatedFilter(event.target.value as RelatedAlertFilter)
+                    }
+                    className="mt-1 w-full rounded-xl border border-app bg-input px-3 py-2 text-sm text-main outline-none focus:border-blue-500"
+                  >
+                    {relatedAlertFilters.map((filter) => (
+                      <option key={filter.id} value={filter.id}>
+                        {filter.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <p className="mt-3 text-sm text-muted">
+              Showing {alerts.length} of {activeAlerts.length} active alerts.
             </p>
           </div>
 

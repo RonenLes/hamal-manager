@@ -9,7 +9,7 @@ import {
   saveSeenAlertPopupIds,
 } from "@/lib/alert-popup-storage";
 import { getLatestDriverCancellation } from "@/lib/mission-alerts";
-import { playAppSound } from "@/lib/sounds";
+import { isNotificationsDisabled, playAppSound } from "@/lib/sounds";
 import DashboardPanel from "./DashboardPanel";
 
 type AlertsPanelProps = {
@@ -127,6 +127,8 @@ export default function AlertsPanel({ missions, drivers }: AlertsPanelProps) {
   ], [coolingMissions, driverCancelledMissions, drivers, offlineDrivers, unassignedCount]);
 
   useEffect(() => {
+    if (isNotificationsDisabled()) return;
+
     const groupedAlerts = groupAlertsForPopup(alerts);
     const newAlerts = groupedAlerts.filter((alert) => !seenAlertIds.current.has(alert.id));
     if (newAlerts.length === 0) return;
@@ -137,6 +139,7 @@ export default function AlertsPanel({ missions, drivers }: AlertsPanelProps) {
   }, [alerts]);
 
   useEffect(() => {
+    if (isNotificationsDisabled()) return;
     if (!popupAlert || lastSoundAlertId.current === popupAlert.id) return;
 
     lastSoundAlertId.current = popupAlert.id;

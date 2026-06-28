@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from typing import Dict, Optional,List
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel,Field
 
 from ...shared.models import Location
@@ -52,7 +52,9 @@ CAR_SPECS: Dict[CarType, Dict] = {
 
 class ScoreRecord(BaseModel):
     score: int
-    date: datetime = datetime.utcnow
+    date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    mission_id: Optional[str] = None
+    mission_title: Optional[str] = None
 
 class Driver(BaseModel):
     """A volunteer driver with a specific vehicle type."""

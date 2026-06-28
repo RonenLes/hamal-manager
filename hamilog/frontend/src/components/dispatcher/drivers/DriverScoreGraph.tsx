@@ -1,7 +1,10 @@
+import { useState } from "react";
+
 import type { DriverScorePoint } from "@/lib/driver-metrics";
 
 type DriverScoreGraphProps = {
-  points: DriverScorePoint[];
+  datePoints: DriverScorePoint[];
+  missionPoints: DriverScorePoint[];
 };
 
 function buildPath(points: DriverScorePoint[]) {
@@ -27,7 +30,12 @@ function getPointPosition(
   };
 }
 
-export default function DriverScoreGraph({ points }: DriverScoreGraphProps) {
+export default function DriverScoreGraph({
+  datePoints,
+  missionPoints,
+}: DriverScoreGraphProps) {
+  const [mode, setMode] = useState<"date" | "mission">("date");
+  const points = mode === "date" ? datePoints : missionPoints;
   const path = buildPath(points);
   const latestScore = points[points.length - 1]?.score ?? 0;
 
@@ -37,15 +45,34 @@ export default function DriverScoreGraph({ points }: DriverScoreGraphProps) {
         <div>
           <h3 className="text-lg font-black text-main">Driver Score Trend</h3>
           <p className="mt-1 text-sm text-muted">
-            Score movement across recent assigned deliveries.
+            Score movement from stored driver history.
           </p>
         </div>
 
-        <div className="rounded-xl border border-app bg-card px-4 py-2 text-right">
-          <p className="text-xs uppercase tracking-wider text-soft">Latest</p>
-          <p className="text-2xl font-black text-emerald-300">
-            {latestScore}%
-          </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="rounded-xl border border-app bg-card p-1">
+            {(["date", "mission"] as const).map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setMode(item)}
+                className={`rounded-lg px-3 py-1.5 text-xs font-bold capitalize transition ${
+                  mode === item
+                    ? "bg-blue-600 text-white"
+                    : "text-muted hover:text-main"
+                }`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+
+          <div className="rounded-xl border border-app bg-card px-4 py-2 text-right">
+            <p className="text-xs uppercase tracking-wider text-soft">Latest</p>
+            <p className="text-2xl font-black text-emerald-300">
+              {latestScore}%
+            </p>
+          </div>
         </div>
       </div>
 

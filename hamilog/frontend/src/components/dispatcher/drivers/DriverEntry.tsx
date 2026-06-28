@@ -21,7 +21,8 @@ type DriverEntryProps = {
   activeMission?: Mission;
   deliveriesMade: number;
   score: number;
-  scorePoints: DriverScorePoint[];
+  dateScorePoints: DriverScorePoint[];
+  missionScorePoints: DriverScorePoint[];
   isExpanded: boolean;
   isGraphExpanded: boolean;
   copiedDriverId: string | null;
@@ -68,7 +69,8 @@ export default function DriverEntry({
   activeMission,
   deliveriesMade,
   score,
-  scorePoints,
+  dateScorePoints,
+  missionScorePoints,
   isExpanded,
   isGraphExpanded,
   copiedDriverId,
@@ -150,7 +152,12 @@ export default function DriverEntry({
         </div>
       </div>
 
-      {isGraphExpanded && <DriverScoreGraph points={scorePoints} />}
+      {isGraphExpanded && (
+        <DriverScoreGraph
+          datePoints={dateScorePoints}
+          missionPoints={missionScorePoints}
+        />
+      )}
 
       {isExpanded && (
         <div className="border-t border-app bg-card-soft px-5 py-5">

@@ -204,8 +204,8 @@ async def list_message_participants(
             "id": dispatcher_id,
             "role": "dispatcher",
             "name": dispatcher.get("name") or dispatcher_id,
-            "status": "online" if dispatcher_id == user_id else "offline",
-            "is_online": dispatcher_id == user_id,
+            "status": "online",
+            "is_online": True,
             "current_mission_id": None,
             "current_mission": None,
         })

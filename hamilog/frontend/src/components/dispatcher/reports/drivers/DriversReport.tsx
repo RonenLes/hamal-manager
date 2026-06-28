@@ -7,6 +7,7 @@ import type { BarRow, DriverGraph, ReportFilterProps } from "../shared/types";
 const driverGraphOptions: { id: DriverGraph; label: string }[] = [
   { id: "deliveries", label: "Deliveries by driver" },
   { id: "score", label: "Driver score" },
+  { id: "km", label: "Total km by driver" },
 ];
 
 type DriversReportProps = {
@@ -70,12 +71,22 @@ export default function DriversReport({
             description={
               driverGraph === "deliveries"
                 ? "X axis is the driver name. Y axis is delivered missions completed in the selected period."
-                : "X axis is the driver name. Y axis is a 0-100 operational score based on completion rate, delivered missions, cancelled missions, and current status."
+                : driverGraph === "score"
+                  ? "X axis is the driver name. Y axis is a 0-100 operational score based on completion rate, delivered missions, cancelled missions, and current status."
+                  : "X axis is the driver name. Y axis is total delivered route kilometers in the selected period."
             }
             rows={selectedDriverRows}
-            yLabel={driverGraph === "deliveries" ? "Deliveries made" : "Driver score"}
+            yLabel={
+              driverGraph === "deliveries"
+                ? "Deliveries made"
+                : driverGraph === "score"
+                  ? "Driver score"
+                  : "Kilometers"
+            }
             maxValue={driverGraph === "score" ? 100 : undefined}
-            valueSuffix={driverGraph === "score" ? "/100" : ""}
+            valueSuffix={
+              driverGraph === "score" ? "/100" : driverGraph === "km" ? " km" : ""
+            }
           />
         </div>
         <ReportFilters {...filterProps} />

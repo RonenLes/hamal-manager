@@ -50,6 +50,7 @@ import {
   getToken,
 } from "@/lib/api-client";
 import { formatIdealDeliveryTime, getMissionDeliveredAt } from "@/lib/mission-time";
+import { getMissionDistanceKm } from "@/lib/mission-distance";
 
 const reportViews: { id: ReportView; label: string }[] = [
   { id: "overview", label: "Overview" },
@@ -61,6 +62,7 @@ const reportViews: { id: ReportView; label: string }[] = [
 const driverGraphLabels: Record<DriverGraph, string> = {
   deliveries: "Deliveries by driver",
   score: "Driver score",
+  km: "Total km by driver",
 };
 
 const missionGraphLabels: Record<MissionGraph, string> = {
@@ -283,11 +285,43 @@ export default function DispatcherReportsPage() {
       .sort((a, b) => b.value - a.value);
   }, [drivers, missions, range.end, range.start]);
 
+  const driverKmRows = useMemo(() => {
+    return drivers
+      .map((driver) => {
+        const value = missions
+          .filter(
+            (mission) =>
+              mission.assigned_driver_id === driver.id &&
+              mission.status === "delivered" &&
+              isWithinRange(
+                getMissionDeliveredAt(mission) ?? mission.updated_at,
+                range.start,
+                range.end,
+              ),
+          )
+          .reduce((sum, mission) => sum + getMissionDistanceKm(mission), 0);
+
+        return {
+          label: driver.name,
+          value: Math.round(value),
+        };
+      })
+      .sort((a, b) => b.value - a.value);
+  }, [drivers, missions, range.end, range.start]);
+
   const selectedDriverRows =
-    driverGraph === "deliveries" ? driverDeliveryRows : driverScoreRows;
+    driverGraph === "deliveries"
+      ? driverDeliveryRows
+      : driverGraph === "score"
+        ? driverScoreRows
+        : driverKmRows;
   const selectedDriverGraphLabel = driverGraphLabels[driverGraph];
   const selectedDriverMeasurement =
-    driverGraph === "deliveries" ? "Deliveries made" : "Driver score / 100";
+    driverGraph === "deliveries"
+      ? "Deliveries made"
+      : driverGraph === "score"
+        ? "Driver score / 100"
+        : "Kilometers driven";
 
   const cargoRows = useMemo(
     () => [
@@ -411,7 +445,12 @@ export default function DispatcherReportsPage() {
 
   const selectedDriverExportRows: ExportRow[] = selectedDriverRows.map((row) => ({
     driver: row.label,
-    value: driverGraph === "score" ? `${row.value}/100` : row.value,
+    value:
+      driverGraph === "score"
+        ? `${row.value}/100`
+        : driverGraph === "km"
+          ? `${row.value} km`
+          : row.value,
   }));
 
   const missionDetailRange = {

@@ -14,6 +14,7 @@ const STORAGE_KEYS = {
   theme: "hamilog-theme",
   fontSize: "hamilog-font-size",
   soundMuted: "hamilog-sound-muted",
+  notificationsDisabled: "hamilog-notifications-disabled",
 };
 
 function getSavedTheme(): ThemeMode {
@@ -36,6 +37,12 @@ function getSavedSoundMuted() {
   if (typeof window === "undefined") return false;
 
   return localStorage.getItem(STORAGE_KEYS.soundMuted) === "true";
+}
+
+function getSavedNotificationsDisabled() {
+  if (typeof window === "undefined") return false;
+
+  return localStorage.getItem(STORAGE_KEYS.notificationsDisabled) === "true";
 }
 
 function applySettings(theme: ThemeMode, fontSize: FontSize) {
@@ -117,6 +124,9 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
   const [theme, setTheme] = useState<ThemeMode>(getSavedTheme);
   const [fontSize, setFontSize] = useState<FontSize>(getSavedFontSize);
   const [soundMuted, setSoundMuted] = useState(getSavedSoundMuted);
+  const [notificationsDisabled, setNotificationsDisabled] = useState(
+    getSavedNotificationsDisabled,
+  );
   const [activeTab, setActiveTab] = useState<SettingsTab>("accessibility");
   const [savedMessage, setSavedMessage] = useState("");
 
@@ -155,6 +165,14 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
     setSoundMuted(nextSoundMuted);
     localStorage.setItem(STORAGE_KEYS.soundMuted, String(nextSoundMuted));
     showSavedMessage(nextSoundMuted ? "Sound muted" : "Sound enabled");
+  }
+
+  function handleNotificationsDisabledChange(nextValue: boolean) {
+    setNotificationsDisabled(nextValue);
+    localStorage.setItem(STORAGE_KEYS.notificationsDisabled, String(nextValue));
+    showSavedMessage(
+      nextValue ? "Notifications turned off" : "Notifications turned on",
+    );
   }
 
   const accessibilityPanel = (
@@ -257,16 +275,41 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
   );
 
   const notificationsPanel = (
-    <section className="rounded-2xl border border-dashed border-app bg-card p-5 shadow-xl">
-      <div>
+    <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+      <div className="mb-5">
         <h2 className="text-xl font-black text-main">Notifications</h2>
         <p className="mt-1 text-sm text-muted">
-          Notification controls will be added here in a future update.
+          Control alert popups and notification prompts.
         </p>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-app bg-card-soft p-5 text-muted">
-        Future features
+      <div className="flex flex-col gap-4 rounded-2xl border border-app bg-card-soft p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-lg font-black text-main">Turn Off Notifications</h3>
+          <p className="mt-1 text-sm text-muted">
+            Hide alert popups while keeping dashboard data visible.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() =>
+            handleNotificationsDisabledChange(!notificationsDisabled)
+          }
+          className={`relative h-9 w-16 rounded-full border transition ${
+            notificationsDisabled
+              ? "border-blue-500 bg-blue-500"
+              : "border-app bg-card"
+          }`}
+          aria-pressed={notificationsDisabled}
+          aria-label="Turn off notifications"
+        >
+          <span
+            className={`absolute top-1 h-7 w-7 rounded-full bg-white transition ${
+              notificationsDisabled ? "left-8" : "left-1"
+            }`}
+          />
+        </button>
       </div>
     </section>
   );
@@ -283,7 +326,7 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
         <p className="mt-2 text-muted">
           {audience === "dispatcher"
             ? "Adjust accessibility, sound, and notification settings for the dispatcher dashboard."
-            : "Adjust visual accessibility settings for the driver dashboard."}
+            : "Adjust accessibility, sound, and notification settings for the driver dashboard."}
         </p>
       </header>
 
@@ -293,34 +336,27 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
         </div>
       )}
 
-      {audience === "dispatcher" && (
-        <nav className="mb-6 grid grid-cols-1 gap-2 rounded-2xl border border-app bg-card p-2 shadow-xl sm:grid-cols-3">
-          <TabButton
-            label="Accessibility"
-            active={activeTab === "accessibility"}
-            onClick={() => setActiveTab("accessibility")}
-          />
-          <TabButton
-            label="Sound"
-            active={activeTab === "sound"}
-            onClick={() => setActiveTab("sound")}
-          />
-          <TabButton
-            label="Notifications"
-            active={activeTab === "notifications"}
-            onClick={() => setActiveTab("notifications")}
-          />
-        </nav>
-      )}
+      <nav className="mb-6 grid grid-cols-1 gap-2 rounded-2xl border border-app bg-card p-2 shadow-xl sm:grid-cols-3">
+        <TabButton
+          label="Accessibility"
+          active={activeTab === "accessibility"}
+          onClick={() => setActiveTab("accessibility")}
+        />
+        <TabButton
+          label="Sound"
+          active={activeTab === "sound"}
+          onClick={() => setActiveTab("sound")}
+        />
+        <TabButton
+          label="Notifications"
+          active={activeTab === "notifications"}
+          onClick={() => setActiveTab("notifications")}
+        />
+      </nav>
 
-      {audience !== "dispatcher" && accessibilityPanel}
-      {audience === "dispatcher" &&
-        activeTab === "accessibility" &&
-        accessibilityPanel}
-      {audience === "dispatcher" && activeTab === "sound" && soundPanel}
-      {audience === "dispatcher" &&
-        activeTab === "notifications" &&
-        notificationsPanel}
+      {activeTab === "accessibility" && accessibilityPanel}
+      {activeTab === "sound" && soundPanel}
+      {activeTab === "notifications" && notificationsPanel}
     </div>
   );
 }

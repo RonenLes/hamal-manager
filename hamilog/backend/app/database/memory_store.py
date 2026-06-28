@@ -441,6 +441,28 @@ class InMemoryDB:
         driver["current_location"] = location
         return driver
 
+    def update_driver_score(
+        self,
+        driver_id: str,
+        score: int,
+        mission: Optional[dict] = None,
+    ) -> Optional[dict]:
+        driver = self.drivers.get(driver_id)
+        if driver is None:
+            return None
+
+        score_record = {
+            "score": score,
+            "date": datetime.now(timezone.utc),
+        }
+        if mission is not None:
+            score_record["mission_id"] = mission.get("id")
+            score_record["mission_title"] = mission.get("title")
+
+        driver["score"] = score
+        driver.setdefault("history_score", []).append(score_record)
+        return driver
+
     # ----- Driver Request CRUD --------------------------------------------
 
     def count_pending_driver_requests(self) -> int:

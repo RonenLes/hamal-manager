@@ -1,6 +1,6 @@
 export type ReportView = "overview" | "missions" | "drivers" | "cargo";
 export type DatePreset = "last30" | "thisMonth" | "lastMonth";
-export type DriverGraph = "deliveries" | "score";
+export type DriverGraph = "deliveries" | "score" | "km";
 export type MissionGraph = "createdByDate" | "completedByDate";
 export type CargoGraph = "cargoByDate";
 export type MissionDetailStatus =

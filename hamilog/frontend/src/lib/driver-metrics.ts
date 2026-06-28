@@ -1,5 +1,4 @@
 import type { Driver, Mission } from "@/lib/api-client";
-import { getMissionDeliveredAt } from "@/lib/mission-time";
 
 export type DriverScorePoint = {
   label: string;
@@ -14,18 +13,17 @@ function clampScore(score: number) {
   return Math.min(100, Math.max(0, Math.round(score)));
 }
 
-function getMissionScoreDelta(mission: Mission) {
-  if (mission.status === "delivered") return 3;
-  if (mission.status === "cancelled") return -8;
-  if (mission.status === "in_transit") return 1;
-  return 0;
-}
-
 function formatPointLabel(dateValue: string) {
   return new Intl.DateTimeFormat("en", {
     month: "short",
     day: "numeric",
   }).format(new Date(dateValue));
+}
+
+function getSortedScoreHistory(driver: Driver) {
+  return [...(driver.history_score ?? [])].sort((a, b) => {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
 }
 
 export function getDriverScore(driver: ScoredDriver, index = 0) {
@@ -77,44 +75,41 @@ export function getDriverMissions(
 
 export function getDriverScoreTimeline({
   driver,
-  missions,
   score,
 }: {
   driver: Driver;
-  missions: Mission[];
   score: number;
 }): DriverScorePoint[] {
-  const driverMissions = getDriverMissions(driver, driver.id, missions);
+  const history = getSortedScoreHistory(driver);
 
-  if (driverMissions.length === 0) {
+  if (history.length === 0) {
     return [
       { label: "Start", score: clampScore(score - 2) },
       { label: "Now", score: clampScore(score) },
     ];
   }
 
-  const recentMissions = driverMissions.slice(-6);
-  const netDelta = recentMissions.reduce(
-    (total, mission) => total + getMissionScoreDelta(mission),
-    0
-  );
-  let runningScore = clampScore(score - netDelta);
+  return history.slice(-8).map((record) => ({
+    label: formatPointLabel(record.date),
+    score: clampScore(record.score),
+  }));
+}
 
-  const points = recentMissions.map((mission) => {
-    runningScore = clampScore(runningScore + getMissionScoreDelta(mission));
+export function getDriverScoreMissionTimeline({
+  driver,
+  score,
+}: {
+  driver: Driver;
+  score: number;
+}): DriverScorePoint[] {
+  const history = getSortedScoreHistory(driver);
 
-    return {
-      label: formatPointLabel(
-        getMissionDeliveredAt(mission) ?? mission.updated_at ?? mission.created_at
-      ),
-      score: runningScore,
-    };
-  });
-
-  const lastPoint = points[points.length - 1];
-  if (!lastPoint || lastPoint.score !== clampScore(score)) {
-    points.push({ label: "Now", score: clampScore(score) });
+  if (history.length === 0) {
+    return [{ label: "No missions", score: clampScore(score) }];
   }
 
-  return points;
+  return history.slice(-8).map((record, index) => ({
+    label: record.mission_title || record.mission_id || `Mission ${index + 1}`,
+    score: clampScore(record.score),
+  }));
 }

@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
+  type MessageParticipant,
   type Mission,
   type StoredUser,
   cancelMission,
   clearToken,
+  getMessageParticipants,
   getMissions,
   getStoredUser,
   getToken,
@@ -16,6 +18,7 @@ import {
 } from "@/lib/api-client";
 import StatCard from "@/components/dispatcher/dashboard/StatCard";
 import ActiveMissionCard from "@/components/driver/missions/ActiveMissionCard";
+import { getMissionDistanceLabel } from "@/lib/mission-distance";
 
 export default function DriverDashboardPage() {
   const router = useRouter();
@@ -23,6 +26,7 @@ export default function DriverDashboardPage() {
   const [user, setUser] = useState<StoredUser | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [openMissions, setOpenMissions] = useState<Mission[]>([]);
+  const [dispatchers, setDispatchers] = useState<MessageParticipant[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,9 +43,10 @@ export default function DriverDashboardPage() {
 
     async function fetchData() {
       try {
-        const [myData, openData] = await Promise.all([
+        const [myData, openData, participantData] = await Promise.all([
           getMissions({ driverUid: driverId }),
           getMissions({ status: "available" }),
+          getMessageParticipants(),
         ]);
 
         setMissions(
@@ -52,6 +57,7 @@ export default function DriverDashboardPage() {
         setOpenMissions(
           openData.filter((mission) => mission.status === "available")
         );
+        setDispatchers(participantData.dispatchers);
       } finally {
         setLoading(false);
       }
@@ -70,15 +76,17 @@ export default function DriverDashboardPage() {
   async function refreshDashboard() {
     if (!user?.driver_id) return;
 
-    const [myData, openData] = await Promise.all([
+    const [myData, openData, participantData] = await Promise.all([
       getMissions({ driverUid: user.driver_id }),
       getMissions({ status: "available" }),
+      getMessageParticipants(),
     ]);
 
     setMissions(
       myData.filter((mission) => mission.assigned_driver_id === user.driver_id)
     );
     setOpenMissions(openData.filter((mission) => mission.status === "available"));
+    setDispatchers(participantData.dispatchers);
   }
 
   async function handleMarkDelivered(missionId: string) {
@@ -102,6 +110,12 @@ export default function DriverDashboardPage() {
   const completedCount = missions.filter(
     (mission) => mission.status === "delivered"
   ).length;
+  const deliveredMissions = missions.filter(
+    (mission) => mission.status === "delivered"
+  );
+  const onlineDispatchers = dispatchers.filter(
+    (dispatcher) => dispatcher.is_online
+  );
 
   if (loading) {
     return (
@@ -134,7 +148,7 @@ export default function DriverDashboardPage() {
           </div>
         </header>
 
-        <section className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <section className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
           <StatCard
             title="Active Mission"
             value={activeMission ? "1" : "0"}
@@ -157,6 +171,14 @@ export default function DriverDashboardPage() {
             subtitle="Delivered missions"
             icon="✓"
             color="green"
+          />
+
+          <StatCard
+            title="Total Km"
+            value={getMissionDistanceLabel(deliveredMissions)}
+            subtitle="Delivered routes"
+            icon="km"
+            color="blue"
           />
         </section>
 
@@ -207,6 +229,51 @@ export default function DriverDashboardPage() {
                   <span className="text-muted">Online</span>
                   <span className="font-bold text-emerald-300">Ready</span>
                 </div>
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-black text-main">
+                    Online Dispatchers
+                  </h2>
+                  <p className="mt-1 text-sm text-muted">
+                    Message operations support directly.
+                  </p>
+                </div>
+                <span className="rounded-xl bg-emerald-500/15 px-3 py-2 text-sm font-black text-emerald-300">
+                  {onlineDispatchers.length}
+                </span>
+              </div>
+
+              <div className="mt-4 space-y-3">
+                {onlineDispatchers.length === 0 && (
+                  <p className="rounded-xl border border-app bg-card-soft p-4 text-sm text-muted">
+                    No dispatcher is marked online right now.
+                  </p>
+                )}
+
+                {onlineDispatchers.map((dispatcher) => (
+                  <div
+                    key={dispatcher.id}
+                    className="flex items-center justify-between gap-3 rounded-xl border border-app bg-card-soft p-4"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-bold text-main">
+                        {dispatcher.name}
+                      </p>
+                      <p className="text-sm text-emerald-300">Online</p>
+                    </div>
+                    <Link
+                      href={`/driver/messages/dispatcher/${dispatcher.id}`}
+                      className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-3 py-2 text-sm font-black text-blue-200 transition hover:bg-blue-500/20"
+                      aria-label={`Message ${dispatcher.name}`}
+                    >
+                      @
+                    </Link>
+                  </div>
+                ))}
               </div>
             </section>
 

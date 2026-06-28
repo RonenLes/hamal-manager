@@ -14,6 +14,11 @@ def serialize_single(record: dict) -> dict:
             out[key] = value.value
         elif isinstance(value, dict):
             out[key] = serialize_single(value)
+        elif isinstance(value, list):
+            out[key] = [
+                serialize_single(item) if isinstance(item, dict) else item
+                for item in value
+            ]
         else:
             out[key] = value
 

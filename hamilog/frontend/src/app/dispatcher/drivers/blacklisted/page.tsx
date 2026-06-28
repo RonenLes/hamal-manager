@@ -14,6 +14,7 @@ import {
   getActiveMissionForDriver,
   getDeliveriesMade,
   getDriverScore,
+  getDriverScoreMissionTimeline,
   getDriverScoreTimeline,
 } from "@/lib/driver-metrics";
 
@@ -175,9 +176,12 @@ export default function BlacklistedDriversPage() {
                   activeMission={getActiveMissionForDriver(driver, missions)}
                   deliveriesMade={getDeliveriesMade(driver, missions)}
                   score={score}
-                  scorePoints={getDriverScoreTimeline({
+                  dateScorePoints={getDriverScoreTimeline({
                     driver,
-                    missions,
+                    score,
+                  })}
+                  missionScorePoints={getDriverScoreMissionTimeline({
+                    driver,
                     score,
                   })}
                   isExpanded={isExpanded}

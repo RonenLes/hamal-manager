@@ -226,3 +226,20 @@ def calculate_driver_trust_score(driver: dict, missions: List[dict]) -> int:
             score = mission_delivered_score(mission, score)
 
     return round(max(0, min(score, 100)))
+
+
+def calculate_driver_score_for_mission(driver: dict, mission: dict) -> int:
+    driver_id = driver.get("id") or driver.get("driver_id")
+    score = driver.get("score")
+
+    if score is None:
+        score = 100
+
+    if driver_id and driver_cancelled_mission(mission, driver_id):
+        score = mission_cancelled_score(mission, driver_id, score)
+        return round(max(0, min(score, 100)))
+
+    if mission.get("status") == MissionStatus.delivered.value:
+        score = mission_delivered_score(mission, score)
+
+    return round(max(0, min(score, 100)))

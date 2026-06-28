@@ -147,6 +147,10 @@ class MongoDB:
             {"joined_at": {"$exists": False}},
             {"$set": {"joined_at": datetime.now(timezone.utc)}},
         )
+        self.drivers.update_many(
+            {"history_score": {"$exists": False}},
+            {"$set": {"history_score": []}},
+        )
 
     def _ensure_user_fields(self) -> None:
         for user in get_seed_users().values():
@@ -310,12 +314,28 @@ class MongoDB:
         )
         return self.get_driver_request_by_id(request_id)
     
-    def update_driver_score(self,driver_id:str,score:int)->Optional[dict]:
+    def update_driver_score(
+        self,
+        driver_id: str,
+        score: int,
+        mission: Optional[dict] = None,
+    ) -> Optional[dict]:
+        score_record: Dict[str, Any] = {
+            "score": score,
+            "date": datetime.now(timezone.utc),
+        }
+        if mission is not None:
+            score_record["mission_id"] = mission.get("id")
+            score_record["mission_title"] = mission.get("title")
+
         self.drivers.update_one(
             {"id": driver_id},
-            {"$set":{"score":score}}
+            {
+                "$set": {"score": score},
+                "$push": {"history_score": _to_mongo_value(score_record)},
+            },
         )
-        return self._one(self.drivers,{"id":driver_id})
+        return self._one(self.drivers, {"id": driver_id})
 
     def get_user_by_username(self, username: str) -> Optional[dict]:
         return self._one(self.users, {"username": username})
