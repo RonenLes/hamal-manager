@@ -20,6 +20,7 @@ type ScheduleEntryProps = {
   onToggle: () => void;
 };
 
+// Returns the delivery state label.
 function getDeliveryStateLabel(state: DeliveryState) {
   switch (state) {
     case "active":
@@ -35,6 +36,7 @@ function getDeliveryStateLabel(state: DeliveryState) {
   }
 }
 
+// Returns the state badge classes.
 function getStateBadgeClasses(state: DeliveryState) {
   switch (state) {
     case "active":
@@ -50,6 +52,7 @@ function getStateBadgeClasses(state: DeliveryState) {
   }
 }
 
+// Returns the state dot classes.
 function getStateDotClasses(state: DeliveryState) {
   switch (state) {
     case "active":
@@ -65,10 +68,12 @@ function getStateDotClasses(state: DeliveryState) {
   }
 }
 
+// Formats the time for display.
 function formatTime(dateValue?: string) {
   return formatTime24FromValue(dateValue, "Not started");
 }
 
+// Renders the schedule entry component.
 export default function ScheduleEntry({
   mission,
   state,

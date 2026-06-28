@@ -6,6 +6,7 @@ type BarListProps = {
   emptyText: string;
 };
 
+// Renders the bar list component.
 export default function BarList({ title, rows, emptyText }: BarListProps) {
   const max = Math.max(...rows.map((row) => row.value), 1);
 

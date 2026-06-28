@@ -12,10 +12,12 @@ type NewDriverRequestEntryProps = {
   onDecline: () => void;
 };
 
+// Formats the date time for display.
 function formatDateTime(dateValue?: string) {
   return formatDateTime24(dateValue);
 }
 
+// Returns the request status classes.
 function getRequestStatusClasses(status: DriverRequest["status"]) {
   if (status === "pending") {
     return "border-orange-500/30 bg-orange-500/10 text-orange-300";
@@ -28,12 +30,14 @@ function getRequestStatusClasses(status: DriverRequest["status"]) {
   return "border-red-500/30 bg-red-500/10 text-red-300";
 }
 
+// Returns the request status dot classes.
 function getRequestStatusDotClasses(status: DriverRequest["status"]) {
   if (status === "pending") return "bg-orange-400";
   if (status === "approved") return "bg-emerald-400";
   return "bg-red-400";
 }
 
+// Renders the new driver request entry component.
 export default function NewDriverRequestEntry({
   driverRequest,
   isExpanded,
@@ -93,6 +97,12 @@ export default function NewDriverRequestEntry({
 
             <DetailTile label="Phone Number">
               <p className="font-semibold text-main">{phone}</p>
+            </DetailTile>
+
+            <DetailTile label="Email">
+              <p className="font-semibold text-main">
+                {driverRequest.email || "No email provided"}
+              </p>
             </DetailTile>
 
             <DetailTile label="Request Status">

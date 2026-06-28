@@ -7,6 +7,7 @@ type MessageDirectoryProps = {
   conversationHrefFor: (participant: ParticipantWithConversation) => string;
 };
 
+// Renders the message directory component.
 export default function MessageDirectory({
   participants,
   missionHrefFor,

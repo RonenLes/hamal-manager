@@ -24,6 +24,7 @@ import DriverEntry, {
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
+// Renders the blacklisted drivers page component.
 export default function BlacklistedDriversPage() {
   const router = useRouter();
 
@@ -43,6 +44,7 @@ export default function BlacklistedDriversPage() {
     }
   }, [router]);
 
+  // Fetches the latest page data.
   async function fetchData() {
     try {
       const [driversData, missionsData] = await Promise.all([
@@ -91,6 +93,7 @@ export default function BlacklistedDriversPage() {
     };
   }, [blacklistedDrivers, missions]);
 
+  // Handles the copy phone action.
   async function handleCopyPhone(driverId: string, phone: string) {
     try {
       await navigator.clipboard.writeText(phone);

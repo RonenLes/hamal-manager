@@ -4,7 +4,9 @@ type TextToSpeechButtonProps = {
   text: string;
 };
 
+// Renders the text to speech button component.
 export default function TextToSpeechButton({ text }: TextToSpeechButtonProps) {
+  // Handles the speak logic.
   function speak() {
     if (!text.trim()) return;
 

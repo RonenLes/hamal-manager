@@ -8,6 +8,7 @@ type DriverHistoryMissionCardProps = {
   mission: Mission;
 };
 
+// Formats the date for display.
 function formatDate(value: string) {
   const date = new Date(value);
 
@@ -21,6 +22,7 @@ function formatDate(value: string) {
   }).format(date);
 }
 
+// Renders the driver history mission card component.
 export default function DriverHistoryMissionCard({
   mission,
 }: DriverHistoryMissionCardProps) {

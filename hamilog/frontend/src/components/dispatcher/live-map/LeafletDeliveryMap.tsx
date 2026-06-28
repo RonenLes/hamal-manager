@@ -21,6 +21,7 @@ type CoordinateLocation = {
   address?: string;
 };
 
+// Checks whether the value has valid coordinates.
 function hasValidCoordinates(
   location?: CoordinateLocation | null
 ): location is CoordinateLocation {
@@ -32,6 +33,7 @@ function hasValidCoordinates(
   );
 }
 
+// Creates the mission icon.
 function createMissionIcon(color: string, isSelected: boolean) {
   const size = isSelected ? 24 : 18;
 
@@ -54,6 +56,7 @@ function createMissionIcon(color: string, isSelected: boolean) {
   });
 }
 
+// Creates the driver icon.
 function createDriverIcon() {
   return divIcon({
     className: "",
@@ -79,12 +82,14 @@ function createDriverIcon() {
   });
 }
 
+// Renders the leaflet delivery map component.
 export default function LeafletDeliveryMap({
   points,
   filters,
   selectedMissionId,
   onSelectMission,
 }: LeafletDeliveryMapProps) {
+  // Handles the should show delivery location logic.
   function shouldShowDeliveryLocation(point: MapPoint) {
     if (point.state === "active") return filters.activeDeliveryLocations;
     return filters.nonActiveDeliveryLocations;

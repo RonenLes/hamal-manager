@@ -103,6 +103,7 @@ const dispatcherHelpPages: HelpPageItem[] = [
   },
 ];
 
+// Renders the dispatcher help page component.
 export default function DispatcherHelpPage() {
   return (
     <HelpPage

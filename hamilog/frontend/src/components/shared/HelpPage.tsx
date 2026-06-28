@@ -19,6 +19,7 @@ type HelpPageProps = {
   pages: HelpPageItem[];
 };
 
+// Renders the help page card component.
 function HelpPageCard({ title, href, description, features }: HelpPageItem) {
   return (
     <article className="rounded-2xl border border-app bg-card p-5 shadow-xl">
@@ -45,6 +46,7 @@ function HelpPageCard({ title, href, description, features }: HelpPageItem) {
   );
 }
 
+// Renders the help page component.
 export default function HelpPage({
   guideLabel,
   intro,

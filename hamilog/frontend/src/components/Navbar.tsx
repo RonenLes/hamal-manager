@@ -14,6 +14,7 @@ const links = [
   { label: "Menu", href: "/dispatcher/menu" },
 ];
 
+// Renders the navbar component.
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function Navbar() {
   useEffect(() => {
     if (!getToken()) return;
 
+    // Fetches the unread data.
     async function fetchUnread() {
       try {
         const conversations = await getMessageConversations();
@@ -47,19 +49,20 @@ export default function Navbar() {
     };
   }, []);
 
+  // Handles the logout action.
   function handleLogout() {
     clearToken();
     router.replace("/login");
   }
 
   return (
-    <nav className="border-b border-app bg-app/90 px-6 py-4 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between">
+    <nav className="border-b border-app bg-app/90 px-4 py-4 backdrop-blur sm:px-6">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <Link href="/dispatcher" className="text-xl font-black text-main">
           Hamilog
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:items-center lg:gap-3">
           {links.map((link) => {
             const isMessages = link.href.endsWith("/messages");
             const isActive =
@@ -70,7 +73,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                className={`rounded-xl px-3 py-2 text-center text-sm font-semibold transition sm:px-4 ${
                   isActive
                     ? "bg-blue-600 text-main"
                     : "text-muted hover:bg-card-soft hover:text-main"
@@ -86,12 +89,14 @@ export default function Navbar() {
             );
           })}
 
+          <div className="flex justify-center">
             <ThemeToggleButton />
+          </div>
 
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500 hover:text-white"
+            className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm font-semibold text-red-300 transition hover:bg-red-500 hover:text-white sm:px-4"
           >
             Logout
           </button>

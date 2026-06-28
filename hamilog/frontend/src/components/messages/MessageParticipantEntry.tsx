@@ -8,6 +8,7 @@ type MessageParticipantEntryProps = {
   conversationHref: string;
 };
 
+// Returns the status classes.
 function getStatusClasses(status: string) {
   if (status === "on_mission") {
     return "border-orange-500/30 bg-orange-500/10 text-orange-300";
@@ -18,6 +19,7 @@ function getStatusClasses(status: string) {
   return "border-slate-500/30 bg-slate-500/10 text-muted";
 }
 
+// Renders the message participant entry component.
 export default function MessageParticipantEntry({
   participant,
   missionHref,

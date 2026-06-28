@@ -26,6 +26,12 @@ const menuItems = [
     href: "/driver/open-tasks",
   },
   {
+    title: "Availability",
+    description: "Mark the dates you are available.",
+    icon: "📅",
+    href: "/driver/availability",
+  },
+  {
     title: "Profile",
     description: "Driver account and vehicle information.",
     icon: "👤",
@@ -45,6 +51,7 @@ const menuItems = [
   },
 ];
 
+// Renders the driver menu page component.
 export default function DriverMenuPage() {
   return (
     <main className="min-h-screen bg-app p-6 text-main">

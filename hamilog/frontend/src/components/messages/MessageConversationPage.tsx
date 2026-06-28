@@ -27,10 +27,12 @@ type MessageConversationPageProps = {
   }>;
 };
 
+// Checks whether the value is message role.
 function isMessageRole(value: string): value is MessageRecipient["role"] {
   return value === "dispatcher" || value === "driver";
 }
 
+// Finds the participant.
 function findParticipant(
   participants: { drivers: MessageParticipant[]; dispatchers: MessageParticipant[] },
   participantRole: MessageRecipient["role"],
@@ -42,6 +44,7 @@ function findParticipant(
   return list.find((participant) => participant.id === participantId) || null;
 }
 
+// Renders the message conversation page component.
 export default function MessageConversationPage({
   role,
   fallbackHref,
@@ -106,6 +109,7 @@ export default function MessageConversationPage({
     };
   }, [fetchThread]);
 
+  // Handles the send action.
   async function handleSend() {
     if (!participant || !draft.trim()) return;
 

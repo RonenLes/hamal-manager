@@ -77,6 +77,7 @@ const menuItems = [
   },
 ];
 
+// Renders the dispatcher menu page component.
 export default function DispatcherMenuPage() {
   return (
     <main className="min-h-screen bg-app p-6 text-main">

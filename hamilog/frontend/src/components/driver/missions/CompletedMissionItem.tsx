@@ -6,6 +6,7 @@ type CompletedMissionItemProps = {
   mission: Mission;
 };
 
+// Renders the completed mission item component.
 export default function CompletedMissionItem({
   mission,
 }: CompletedMissionItemProps) {

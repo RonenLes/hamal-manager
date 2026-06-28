@@ -7,6 +7,7 @@ type DriverStatusPanelProps = {
   drivers: Driver[];
 };
 
+// Renders the driver status panel component.
 export default function DriverStatusPanel({ drivers }: DriverStatusPanelProps) {
   const visibleDrivers = drivers
     .filter((driver) => driver.status !== "blacklisted")

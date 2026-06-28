@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import type { CountRow } from "./types";
 
+// Renders the count link card component.
 function CountLinkCard({
   title,
   value,
@@ -48,6 +49,7 @@ type CountWindowProps = {
   rows: CountRow[];
 };
 
+// Renders the count window component.
 export default function CountWindow({ title, rows }: CountWindowProps) {
   return (
     <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">

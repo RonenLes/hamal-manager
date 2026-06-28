@@ -7,6 +7,7 @@ type DriverHistoryListProps = {
   loading: boolean;
 };
 
+// Renders the driver history list component.
 export default function DriverHistoryList({
   missions,
   loading,

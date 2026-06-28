@@ -2,17 +2,26 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter} from "next/navigation";
-import { login as apiLogin, getStoredUser, getToken } from "@/lib/api-client";
+import {
+  type CarType,
+  createDriverRequest,
+  login as apiLogin,
+  getStoredUser,
+  getToken,
+} from "@/lib/api-client";
+import { CAR_SPECS } from "@/lib/car-specs";
 
 type ThemeMode = "dark" | "light";
 
 const THEME_STORAGE_KEY = "hamilog-theme";
 
+// Returns the saved theme.
 function getSavedTheme(): ThemeMode {
   if (typeof window === "undefined") return "dark";
   return localStorage.getItem(THEME_STORAGE_KEY) === "light" ? "light" : "dark";
 }
 
+// Applies the theme.
 function applyTheme(theme: ThemeMode) {
   document.documentElement.classList.remove("theme-dark", "theme-light");
   document.documentElement.classList.add(theme === "dark" ? "theme-dark" : "theme-light");
@@ -29,6 +38,11 @@ const AVAILABLE_USERS = [
   { username: "driver_refrigerated", password: "drive123", role: "driver", label: "Dan Shapira - Refrigerated Van" },
 ] as const;
 
+const carTypeOptions = Object.entries(CAR_SPECS).map(([value, spec]) => ({
+  value: value as CarType,
+  label: spec.label,
+}));
+
 // ---------------------------------------------------------------------------
 // Inner component that uses useSearchParams
 // ---------------------------------------------------------------------------
@@ -39,7 +53,17 @@ function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [registering, setRegistering] = useState(false);
+  const [showDriverRegistration, setShowDriverRegistration] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [registerMessage, setRegisterMessage] = useState("");
+  const [driverRequest, setDriverRequest] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    car_type: "sedan" as CarType,
+  });
   const [shaking, setShaking] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>(getSavedTheme);
 
@@ -106,6 +130,41 @@ function LoginForm() {
     [router],
   );
 
+  const handleDriverRequestSubmit = useCallback(
+    async (event: React.FormEvent) => {
+      event.preventDefault();
+      setError(null);
+      setRegisterMessage("");
+      setRegistering(true);
+
+      try {
+        await createDriverRequest(driverRequest);
+        setRegisterMessage(
+          "Request sent. A dispatcher needs to approve your driver account.",
+        );
+        setDriverRequest({
+          name: "",
+          email: "",
+          phone: "",
+          address: "",
+          car_type: "sedan",
+        });
+      } catch (err: unknown) {
+        const msg =
+          err && typeof err === "object" && "detail" in err
+            ? (err as { detail: string }).detail
+            : "Could not send driver registration request.";
+        setError(msg);
+        setShaking(true);
+        setTimeout(() => setShaking(false), 600);
+      } finally {
+        setRegistering(false);
+      }
+    },
+    [driverRequest],
+  );
+
+  // Handles the theme toggle action.
   function handleThemeToggle() {
     const nextTheme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
@@ -270,6 +329,123 @@ function LoginForm() {
             </span>
           </button>
         ))}
+      </div>
+
+      <div className="mt-6 border-t border-app pt-5">
+        <button
+          type="button"
+          onClick={() => {
+            setShowDriverRegistration((current) => !current);
+            setError(null);
+            setRegisterMessage("");
+          }}
+          className="w-full rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-bold text-emerald-300 transition hover:bg-emerald-500/20"
+        >
+          Register as Driver
+        </button>
+
+        {showDriverRegistration && (
+          <form
+            onSubmit={handleDriverRequestSubmit}
+            className="mt-4 grid gap-3 rounded-2xl border border-app bg-card-soft p-4"
+          >
+            <div>
+              <h2 className="text-lg font-black text-main">
+                Driver Registration
+              </h2>
+              <p className="mt-1 text-sm text-muted">
+                Fill this form and wait for dispatcher approval.
+              </p>
+            </div>
+
+            <input
+              type="text"
+              value={driverRequest.name}
+              onChange={(event) =>
+                setDriverRequest((current) => ({
+                  ...current,
+                  name: event.target.value,
+                }))
+              }
+              className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500"
+              placeholder="Full name"
+              required
+            />
+
+            <input
+              type="email"
+              value={driverRequest.email}
+              onChange={(event) =>
+                setDriverRequest((current) => ({
+                  ...current,
+                  email: event.target.value,
+                }))
+              }
+              className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500"
+              placeholder="Email"
+              required
+            />
+
+            <input
+              type="tel"
+              value={driverRequest.phone}
+              onChange={(event) =>
+                setDriverRequest((current) => ({
+                  ...current,
+                  phone: event.target.value,
+                }))
+              }
+              className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500"
+              placeholder="Phone"
+              required
+            />
+
+            <input
+              type="text"
+              value={driverRequest.address}
+              onChange={(event) =>
+                setDriverRequest((current) => ({
+                  ...current,
+                  address: event.target.value,
+                }))
+              }
+              className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500"
+              placeholder="Address"
+              required
+            />
+
+            <select
+              value={driverRequest.car_type}
+              onChange={(event) =>
+                setDriverRequest((current) => ({
+                  ...current,
+                  car_type: event.target.value as CarType,
+                }))
+              }
+              className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500"
+            >
+              {carTypeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+
+            {registerMessage && (
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+                {registerMessage}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={registering}
+              className="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-emerald-500 disabled:opacity-50"
+            >
+              {registering ? "Sending request..." : "Send Request"}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

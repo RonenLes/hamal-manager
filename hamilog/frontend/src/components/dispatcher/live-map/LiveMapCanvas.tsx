@@ -20,6 +20,7 @@ type LiveMapCanvasProps = {
   onSelectMission: (missionId: string) => void;
 };
 
+// Renders the live map canvas component.
 export default function LiveMapCanvas({
   points,
   filters,

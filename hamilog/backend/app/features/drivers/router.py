@@ -1,7 +1,9 @@
+import uuid
 from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 
 from ...core.security import get_current_user, require_role
 
@@ -10,10 +12,22 @@ from ...features.driver_requests.service import (
     DriverRequestNotFoundError,
     DriverRequestNotPendingError,
 )
-from ...features.drivers.models import DriverStatus
+from ...features.drivers.models import CarType, DriverStatus
 from ...shared.serializers import serialize_drivers, serialize_single
 
 router = APIRouter(prefix="/api")
+
+
+class CreateDriverRequest(BaseModel):
+    name: str
+    email: str
+    phone: str
+    address: str
+    car_type: CarType
+
+
+class UpdateDriverAvailabilityRequest(BaseModel):
+    availability_dates: List[str]
 
 
 @router.get("/drivers", tags=["Drivers"])
@@ -35,6 +49,30 @@ async def get_driver(
     return serialize_single(driver)
 
 
+@router.put("/drivers/{driver_id}/availability", tags=["Drivers"])
+async def update_driver_availability(
+    driver_id: str,
+    body: UpdateDriverAvailabilityRequest,
+    user: dict = Depends(get_current_user),
+) -> dict:
+    if user.get("role") == "driver" and user.get("driver_id") != driver_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Drivers can only update their own availability",
+        )
+    if user.get("role") not in ("driver", "dispatcher"):
+        raise HTTPException(status_code=403, detail="Invalid role")
+
+    driver = db.update_driver_availability_dates(
+        driver_id,
+        sorted(set(body.availability_dates)),
+    )
+    if driver is None:
+        raise HTTPException(status_code=404, detail="Driver not found")
+
+    return serialize_single(driver)
+
+
 @router.get("/driver-requests/pending/count", tags=["Driver Requests"])
 async def get_pending_driver_requests_count(
     user: dict = Depends(require_role("dispatcher")),
@@ -48,6 +86,22 @@ async def list_driver_requests(
     user: dict = Depends(require_role("dispatcher")),
 ) -> List[dict]:
     return db.list_driver_requests(status_filter)
+
+
+@router.post("/driver-requests", status_code=201, tags=["Driver Requests"])
+async def create_driver_request(body: CreateDriverRequest) -> dict:
+    created = db.create_driver_request({
+        "id": f"req_{uuid.uuid4().hex[:8]}",
+        "name": body.name.strip(),
+        "email": body.email,
+        "phone": body.phone.strip(),
+        "address": body.address.strip(),
+        "car_type": body.car_type.value,
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "reviewed_at": None,
+    })
+    return serialize_single(created)
 
 
 @router.post("/driver-requests/{request_id}/approve", tags=["Driver Requests"])
@@ -116,5 +170,3 @@ def _review_driver_request(request_id: str, next_status: str) -> dict:
             })
 
     return serialize_single(reviewed)
-
-

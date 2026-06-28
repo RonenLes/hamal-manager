@@ -7,6 +7,7 @@ type DriverConversationPageProps = {
   }>;
 };
 
+// Renders the driver conversation page component.
 export default function DriverConversationPage({
   params,
 }: DriverConversationPageProps) {

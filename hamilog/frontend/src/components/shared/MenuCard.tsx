@@ -8,6 +8,7 @@ type MenuCardProps = {
   disabled?: boolean;
 };
 
+// Renders the menu card component.
 export default function MenuCard({
   title,
   description,

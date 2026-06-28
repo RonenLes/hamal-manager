@@ -151,6 +151,10 @@ class MongoDB:
             {"history_score": {"$exists": False}},
             {"$set": {"history_score": []}},
         )
+        self.drivers.update_many(
+            {"availability_dates": {"$exists": False}},
+            {"$set": {"availability_dates": []}},
+        )
 
     def _ensure_user_fields(self) -> None:
         for user in get_seed_users().values():
@@ -292,6 +296,17 @@ class MongoDB:
         )
         return self.get_driver_by_id(driver_id)
 
+    def update_driver_availability_dates(
+        self,
+        driver_id: str,
+        availability_dates: List[str],
+    ) -> Optional[dict]:
+        self.drivers.update_one(
+            {"id": driver_id},
+            {"$set": {"availability_dates": availability_dates}},
+        )
+        return self.get_driver_by_id(driver_id)
+
     def count_pending_driver_requests(self) -> int:
         return self.driver_requests.count_documents({"status": "pending"})
 
@@ -301,6 +316,11 @@ class MongoDB:
 
     def get_driver_request_by_id(self, request_id: str) -> Optional[dict]:
         return self._one(self.driver_requests, {"id": request_id})
+
+    def create_driver_request(self, request_data: dict) -> dict:
+        request_data = _to_mongo_value(request_data)
+        self.driver_requests.insert_one(request_data)
+        return self.get_driver_request_by_id(request_data["id"]) or request_data
 
     def review_driver_request(self, request_id: str, next_status: str) -> Optional[dict]:
         self.driver_requests.update_one(

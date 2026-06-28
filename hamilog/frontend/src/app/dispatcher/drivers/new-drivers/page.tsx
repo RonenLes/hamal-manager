@@ -15,6 +15,7 @@ import {
 import NewDriverRequestEntry from "@/components/dispatcher/drivers/NewDriverRequestEntry";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
+// Renders the new drivers page component.
 export default function NewDriversPage() {
   const router = useRouter();
 
@@ -31,6 +32,7 @@ export default function NewDriversPage() {
     }
   }, [router]);
 
+  // Fetches the latest page data.
   async function fetchData() {
     try {
       const data = await getPendingDriverRequests();
@@ -40,6 +42,7 @@ export default function NewDriversPage() {
     }
   }
 
+  // Handles the approve action.
   async function handleApprove(requestId: string) {
     try {
       await approveDriverRequest(requestId);
@@ -50,6 +53,7 @@ export default function NewDriversPage() {
     }
   }
 
+  // Handles the decline action.
   async function handleDecline(requestId: string) {
     try {
       await declineDriverRequest(requestId);

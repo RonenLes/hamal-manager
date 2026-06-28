@@ -9,6 +9,7 @@ type TrendChartProps = {
   points: TrendPoint[];
 };
 
+// Renders the trend chart component.
 export default function TrendChart({ title, points }: TrendChartProps) {
   const max = Math.max(
     ...points.flatMap((point) => [point.created, point.delivered]),

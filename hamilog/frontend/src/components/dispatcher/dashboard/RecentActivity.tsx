@@ -29,10 +29,12 @@ type ActivityItem = {
   tone: "blue" | "green" | "orange" | "red";
 };
 
+// Formats the time for display.
 function formatTime(date?: string) {
   return formatTime24FromValue(date, "Recently");
 }
 
+// Returns the tone class.
 function getToneClass(tone: ActivityItem["tone"]) {
   switch (tone) {
     case "green":
@@ -46,12 +48,14 @@ function getToneClass(tone: ActivityItem["tone"]) {
   }
 }
 
+// Renders the recent activity component.
 export default function RecentActivity({
   missions,
   drivers,
   missionRequests,
   driverRequests,
 }: RecentActivityProps) {
+  // Returns the driver name.
   function getDriverName(driverId?: string | null) {
     if (!driverId) return null;
 

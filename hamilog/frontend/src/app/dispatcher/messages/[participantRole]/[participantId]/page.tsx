@@ -7,6 +7,7 @@ type DispatcherConversationPageProps = {
   }>;
 };
 
+// Renders the dispatcher conversation page component.
 export default function DispatcherConversationPage({
   params,
 }: DispatcherConversationPageProps) {

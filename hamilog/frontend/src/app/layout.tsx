@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   keywords: ["logistics", "volunteer", "dispatch", "driver", "delivery"],
 };
 
+// Renders the root layout component.
 export default function RootLayout({
   children,
 }: Readonly<{

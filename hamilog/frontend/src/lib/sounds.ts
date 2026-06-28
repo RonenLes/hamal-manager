@@ -8,16 +8,19 @@ const NOTIFICATIONS_DISABLED_KEY = "hamilog-notifications-disabled";
 
 export type AppSound = keyof typeof SOUND_PATHS;
 
+// Checks whether the value is sound muted.
 export function isSoundMuted() {
   if (typeof window === "undefined") return false;
   return localStorage.getItem(SOUND_MUTED_KEY) === "true";
 }
 
+// Checks whether the value is notifications disabled.
 export function isNotificationsDisabled() {
   if (typeof window === "undefined") return false;
   return localStorage.getItem(NOTIFICATIONS_DISABLED_KEY) === "true";
 }
 
+// Plays the app sound.
 export function playAppSound(sound: AppSound) {
   if (typeof window === "undefined") return;
   if (isSoundMuted()) return;

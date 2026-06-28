@@ -19,7 +19,9 @@ import {
 import StatCard from "@/components/dispatcher/dashboard/StatCard";
 import ActiveMissionCard from "@/components/driver/missions/ActiveMissionCard";
 import { getMissionDistanceLabel } from "@/lib/mission-distance";
+import { toDateInputValue } from "@/components/shared/Calendar";
 
+// Renders the driver dashboard page component.
 export default function DriverDashboardPage() {
   const router = useRouter();
 
@@ -41,6 +43,7 @@ export default function DriverDashboardPage() {
     setUser(storedUser);
     const driverId = storedUser.driver_id;
 
+    // Fetches the latest page data.
     async function fetchData() {
       try {
         const [myData, openData, participantData] = await Promise.all([
@@ -68,11 +71,13 @@ export default function DriverDashboardPage() {
     return () => clearInterval(interval);
   }, [router]);
 
+  // Handles the logout action.
   function handleLogout() {
     clearToken();
     router.push("/");
   }
 
+  // Handles the refresh dashboard logic.
   async function refreshDashboard() {
     if (!user?.driver_id) return;
 
@@ -89,16 +94,19 @@ export default function DriverDashboardPage() {
     setDispatchers(participantData.dispatchers);
   }
 
+  // Handles the mark delivered action.
   async function handleMarkDelivered(missionId: string) {
     await updateMissionStatus(missionId, "delivered");
     await refreshDashboard();
   }
 
+  // Handles the start transit action.
   async function handleStartTransit(missionId: string, status: "in_transit") {
     await updateMissionStatus(missionId, status);
     await refreshDashboard();
   }
 
+  // Handles the cancel mission action.
   async function handleCancelMission(missionId: string, reason: string) {
     await cancelMission(missionId, reason);
     await refreshDashboard();
@@ -207,6 +215,48 @@ export default function DriverDashboardPage() {
                 </Link>
               </div>
             )}
+
+            <section className="mt-5 rounded-2xl border border-app bg-card shadow-xl">
+              <div className="border-b border-app px-5 py-4">
+                <h2 className="text-xl font-black text-main">
+                  Assigned Missions
+                </h2>
+                <p className="mt-1 text-sm text-muted">
+                  All missions currently linked to your driver account.
+                </p>
+              </div>
+
+              <div className="divide-y divide-[var(--border-app)]">
+                {missions.length === 0 && (
+                  <p className="p-5 text-sm text-muted">
+                    No assigned missions yet.
+                  </p>
+                )}
+
+                {missions.map((mission) => (
+                  <div
+                    key={mission.id}
+                    className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-bold text-main">
+                        {mission.title}
+                      </p>
+                      <p className="text-sm text-muted">
+                        {mission.status.replace("_", " ")} -{" "}
+                        {toDateInputValue(new Date(mission.created_at))}
+                      </p>
+                    </div>
+                    <Link
+                      href="/driver/my-missions"
+                      className="rounded-xl border border-app bg-card-soft px-4 py-2 text-center text-sm font-bold text-main transition hover:bg-card-soft"
+                    >
+                      Open
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
 
           <div className="space-y-5">
@@ -291,6 +341,12 @@ export default function DriverDashboardPage() {
                   className="rounded-xl border border-app bg-card-soft px-4 py-3 text-sm font-bold text-main hover:bg-card-soft"
                 >
                   Open Tasks
+                </Link>
+                <Link
+                  href="/driver/availability"
+                  className="rounded-xl border border-app bg-card-soft px-4 py-3 text-sm font-bold text-main hover:bg-card-soft"
+                >
+                  Availability
                 </Link>
                 <Link
                   href="/driver/settings"

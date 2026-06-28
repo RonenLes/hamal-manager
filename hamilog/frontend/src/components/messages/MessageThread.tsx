@@ -13,11 +13,13 @@ type MessageThreadProps = {
   onSend: () => void;
 };
 
+// Returns the current user id.
 function getCurrentUserId(user: StoredUser | null) {
   if (!user) return "";
   return user.role === "driver" ? user.driver_id || user.username : user.username;
 }
 
+// Formats the time for display.
 function formatTime(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "Now";
@@ -25,6 +27,7 @@ function formatTime(value: string) {
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
+// Renders the message thread component.
 export default function MessageThread({
   currentUser,
   recipient,
@@ -36,6 +39,7 @@ export default function MessageThread({
 }: MessageThreadProps) {
   const currentUserId = getCurrentUserId(currentUser);
 
+  // Handles the submit action.
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     onSend();

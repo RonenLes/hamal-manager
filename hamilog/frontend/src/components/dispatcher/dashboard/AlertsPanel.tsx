@@ -29,6 +29,7 @@ type DriverCancelledMission = {
   cancellation: CancellationRecord;
 };
 
+// Groups the alerts for popup.
 function groupAlertsForPopup(alerts: DashboardAlert[]): PopupAlert[] {
   const groups = new Map<DashboardAlert["type"], DashboardAlert[]>();
 
@@ -56,15 +57,12 @@ function groupAlertsForPopup(alerts: DashboardAlert[]): PopupAlert[] {
   });
 }
 
+// Renders the alerts panel component.
 export default function AlertsPanel({ missions, drivers }: AlertsPanelProps) {
   const unassignedCount = missions.filter(
     (mission) =>
       mission.status === "available" && !mission.assigned_driver_id
   ).length;
-
-  const offlineDrivers = drivers.filter(
-    (driver) => driver.status === "offline"
-  );
 
   const coolingMissions = missions.filter(
     (mission) =>
@@ -99,13 +97,6 @@ export default function AlertsPanel({ missions, drivers }: AlertsPanelProps) {
         ]
       : []),
 
-    ...offlineDrivers.map((driver) => ({
-      id: `dashboard-offline-driver-${driver.id}`,
-      type: "danger" as const,
-      title: `${driver.name} is offline`,
-      summary: "Driver is currently unavailable.",
-    })),
-
     ...coolingMissions.map((mission) => ({
       id: `dashboard-cooling-${mission.id}`,
       type: "info" as const,
@@ -124,7 +115,7 @@ export default function AlertsPanel({ missions, drivers }: AlertsPanelProps) {
         summary: `Mission needs dispatcher review.${reason}`,
       };
     }),
-  ], [coolingMissions, driverCancelledMissions, drivers, offlineDrivers, unassignedCount]);
+  ], [coolingMissions, driverCancelledMissions, drivers, unassignedCount]);
 
   useEffect(() => {
     if (isNotificationsDisabled()) return;

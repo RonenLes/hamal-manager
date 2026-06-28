@@ -26,6 +26,7 @@ import type {
   MapPoint,
 } from "@/components/dispatcher/live-map/types";
 
+// Returns the driver for mission.
 function getDriverForMission(mission: Mission, drivers: Driver[]) {
   return drivers.find(
     (driver) =>
@@ -34,6 +35,7 @@ function getDriverForMission(mission: Mission, drivers: Driver[]) {
   );
 }
 
+// Renders the live delivery map page component.
 export default function LiveDeliveryMapPage() {
   const router = useRouter();
 
@@ -56,6 +58,7 @@ export default function LiveDeliveryMapPage() {
     }
   }, [router]);
 
+  // Fetches the latest page data.
   async function fetchData() {
     try {
       const [missionsData, driversData] = await Promise.all([

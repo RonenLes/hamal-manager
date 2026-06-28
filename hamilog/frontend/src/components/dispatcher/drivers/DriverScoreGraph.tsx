@@ -7,6 +7,7 @@ type DriverScoreGraphProps = {
   missionPoints: DriverScorePoint[];
 };
 
+// Builds the path.
 function buildPath(points: DriverScorePoint[]) {
   if (points.length === 0) return "";
 
@@ -19,6 +20,7 @@ function buildPath(points: DriverScorePoint[]) {
     .join(" ");
 }
 
+// Returns the point position.
 function getPointPosition(
   point: DriverScorePoint,
   index: number,
@@ -30,6 +32,7 @@ function getPointPosition(
   };
 }
 
+// Renders the driver score graph component.
 export default function DriverScoreGraph({
   datePoints,
   missionPoints,

@@ -1,6 +1,7 @@
 import DriverMissionWorkspace from "@/components/driver/DriverMissionWorkspace";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
+// Renders the driver open tasks page component.
 export default function DriverOpenTasksPage() {
   return( 
     <div className="p-4 space-y-4">

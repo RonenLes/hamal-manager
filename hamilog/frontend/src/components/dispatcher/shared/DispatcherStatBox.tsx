@@ -4,6 +4,7 @@ type DispatcherStatBoxProps = {
   subtitle: string;
 };
 
+// Renders the dispatcher stat box component.
 export default function DispatcherStatBox({
   title,
   value,

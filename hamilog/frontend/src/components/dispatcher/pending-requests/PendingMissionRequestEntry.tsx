@@ -19,10 +19,12 @@ type PendingMissionRequestEntryProps = {
   onToggleMission: () => void;
 };
 
+// Formats the date time for display.
 function formatDateTime(dateValue?: string) {
   return formatDateTime24(dateValue);
 }
 
+// Returns the state classes.
 function getStateClasses(state: string) {
   if (state === "available") return "border-blue-500/30 bg-blue-500/10 text-blue-300";
   if (state === "assigned") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
@@ -30,6 +32,7 @@ function getStateClasses(state: string) {
   return "border-orange-500/30 bg-orange-500/10 text-orange-300";
 }
 
+// Renders the pending mission request entry component.
 export default function PendingMissionRequestEntry({
   group,
   isExpanded,

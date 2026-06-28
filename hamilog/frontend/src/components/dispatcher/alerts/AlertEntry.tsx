@@ -29,10 +29,12 @@ type AlertEntryProps = {
   onDismiss: (alertId: string) => void;
 };
 
+// Formats the alert date time for display.
 export function formatAlertDateTime(dateValue?: string) {
   return formatDateTime24(dateValue);
 }
 
+// Returns the waiting time.
 export function getWaitingTime(dateValue?: string) {
   if (!dateValue) return "Unknown";
 
@@ -53,6 +55,7 @@ export function getWaitingTime(dateValue?: string) {
   return `${hours}h ${remainingMinutes}m`;
 }
 
+// Returns the alert classes.
 export function getAlertClasses(level: AlertLevel) {
   switch (level) {
     case "critical":
@@ -66,6 +69,7 @@ export function getAlertClasses(level: AlertLevel) {
   }
 }
 
+// Returns the alert dot classes.
 function getAlertDotClasses(level: AlertLevel) {
   switch (level) {
     case "critical":
@@ -79,6 +83,7 @@ function getAlertDotClasses(level: AlertLevel) {
   }
 }
 
+// Returns the alert icon.
 function getAlertIcon(level: AlertLevel) {
   switch (level) {
     case "critical":
@@ -92,6 +97,7 @@ function getAlertIcon(level: AlertLevel) {
   }
 }
 
+// Renders the alert entry component.
 export default function AlertEntry({
   alert,
   isExpanded,

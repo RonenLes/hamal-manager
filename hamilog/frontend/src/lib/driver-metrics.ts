@@ -9,10 +9,12 @@ type ScoredDriver = Driver & {
   score?: number;
 };
 
+// Clamps the score.
 function clampScore(score: number) {
   return Math.min(100, Math.max(0, Math.round(score)));
 }
 
+// Formats the point label for display.
 function formatPointLabel(dateValue: string) {
   return new Intl.DateTimeFormat("en", {
     month: "short",
@@ -20,18 +22,21 @@ function formatPointLabel(dateValue: string) {
   }).format(new Date(dateValue));
 }
 
+// Returns the sorted score history.
 function getSortedScoreHistory(driver: Driver) {
   return [...(driver.history_score ?? [])].sort((a, b) => {
     return new Date(a.date).getTime() - new Date(b.date).getTime();
   });
 }
 
+// Returns the driver score.
 export function getDriverScore(driver: ScoredDriver, index = 0) {
   if (typeof driver.score === "number") return clampScore(driver.score);
 
   return 90 - ((index * 7) % 28);
 }
 
+// Returns the active mission for driver.
 export function getActiveMissionForDriver(driver: Driver, missions: Mission[]) {
   if (driver.current_mission_id) {
     const missionFromDriver = missions.find(
@@ -48,6 +53,7 @@ export function getActiveMissionForDriver(driver: Driver, missions: Mission[]) {
   );
 }
 
+// Returns the deliveries made.
 export function getDeliveriesMade(driver: Driver, missions: Mission[]) {
   return missions.filter(
     (mission) =>
@@ -56,6 +62,7 @@ export function getDeliveriesMade(driver: Driver, missions: Mission[]) {
   ).length;
 }
 
+// Returns the driver missions.
 export function getDriverMissions(
   driver: Driver | null,
   driverId: string,
@@ -73,6 +80,7 @@ export function getDriverMissions(
     });
 }
 
+// Returns the driver score timeline.
 export function getDriverScoreTimeline({
   driver,
   score,
@@ -95,6 +103,7 @@ export function getDriverScoreTimeline({
   }));
 }
 
+// Returns the driver score mission timeline.
 export function getDriverScoreMissionTimeline({
   driver,
   score,

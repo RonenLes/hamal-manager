@@ -15,6 +15,7 @@ type PendingMissionGroup = {
   requestCount: number;
 };
 
+// Returns the pending mission groups.
 function getPendingMissionGroups(
   missionRequests: MissionDeliveryRequest[]
 ): PendingMissionGroup[] {
@@ -44,6 +45,7 @@ function getPendingMissionGroups(
   });
 }
 
+// Renders the pending requests component.
 export default function PendingRequests({ missionRequests }: PendingRequestsProps) {
   const pendingMissionGroups = getPendingMissionGroups(missionRequests);
   const visibleGroups = pendingMissionGroups.slice(0, 5);

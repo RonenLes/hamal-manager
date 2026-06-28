@@ -26,11 +26,13 @@ import {
   getDriverScoreTimeline,
 } from "@/lib/driver-metrics";
 
+// Returns the initial status filter.
 function getInitialStatusFilter() {
   if (typeof window === "undefined") return null;
   return new URLSearchParams(window.location.search).get("status");
 }
 
+// Renders the drivers page component.
 export default function DriversPage() {
   const router = useRouter();
 
@@ -53,6 +55,7 @@ export default function DriversPage() {
     }
   }, [router]);
 
+  // Fetches the latest page data.
   async function fetchData() {
     try {
       const [driversData, missionsData, pendingCount] = await Promise.all([
@@ -134,6 +137,7 @@ export default function DriversPage() {
       });
   }, [drivers, missions, statusFilter]);
 
+  // Handles the copy phone action.
   async function handleCopyPhone(driverId: string, phone: string) {
     try {
       await navigator.clipboard.writeText(phone);

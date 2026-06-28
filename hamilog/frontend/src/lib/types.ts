@@ -72,6 +72,7 @@ export interface Driver {
   current_mission_id: string | null;
   score?: number;
   history_score?: DriverScoreRecord[];
+  availability_dates?: string[];
 }
 
 export interface DriverScoreRecord {
@@ -173,6 +174,7 @@ export interface WSMissionAssignedToYou {
 export type DriverRequest = {
   id: string;
   name: string;
+  email?: string;
   phone: string;
   address: string;
   car_type: CarType;

@@ -21,6 +21,7 @@ type DriversReportProps = {
   onExportPdf: () => void;
 };
 
+// Renders the drivers report component.
 export default function DriversReport({
   carTypeRows,
   driverGraph,

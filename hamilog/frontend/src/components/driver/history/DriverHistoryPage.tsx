@@ -15,6 +15,7 @@ import DriverHeader from "../shared/DriverHeader";
 import DriverHistoryList from "./DriverHistoryList";
 import DriverHistoryStats from "./DriverHistoryStats";
 
+// Renders the driver history page component.
 export default function DriverHistoryPage() {
   const router = useRouter();
   const userRef = useRef<StoredUser | null>(getStoredUser());

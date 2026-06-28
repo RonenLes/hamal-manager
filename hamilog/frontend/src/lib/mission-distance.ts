@@ -1,10 +1,12 @@
 import type { Mission } from "@/lib/api-client";
 
+// Converts the value to a number.
 function toNumber(value: unknown) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue) ? numberValue : null;
 }
 
+// Returns the mission distance km.
 export function getMissionDistanceKm(mission: Mission) {
   const pickupLat = toNumber(mission.pickup?.lat);
   const pickupLng = toNumber(mission.pickup?.lng);
@@ -36,6 +38,7 @@ export function getMissionDistanceKm(mission: Mission) {
   return earthRadiusKm * c;
 }
 
+// Returns the mission distance label.
 export function getMissionDistanceLabel(missions: Mission[]) {
   const totalKm = missions.reduce(
     (sum, mission) => sum + getMissionDistanceKm(mission),

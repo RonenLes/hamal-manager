@@ -1,6 +1,7 @@
 import type { Mission } from "@/lib/api-client";
 import type { DeliveryMapState } from "./types";
 
+// Returns the delivery state.
 export function getDeliveryState(mission: Mission): DeliveryMapState {
   if (mission.status === "in_transit") return "active";
   if (mission.status === "assigned") return "assigned";
@@ -10,6 +11,7 @@ export function getDeliveryState(mission: Mission): DeliveryMapState {
   return "unassigned";
 }
 
+// Returns the state label.
 export function getStateLabel(state: DeliveryMapState) {
   switch (state) {
     case "active":
@@ -25,6 +27,7 @@ export function getStateLabel(state: DeliveryMapState) {
   }
 }
 
+// Returns the point color.
 export function getPointColor(state: DeliveryMapState) {
   switch (state) {
     case "active":
@@ -40,6 +43,7 @@ export function getPointColor(state: DeliveryMapState) {
   }
 }
 
+// Returns the badge classes.
 export function getBadgeClasses(state: DeliveryMapState) {
   switch (state) {
     case "active":

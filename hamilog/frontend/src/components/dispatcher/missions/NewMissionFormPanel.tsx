@@ -36,6 +36,7 @@ const timeOptions = Array.from({ length: 24 * 4 }, (_, index) => {
   return `${hours}:${minutes}`;
 });
 
+// Renders the new mission form panel component.
 export default function NewMissionFormPanel({
   form,
   posting,

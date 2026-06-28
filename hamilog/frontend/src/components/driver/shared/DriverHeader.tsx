@@ -4,6 +4,7 @@ type DriverHeaderProps = {
   online?: boolean;
 };
 
+// Renders the driver header component.
 export default function DriverHeader({
   title,
   description,

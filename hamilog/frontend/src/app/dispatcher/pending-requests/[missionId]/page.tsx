@@ -31,10 +31,12 @@ type MissionDeliveryRequest = Awaited<
   ReturnType<typeof getMissionRequests>
 >[number];
 
+// Converts the value to a match percentage.
 function toMatchPercentage(score: number) {
   return Math.round(score * 100);
 }
 
+// Returns the state classes.
 function getStateClasses(state: string) {
   if (state === "available") return "border-blue-500/30 bg-blue-500/10 text-blue-300";
   if (state === "assigned") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
@@ -42,6 +44,7 @@ function getStateClasses(state: string) {
   return "border-orange-500/30 bg-orange-500/10 text-orange-300";
 }
 
+// Returns the mission requests for page.
 function getMissionRequestsForPage(
   missionId: string,
   requests: MissionDeliveryRequest[]
@@ -69,6 +72,7 @@ function getMissionRequestsForPage(
   };
 }
 
+// Renders the mission requests page component.
 export default function MissionRequestsPage({ params }: MissionRequestsPageProps) {
   const { missionId } = use(params);
   const router = useRouter();
@@ -115,6 +119,7 @@ export default function MissionRequestsPage({ params }: MissionRequestsPageProps
   }, [requests]);
   const deliveredAt = mission ? getMissionDeliveredAt(mission) : null;
 
+  // Handles the accept action.
   async function handleAccept(requestId: string) {
     setActionLoadingId(requestId);
 
@@ -129,6 +134,7 @@ export default function MissionRequestsPage({ params }: MissionRequestsPageProps
     }
   }
 
+  // Handles the decline action.
   async function handleDecline(requestId: string) {
     setActionLoadingId(requestId);
 

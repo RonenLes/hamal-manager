@@ -1,3 +1,4 @@
+// Renders the loading mission cards component.
 export default function LoadingMissionCards() {
   return (
     <div className="space-y-3">

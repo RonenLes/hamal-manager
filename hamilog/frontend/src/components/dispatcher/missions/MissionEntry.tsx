@@ -14,10 +14,12 @@ type MissionEntryProps = {
   getStateClasses: (state: string) => string;
 };
 
+// Formats the date time for display.
 function formatDateTime(dateValue?: string) {
   return formatDateTime24(dateValue);
 }
 
+// Renders the mission entry component.
 export default function MissionEntry({
   mission,
   state,

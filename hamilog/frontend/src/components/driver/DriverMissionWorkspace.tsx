@@ -26,6 +26,7 @@ type DriverMissionWorkspaceProps = {
   initialTab?: DriverTab;
 };
 
+// Renders the driver mission workspace component.
 export default function DriverMissionWorkspace({
   initialTab = "my-missions",
 }: DriverMissionWorkspaceProps) {

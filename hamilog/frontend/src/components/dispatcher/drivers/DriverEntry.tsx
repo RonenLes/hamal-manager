@@ -31,16 +31,19 @@ type DriverEntryProps = {
   onCopyPhone: (driverId: string, phone: string) => void;
 };
 
+// Formats the date time for display.
 function formatDateTime(dateValue?: string) {
   return formatDateTime24(dateValue);
 }
 
+// Returns the score classes.
 function getScoreClasses(score: number) {
   if (score >= 85) return "text-emerald-300";
   if (score >= 65) return "text-orange-300";
   return "text-red-300";
 }
 
+// Returns the status classes.
 function getStatusClasses(isActive: boolean, status: string) {
   if (isActive) {
     return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
@@ -57,6 +60,7 @@ function getStatusClasses(isActive: boolean, status: string) {
   return "border-orange-500/30 bg-orange-500/10 text-orange-300";
 }
 
+// Returns the status dot classes.
 function getStatusDotClasses(isActive: boolean, status: string) {
   if (isActive) return "bg-emerald-400";
   if (status === "available") return "bg-blue-400";
@@ -64,6 +68,7 @@ function getStatusDotClasses(isActive: boolean, status: string) {
   return "bg-orange-400";
 }
 
+// Renders the driver entry component.
 export default function DriverEntry({
   driver,
   activeMission,

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
+import Calendar from "@/components/shared/Calendar";
 
 import {
   type Mission,
@@ -19,6 +20,7 @@ import ScheduleEntry, {
   type DeliveryState,
 } from "@/components/dispatcher/schedule/ScheduleEntry";
 
+// Returns the delivery state.
 function getDeliveryState(mission: Mission): DeliveryState {
   if (mission.status === "in_transit") return "active";
   if (mission.status === "assigned") return "assigned";
@@ -28,6 +30,7 @@ function getDeliveryState(mission: Mission): DeliveryState {
   return "unassigned";
 }
 
+// Converts the value to a local date input value.
 function toLocalDateInputValue(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -36,11 +39,13 @@ function toLocalDateInputValue(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
+// Formats the readable date for display.
 function formatReadableDate(dateString: string) {
   const date = new Date(`${dateString}T00:00:00`);
   return formatDateDisplay(date);
 }
 
+// Checks whether the value is same local date.
 function isSameLocalDate(dateValue: string | undefined, selectedDate: string) {
   if (!dateValue) return false;
 
@@ -53,6 +58,7 @@ function isSameLocalDate(dateValue: string | undefined, selectedDate: string) {
   return toLocalDateInputValue(date) === selectedDate;
 }
 
+// Renders the todays schedule page component.
 export default function TodaysSchedulePage() {
   const router = useRouter();
 
@@ -60,6 +66,7 @@ export default function TodaysSchedulePage() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
     toLocalDateInputValue(new Date())
   );
@@ -73,6 +80,7 @@ export default function TodaysSchedulePage() {
     }
   }, [router]);
 
+  // Fetches the latest page data.
   async function fetchData() {
     try {
       const [missionsData, driversData] = await Promise.all([
@@ -144,6 +152,22 @@ export default function TodaysSchedulePage() {
     });
   }, [scheduleMissions]);
 
+  const calendarMarkers = useMemo(() => {
+    return missions.map((mission) => ({
+      date: toLocalDateInputValue(new Date(mission.created_at)),
+      label: mission.title,
+      tone:
+        mission.status === "delivered"
+          ? ("slate" as const)
+          : mission.status === "cancelled"
+            ? ("red" as const)
+            : mission.status === "available"
+              ? ("orange" as const)
+              : ("blue" as const),
+    }));
+  }, [missions]);
+
+  // Returns the driver name.
   function getDriverName(driverId?: string | null) {
     if (!driverId) return "No driver assigned";
 
@@ -194,6 +218,13 @@ export default function TodaysSchedulePage() {
               }}
               className="rounded-xl border border-app bg-app px-4 py-2 text-main outline-none focus:border-blue-500"
             />
+            <button
+              type="button"
+              onClick={() => setShowCalendar((current) => !current)}
+              className="mt-3 w-full rounded-xl border border-blue-500/40 bg-blue-500/10 px-4 py-2 text-sm font-bold text-blue-200 transition hover:bg-blue-500/20"
+            >
+              {showCalendar ? "Hide calendar" : "View in calendar"}
+            </button>
           </div>
         </header>
 
@@ -224,6 +255,19 @@ export default function TodaysSchedulePage() {
             subtitle="Completed"
           />
         </section>
+
+        {showCalendar && (
+          <div className="mb-6">
+            <Calendar
+              selectedDate={selectedDate}
+              onSelectDate={(date) => {
+                setSelectedDate(date);
+                setExpandedId(null);
+              }}
+              markers={calendarMarkers}
+            />
+          </div>
+        )}
 
         <section className="rounded-2xl border border-app bg-card shadow-xl">
           <div className="border-b border-app px-5 py-4">

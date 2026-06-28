@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 type ThemeMode = "dark" | "light";
 
+// Renders the theme toggle button component.
 export default function ThemeToggleButton() {
   const [theme, setTheme] = useState<ThemeMode>("dark");
 
@@ -14,6 +15,7 @@ export default function ThemeToggleButton() {
     setTheme(savedTheme);
   }, []);
 
+  // Toggles the theme.
   function toggleTheme() {
     const nextTheme: ThemeMode = theme === "dark" ? "light" : "dark";
 

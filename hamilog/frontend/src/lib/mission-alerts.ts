@@ -1,5 +1,6 @@
 import type { CancellationRecord, Mission } from "@/lib/types";
 
+// Returns the latest driver cancellation.
 export function getLatestDriverCancellation(
   mission: Mission
 ): CancellationRecord | null {

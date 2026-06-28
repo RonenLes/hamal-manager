@@ -8,6 +8,7 @@ type ChatMessage = {
   text: string;
 };
 
+// Renders the chat bot component.
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -19,6 +20,7 @@ export default function ChatBot() {
   ]);
   const [loading, setLoading] = useState(false);
 
+  // Handles the send action.
   async function handleSend() {
     if (!message.trim()) return;
 

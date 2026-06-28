@@ -9,10 +9,12 @@ type TodaysScheduleProps = {
   drivers: Driver[];
 };
 
+// Formats the time for display.
 function formatTime(date?: string) {
   return formatTime24FromValue(date, "Now");
 }
 
+// Renders the todays schedule component.
 export default function TodaysSchedule({
   missions,
   drivers,
@@ -22,6 +24,7 @@ export default function TodaysSchedule({
       mission.status === "assigned" || mission.status === "in_transit"
   );
 
+  // Returns the driver name.
   function getDriverName(driverId?: string | null) {
     if (!driverId) return "No driver assigned";
 

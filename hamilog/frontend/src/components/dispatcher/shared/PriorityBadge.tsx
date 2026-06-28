@@ -6,6 +6,7 @@ type PriorityBadgeProps = {
   priority: MissionPriority;
 };
 
+// Renders the priority badge component.
 export default function PriorityBadge({ priority }: PriorityBadgeProps) {
   const classes = {
     critical: "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-300",

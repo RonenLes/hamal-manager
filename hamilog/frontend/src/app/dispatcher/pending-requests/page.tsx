@@ -20,10 +20,12 @@ type MissionDeliveryRequest = Awaited<
   ReturnType<typeof getMissionRequests>
 >[number];
 
+// Converts the value to a match percentage.
 function toMatchPercentage(score: number) {
   return Math.round(score * 100);
 }
 
+// Groups the requests by mission.
 function groupRequestsByMission(
   requests: MissionDeliveryRequest[]
 ): MissionRequestGroup[] {
@@ -59,6 +61,7 @@ function groupRequestsByMission(
   }));
 }
 
+// Renders the pending requests page component.
 export default function PendingRequestsPage() {
   const router = useRouter();
 
@@ -75,6 +78,7 @@ export default function PendingRequestsPage() {
     }
   }, [router]);
 
+  // Fetches the latest page data.
   async function fetchData() {
     try {
       const requestData = await getMissionRequests({ status: "pending" });

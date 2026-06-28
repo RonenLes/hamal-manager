@@ -441,6 +441,17 @@ class InMemoryDB:
         driver["current_location"] = location
         return driver
 
+    def update_driver_availability_dates(
+        self,
+        driver_id: str,
+        availability_dates: List[str],
+    ) -> Optional[dict]:
+        driver = self.drivers.get(driver_id)
+        if driver is None:
+            return None
+        driver["availability_dates"] = availability_dates
+        return driver
+
     def update_driver_score(
         self,
         driver_id: str,
@@ -487,6 +498,11 @@ class InMemoryDB:
     def get_driver_request_by_id(self, request_id: str) -> Optional[dict]:
         """Fetch a single driver request by ID, or ``None``."""
         return self.driver_requests.get(request_id)
+
+    def create_driver_request(self, request_data: dict) -> dict:
+        """Store a new driver signup request."""
+        self.driver_requests[request_data["id"]] = request_data
+        return request_data
 
     def review_driver_request(self, request_id: str, next_status: str) -> Optional[dict]:
         """Approve or decline a pending driver request."""

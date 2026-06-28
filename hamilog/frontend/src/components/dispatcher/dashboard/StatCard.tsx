@@ -12,6 +12,7 @@ const colorClasses = {
   blue: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
 };
 
+// Renders the stat card component.
 export default function StatCard({
   title,
   value,

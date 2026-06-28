@@ -28,6 +28,7 @@ import { CAR_SPECS } from "@/lib/car-specs";
 import { getLatestDriverCancellation } from "@/lib/mission-alerts";
 import { isNotificationsDisabled, playAppSound } from "@/lib/sounds";
 
+// Returns the level rank.
 function getLevelRank(level: AlertLevel) {
   switch (level) {
     case "critical":
@@ -60,6 +61,7 @@ const relatedAlertFilters: { id: RelatedAlertFilter; label: string }[] = [
   { id: "system", label: "System" },
 ];
 
+// Returns the related alert filter.
 function getRelatedAlertFilter(alert: DispatcherAlert): RelatedAlertFilter {
   if (alert.type.toLowerCase().includes("cooling")) return "cargo";
   if (alert.driver) return "driver";
@@ -67,6 +69,7 @@ function getRelatedAlertFilter(alert: DispatcherAlert): RelatedAlertFilter {
   return "system";
 }
 
+// Returns the compatible drivers.
 function getCompatibleDrivers(mission: Mission, drivers: Driver[]) {
   return drivers.filter((driver) => {
     if (driver.status !== "available") return false;
@@ -87,6 +90,7 @@ function getCompatibleDrivers(mission: Mission, drivers: Driver[]) {
   });
 }
 
+// Builds the alerts.
 function buildAlerts(missions: Mission[], drivers: Driver[]) {
   const alerts: DispatcherAlert[] = [];
 
@@ -183,18 +187,6 @@ function buildAlerts(missions: Mission[], drivers: Driver[]) {
   });
 
   drivers.forEach((driver) => {
-    if (driver.status === "offline") {
-      alerts.push({
-        id: `offline-driver-${driver.id}`,
-        level: "warning",
-        type: "Driver Offline",
-        title: "Driver is offline",
-        summary: `${driver.name} is currently unavailable.`,
-        createdAt: new Date().toISOString(),
-        driver,
-      });
-    }
-
     if (driver.status === "blacklisted") {
       alerts.push({
         id: `blacklisted-driver-${driver.id}`,
@@ -228,6 +220,7 @@ function buildAlerts(missions: Mission[], drivers: Driver[]) {
   });
 }
 
+// Groups the alerts for popup.
 function groupAlertsForPopup(alerts: DispatcherAlert[]): PopupAlert[] {
   const groups = new Map<string, DispatcherAlert[]>();
 
@@ -246,6 +239,7 @@ function groupAlertsForPopup(alerts: DispatcherAlert[]): PopupAlert[] {
   }));
 }
 
+// Renders the alerts page component.
 export default function AlertsPage() {
   const router = useRouter();
 
@@ -270,6 +264,7 @@ export default function AlertsPage() {
     }
   }, [router]);
 
+  // Fetches the latest page data.
   async function fetchData() {
     try {
       const [missionsData, driversData] = await Promise.all([
@@ -340,11 +335,13 @@ export default function AlertsPage() {
     playAppSound("alert");
   }, [popupAlert]);
 
+  // Handles the dismiss action.
   function handleDismiss(alertId: string) {
     setDismissedIds((current) => [...current, alertId]);
     setExpandedId(null);
   }
 
+  // Handles the dismiss all action.
   function handleDismissAll() {
     setDismissedIds((current) => [
       ...new Set([...current, ...activeAlerts.map((alert) => alert.id)]),

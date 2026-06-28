@@ -24,10 +24,12 @@ const DEFAULT_PROFILE: DriverProfileDetails = {
   zipcode: "6100001",
 };
 
+// Returns the profile storage key.
 function getProfileStorageKey(user: StoredUser | null) {
   return `hamilog-driver-profile-${user?.driver_id || user?.username || "guest"}`;
 }
 
+// Returns the saved profile.
 function getSavedProfile(user: StoredUser | null): DriverProfileDetails {
   if (typeof window === "undefined") return DEFAULT_PROFILE;
 
@@ -41,6 +43,7 @@ function getSavedProfile(user: StoredUser | null): DriverProfileDetails {
   }
 }
 
+// Renders the editable field component.
 function EditableField({
   label,
   value,
@@ -67,6 +70,7 @@ function EditableField({
   );
 }
 
+// Renders the profile tab component.
 export default function ProfileTab() {
   const router = useRouter();
   const [user] = useState<StoredUser | null>(() => getStoredUser());

@@ -7,6 +7,7 @@ type GroupedBarChartProps = {
   series: GroupedBarSeries[];
 };
 
+// Renders the grouped bar chart component.
 export default function GroupedBarChart({
   title,
   description,

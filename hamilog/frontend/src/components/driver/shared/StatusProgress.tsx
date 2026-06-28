@@ -4,6 +4,7 @@ type StatusProgressProps = {
 
 const steps = ["assigned", "in_transit", "delivered"];
 
+// Renders the status progress component.
 export default function StatusProgress({ status }: StatusProgressProps) {
   const currentIndex = steps.indexOf(status);
 

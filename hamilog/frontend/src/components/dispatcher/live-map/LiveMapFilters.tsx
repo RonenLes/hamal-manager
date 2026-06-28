@@ -35,10 +35,12 @@ export const defaultLiveMapFilters: LiveMapFilters = {
   nonActiveDeliveryLocations: true,
 };
 
+// Renders the live map filters panel component.
 export default function LiveMapFiltersPanel({
   filters,
   onChange,
 }: LiveMapFiltersProps) {
+  // Toggles the filter.
   function toggleFilter(key: LiveMapFilterKey) {
     onChange({
       ...filters,

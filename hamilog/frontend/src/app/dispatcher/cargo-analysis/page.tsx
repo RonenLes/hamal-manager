@@ -15,12 +15,14 @@ type CargoResult = {
   note?: string;
 };
 
+// Renders the cargo analysis page component.
 export default function CargoAnalysisPage() {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CargoResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Handles the analyze action.
   async function handleAnalyze() {
     if (!description.trim()) return;
 

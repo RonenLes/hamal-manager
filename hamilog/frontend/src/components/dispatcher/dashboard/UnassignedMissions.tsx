@@ -10,10 +10,12 @@ type UnassignedMissionsProps = {
   missions: Mission[];
 };
 
+// Formats the time for display.
 function formatTime(date?: string) {
   return formatTime24FromValue(date, "New");
 }
 
+// Renders the unassigned missions component.
 export default function UnassignedMissions({
   missions,
 }: UnassignedMissionsProps) {

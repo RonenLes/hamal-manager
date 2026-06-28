@@ -25,6 +25,7 @@ import DriverStatusPanel from "@/components/dispatcher/dashboard/DriverStatusPan
 import RecentActivity from "@/components/dispatcher/dashboard/RecentActivity";
 import StatCard from "@/components/dispatcher/dashboard/StatCard";
 
+// Returns the display name.
 function getDisplayName(user: StoredUser | null) {
   if (user?.name) return user.name;
   if (!user?.username) return "Dispatcher";
@@ -34,6 +35,7 @@ function getDisplayName(user: StoredUser | null) {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+// Renders the dispatcher page component.
 export default function DispatcherPage() {
   const router = useRouter();
 
@@ -55,6 +57,7 @@ export default function DispatcherPage() {
     }
   }, [router]);
 
+  // Fetches the latest page data.
   async function fetchData() {
     try {
       const [

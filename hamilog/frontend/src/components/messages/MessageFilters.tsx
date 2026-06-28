@@ -19,6 +19,7 @@ type MessageFiltersProps = {
   onFilterChange: (filter: PresenceFilter) => void;
 };
 
+// Renders the message filters component.
 export default function MessageFilters({
   activeTab,
   activeFilter,

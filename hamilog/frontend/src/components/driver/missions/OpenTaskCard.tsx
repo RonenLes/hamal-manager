@@ -20,6 +20,7 @@ type OpenTaskCardProps = {
   onAccept: (missionId: string) => void;
 };
 
+// Renders the open task card component.
 export default function OpenTaskCard({
   mission,
   isExpanded,
@@ -40,6 +41,7 @@ Cargo: ${mission.cargo?.weight_kg ?? "unknown"} kilograms, ${mission.cargo?.volu
 ${mission.cargo?.requires_cooling ? "Cooling is required." : "No cooling needed."}
 `;
 
+  // Handles the toggle action.
   const handleToggle = () => {
     if (isExpanded) {
       setConfirming(false);

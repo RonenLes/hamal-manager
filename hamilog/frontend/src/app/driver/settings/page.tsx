@@ -1,6 +1,7 @@
 import SettingsPanel from "@/components/shared/SettingsPanel";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
+// Renders the driver settings page component.
 export default function DriverSettingsPage() {
   return (
     <main className="min-h-screen bg-app p-6 text-main">

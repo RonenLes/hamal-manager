@@ -24,6 +24,7 @@ const cancellationReasons = [
   "Other",
 ];
 
+// Renders the active mission card component.
 export default function ActiveMissionCard({
   mission,
   onMarkDelivered,
@@ -45,6 +46,7 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "Cooling is not req
   const [isCancelOpen, setIsCancelOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState(cancellationReasons[0]);
 
+  // Submits the cancellation.
   function submitCancellation() {
     onCancelMission(mission.id, cancelReason);
     setIsCancelOpen(false);

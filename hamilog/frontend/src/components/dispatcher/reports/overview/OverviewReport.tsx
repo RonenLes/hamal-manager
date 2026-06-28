@@ -18,6 +18,7 @@ type OverviewReportProps = {
   onExportPdf: () => void;
 };
 
+// Renders the overview report component.
 export default function OverviewReport({
   stats,
   trendPoints,

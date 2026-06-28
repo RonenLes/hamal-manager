@@ -69,4 +69,5 @@ class Driver(BaseModel):
     current_mission_id: Optional[str] = None
     score: Optional[int] = None
     history_score: List[ScoreRecord] =Field(default_factory=list)#dipacher trust score 
+    availability_dates: List[str] = Field(default_factory=list)
     joined_at: datetime

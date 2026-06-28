@@ -1,3 +1,4 @@
+// Formats the ideal delivery time for display.
 export function formatIdealDeliveryTime(dateValue?: string | number | null) {
   if (!dateValue) return "Not set";
 
@@ -15,6 +16,7 @@ export function formatIdealDeliveryTime(dateValue?: string | number | null) {
   }).format(date);
 }
 
+// Returns the mission delivered at.
 export function getMissionDeliveredAt(mission: {
   delivered_at?: string | null;
   updated_at: string;

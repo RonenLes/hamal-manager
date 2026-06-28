@@ -24,12 +24,14 @@ type PendingRequestDriverEntryProps = {
   onDecline: (requestId: string) => void;
 };
 
+// Returns the score classes.
 function getScoreClasses(score: number) {
   if (score >= 85) return "text-emerald-300";
   if (score >= 65) return "text-orange-300";
   return "text-red-300";
 }
 
+// Returns the status classes.
 function getStatusClasses(status: string) {
   if (status === "available") {
     return "border-blue-500/30 bg-blue-500/10 text-blue-300";
@@ -43,6 +45,7 @@ function getStatusClasses(status: string) {
   return "border-orange-500/30 bg-orange-500/10 text-orange-300";
 }
 
+// Renders the pending request driver entry component.
 export default function PendingRequestDriverEntry({
   request,
   isExpanded,

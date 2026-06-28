@@ -19,6 +19,7 @@ import type {
   MessageParticipantsResponse,
   CreateSupportTicketPayload,
   SupportTicket,
+  CarType,
 } from './types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -68,16 +69,19 @@ export type {
 const TOKEN_KEY = 'hamilog_token';
 const USER_KEY = 'hamilog_user';
 
+// Returns the token.
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem(TOKEN_KEY);
 }
 
+// Sets the token.
 export function setToken(token: string): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem(TOKEN_KEY, token);
 }
 
+// Clears the token.
 export function clearToken(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(TOKEN_KEY);
@@ -85,6 +89,7 @@ export function clearToken(): void {
   sessionStorage.removeItem('hamilog-seen-alert-popups');
 }
 
+// Returns the stored user.
 export function getStoredUser(): StoredUser | null {
   if (typeof window === 'undefined') return null;
   const raw = localStorage.getItem(USER_KEY);
@@ -96,6 +101,7 @@ export function getStoredUser(): StoredUser | null {
   }
 }
 
+// Sets the stored user.
 export function setStoredUser(user: StoredUser): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem(USER_KEY, JSON.stringify(user));
@@ -264,6 +270,7 @@ export async function assignMission(
   });
 }
 
+// Creates the mission request.
 export async function createMissionRequest(
   missionId: string,
 ): Promise<MissionDeliveryRequest> {
@@ -273,6 +280,7 @@ export async function createMissionRequest(
   });
 }
 
+// Returns the mission requests.
 export async function getMissionRequests(
   params?: { status?: 'pending' | 'approved' | 'declined' },
 ): Promise<MissionDeliveryRequest[]> {
@@ -284,6 +292,7 @@ export async function getMissionRequests(
   );
 }
 
+// Approves the mission request.
 export async function approveMissionRequest(
   requestId: string,
 ): Promise<MissionDeliveryRequest> {
@@ -293,6 +302,7 @@ export async function approveMissionRequest(
   );
 }
 
+// Declines the mission request.
 export async function declineMissionRequest(
   requestId: string,
 ): Promise<MissionDeliveryRequest> {
@@ -323,6 +333,18 @@ export async function getDriver(driverId: string): Promise<Driver> {
   return apiFetch<Driver>(`/api/drivers/${driverId}`);
 }
 
+// Updates the driver availability.
+export async function updateDriverAvailability(
+  driverId: string,
+  availabilityDates: string[],
+): Promise<Driver> {
+  return apiFetch<Driver>(`/api/drivers/${driverId}/availability`, {
+    method: 'PUT',
+    body: JSON.stringify({ availability_dates: availabilityDates }),
+  });
+}
+
+// Returns the pending driver requests count.
 export async function getPendingDriverRequestsCount() {
   const data = await apiFetch<{ count: number }>(
     '/api/driver-requests/pending/count',
@@ -331,10 +353,30 @@ export async function getPendingDriverRequestsCount() {
   return data.count;
 }
 
+// Returns the pending driver requests.
 export async function getPendingDriverRequests(): Promise<DriverRequest[]> {
   return apiFetch<DriverRequest[]>('/api/driver-requests?status=pending');
 }
 
+export type CreateDriverRequestPayload = {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  car_type: CarType;
+};
+
+// Creates the driver request.
+export async function createDriverRequest(
+  data: CreateDriverRequestPayload,
+): Promise<DriverRequest> {
+  return apiFetch<DriverRequest>('/api/driver-requests', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+// Approves the driver request.
 export async function approveDriverRequest(
   requestId: string,
 ): Promise<DriverRequest> {
@@ -343,6 +385,7 @@ export async function approveDriverRequest(
   });
 }
 
+// Declines the driver request.
 export async function declineDriverRequest(
   requestId: string,
 ): Promise<DriverRequest> {
@@ -359,10 +402,12 @@ export async function getMessageParticipants(): Promise<MessageParticipantsRespo
   return apiFetch<MessageParticipantsResponse>('/api/messages/participants');
 }
 
+// Returns the message conversations.
 export async function getMessageConversations(): Promise<MessageConversation[]> {
   return apiFetch<MessageConversation[]>('/api/messages/conversations');
 }
 
+// Returns the messages.
 export async function getMessages(
   participantRole: 'dispatcher' | 'driver',
   participantId: string,
@@ -370,6 +415,7 @@ export async function getMessages(
   return apiFetch<Message[]>(`/api/messages/${participantRole}/${participantId}`);
 }
 
+// Handles the send message logic.
 export async function sendMessage(
   recipientRole: 'dispatcher' | 'driver',
   recipientId: string,
@@ -385,6 +431,7 @@ export async function sendMessage(
   });
 }
 
+// Handles the mark messages read logic.
 export async function markMessagesRead(
   participantRole: 'dispatcher' | 'driver',
   participantId: string,
@@ -395,6 +442,7 @@ export async function markMessagesRead(
   );
 }
 
+// Creates the support ticket.
 export async function createSupportTicket(
   data: CreateSupportTicketPayload,
 ): Promise<SupportTicket> {
@@ -404,6 +452,7 @@ export async function createSupportTicket(
   });
 }
 
+// Handles the analyze cargo logic.
 export async function analyzeCargo(
   description: string,
 ): Promise<CargoAnalysisResponse> {
@@ -413,6 +462,7 @@ export async function analyzeCargo(
   });
 }
 
+// Handles the send chatbot message logic.
 export async function sendChatbotMessage(message: string): Promise<{ reply: string }> {
   return apiFetch<{ reply: string }>("/api/chatbot", {
     method: "POST",

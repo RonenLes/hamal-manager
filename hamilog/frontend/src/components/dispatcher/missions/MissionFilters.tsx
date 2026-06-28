@@ -16,6 +16,7 @@ type MissionFiltersProps = {
   onReset: () => void;
 };
 
+// Renders the filter checkbox component.
 function FilterCheckbox({
   label,
   checked,
@@ -46,6 +47,7 @@ function FilterCheckbox({
   );
 }
 
+// Renders the mission filters component.
 export default function MissionFilters({
   filters,
   onToggle,

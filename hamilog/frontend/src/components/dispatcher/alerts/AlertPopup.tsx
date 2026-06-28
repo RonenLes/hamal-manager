@@ -12,6 +12,7 @@ type AlertPopupProps = {
   onOk: () => void;
 };
 
+// Returns the popup classes.
 function getPopupClasses(level?: PopupAlert["level"]) {
   if (level === "critical") return "border-red-500/40 bg-red-500/10";
   if (level === "warning") return "border-orange-500/40 bg-orange-500/10";
@@ -19,6 +20,7 @@ function getPopupClasses(level?: PopupAlert["level"]) {
   return "border-emerald-500/40 bg-emerald-500/10";
 }
 
+// Renders the alert popup component.
 export default function AlertPopup({ alert, onOk }: AlertPopupProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">

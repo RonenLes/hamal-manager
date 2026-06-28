@@ -17,6 +17,7 @@ const STORAGE_KEYS = {
   notificationsDisabled: "hamilog-notifications-disabled",
 };
 
+// Returns the saved theme.
 function getSavedTheme(): ThemeMode {
   if (typeof window === "undefined") return "dark";
 
@@ -24,6 +25,7 @@ function getSavedTheme(): ThemeMode {
   return savedTheme === "light" ? "light" : "dark";
 }
 
+// Returns the saved font size.
 function getSavedFontSize(): FontSize {
   if (typeof window === "undefined") return "medium";
 
@@ -33,18 +35,21 @@ function getSavedFontSize(): FontSize {
     : "medium";
 }
 
+// Returns the saved sound muted.
 function getSavedSoundMuted() {
   if (typeof window === "undefined") return false;
 
   return localStorage.getItem(STORAGE_KEYS.soundMuted) === "true";
 }
 
+// Returns the saved notifications disabled.
 function getSavedNotificationsDisabled() {
   if (typeof window === "undefined") return false;
 
   return localStorage.getItem(STORAGE_KEYS.notificationsDisabled) === "true";
 }
 
+// Applies the settings.
 function applySettings(theme: ThemeMode, fontSize: FontSize) {
   const root = document.documentElement;
 
@@ -55,6 +60,7 @@ function applySettings(theme: ThemeMode, fontSize: FontSize) {
   root.classList.add(`font-${fontSize}`);
 }
 
+// Renders the option button component.
 function OptionButton({
   label,
   description,
@@ -96,6 +102,7 @@ function OptionButton({
   );
 }
 
+// Renders the tab button component.
 function TabButton({
   label,
   active,
@@ -120,6 +127,7 @@ function TabButton({
   );
 }
 
+// Renders the settings panel component.
 export default function SettingsPanel({ audience }: SettingsPanelProps) {
   const [theme, setTheme] = useState<ThemeMode>(getSavedTheme);
   const [fontSize, setFontSize] = useState<FontSize>(getSavedFontSize);
@@ -142,11 +150,13 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
     applySettings(theme, fontSize);
   }, [theme, fontSize]);
 
+  // Handles the show saved message logic.
   function showSavedMessage(message: string) {
     setSavedMessage(message);
     setTimeout(() => setSavedMessage(""), 1500);
   }
 
+  // Handles the theme change action.
   function handleThemeChange(nextTheme: ThemeMode) {
     setTheme(nextTheme);
     localStorage.setItem(STORAGE_KEYS.theme, nextTheme);
@@ -154,6 +164,7 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
     showSavedMessage("Theme updated");
   }
 
+  // Handles the font size change action.
   function handleFontSizeChange(nextFontSize: FontSize) {
     setFontSize(nextFontSize);
     localStorage.setItem(STORAGE_KEYS.fontSize, nextFontSize);
@@ -161,12 +172,14 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
     showSavedMessage("Font size updated");
   }
 
+  // Handles the sound muted change action.
   function handleSoundMutedChange(nextSoundMuted: boolean) {
     setSoundMuted(nextSoundMuted);
     localStorage.setItem(STORAGE_KEYS.soundMuted, String(nextSoundMuted));
     showSavedMessage(nextSoundMuted ? "Sound muted" : "Sound enabled");
   }
 
+  // Handles the notifications disabled change action.
   function handleNotificationsDisabledChange(nextValue: boolean) {
     setNotificationsDisabled(nextValue);
     localStorage.setItem(STORAGE_KEYS.notificationsDisabled, String(nextValue));

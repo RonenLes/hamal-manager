@@ -12,6 +12,7 @@ type MyMissionsTabProps = {
   onCancelMission: (id: string, reason: string) => void;
 };
 
+// Renders the my missions tab component.
 export default function MyMissionsTab({
   missions,
   onMarkDelivered,

@@ -2,6 +2,7 @@ import ThemeProvider from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import ChatBot from "@/components/shared/ChatBot";
 
+// Renders the dispatcher layout component.
 export default function DispatcherLayout({
   children,
 }: {

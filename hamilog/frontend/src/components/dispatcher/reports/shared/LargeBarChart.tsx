@@ -9,6 +9,7 @@ type LargeBarChartProps = {
   valueSuffix?: string;
 };
 
+// Renders the large bar chart component.
 export default function LargeBarChart({
   title,
   description,

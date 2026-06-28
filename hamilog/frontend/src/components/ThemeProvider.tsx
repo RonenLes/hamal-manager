@@ -10,6 +10,7 @@ const STORAGE_KEYS = {
   fontSize: "hamilog-font-size",
 };
 
+// Renders the theme provider component.
 export default function ThemeProvider({
   children,
 }: {

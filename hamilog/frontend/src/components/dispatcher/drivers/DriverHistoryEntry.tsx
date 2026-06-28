@@ -21,6 +21,7 @@ type DriverHistoryEntryProps = {
   onToggle: () => void;
 };
 
+// Returns the state label.
 function getStateLabel(state: DriverHistoryState) {
   switch (state) {
     case "active":
@@ -38,6 +39,7 @@ function getStateLabel(state: DriverHistoryState) {
   }
 }
 
+// Returns the state classes.
 function getStateClasses(state: DriverHistoryState) {
   switch (state) {
     case "active":
@@ -55,6 +57,7 @@ function getStateClasses(state: DriverHistoryState) {
   }
 }
 
+// Returns the state dot classes.
 function getStateDotClasses(state: DriverHistoryState) {
   switch (state) {
     case "active":
@@ -72,10 +75,12 @@ function getStateDotClasses(state: DriverHistoryState) {
   }
 }
 
+// Formats the date time for display.
 function formatDateTime(dateValue?: string) {
   return formatDateTime24(dateValue);
 }
 
+// Renders the driver history entry component.
 export default function DriverHistoryEntry({
   mission,
   state,

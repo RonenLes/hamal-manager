@@ -2,6 +2,7 @@ type MatchScoreBarProps = {
   score: number;
 };
 
+// Renders the match score bar component.
 export default function MatchScoreBar({ score }: MatchScoreBarProps) {
   const percentage = Math.round(score * 100);
   const colorClass =

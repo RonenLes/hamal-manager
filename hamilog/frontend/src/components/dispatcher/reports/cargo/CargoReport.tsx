@@ -32,6 +32,7 @@ type CargoReportProps = {
   onExportPdf: () => void;
 };
 
+// Renders the cargo report component.
 export default function CargoReport({
   cargoTruckStats,
   cargoRows,

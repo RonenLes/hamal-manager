@@ -3,6 +3,7 @@ type ExportButtonsProps = {
   onPdf: () => void;
 };
 
+// Renders the export buttons component.
 export default function ExportButtons({ onExcel, onPdf }: ExportButtonsProps) {
   return (
     <div className="flex flex-col gap-2 sm:flex-row">

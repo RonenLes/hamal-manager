@@ -12,6 +12,7 @@ type DeliveryDetailsPanelProps = {
   selectedPoint: MapPoint | null;
 };
 
+// Renders the detail block component.
 function DetailBlock({
   label,
   children,
@@ -27,6 +28,7 @@ function DetailBlock({
   );
 }
 
+// Renders the delivery details panel component.
 export default function DeliveryDetailsPanel({
   selectedPoint,
 }: DeliveryDetailsPanelProps) {

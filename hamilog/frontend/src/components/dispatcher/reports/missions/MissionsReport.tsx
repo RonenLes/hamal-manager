@@ -48,6 +48,7 @@ type MissionsReportProps = {
   onExportMissionDetailsPdf: () => void;
 };
 
+// Renders the missions report component.
 export default function MissionsReport({
   filteredMissions,
   stats,

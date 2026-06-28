@@ -1,5 +1,6 @@
 const STORAGE_KEY = "hamilog-seen-alert-popups";
 
+// Returns the seen alert popup ids.
 export function getSeenAlertPopupIds() {
   if (typeof window === "undefined") return new Set<string>();
 
@@ -12,6 +13,7 @@ export function getSeenAlertPopupIds() {
   }
 }
 
+// Saves the seen alert popup ids.
 export function saveSeenAlertPopupIds(ids: Set<string>) {
   if (typeof window === "undefined") return;
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(ids)));

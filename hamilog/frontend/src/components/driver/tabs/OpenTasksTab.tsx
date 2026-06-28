@@ -14,6 +14,7 @@ type OpenTasksTabProps = {
   onAcceptMission: (missionId: string) => void;
 };
 
+// Renders the open tasks tab component.
 export default function OpenTasksTab({
   missions,
   loading,

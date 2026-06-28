@@ -18,11 +18,13 @@ import DriverHistoryEntry, {
 } from "@/components/dispatcher/drivers/DriverHistoryEntry";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
+// Returns the param string.
 function getParamString(value: string | string[] | undefined) {
   if (Array.isArray(value)) return value[0];
   return value || "";
 }
 
+// Returns the delivery state.
 function getDeliveryState(mission: Mission): DriverHistoryState {
   if (mission.status === "in_transit") return "active";
   if (mission.status === "assigned") return "assigned";
@@ -33,6 +35,7 @@ function getDeliveryState(mission: Mission): DriverHistoryState {
   return "other";
 }
 
+// Renders the driver history page component.
 export default function DriverHistoryPage() {
   const router = useRouter();
   const params = useParams();
@@ -54,6 +57,7 @@ export default function DriverHistoryPage() {
     }
   }, [router]);
 
+  // Fetches the latest page data.
   async function fetchData() {
     try {
       const [driversData, missionsData] = await Promise.all([

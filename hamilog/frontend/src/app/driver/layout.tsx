@@ -2,6 +2,7 @@ import ThemeProvider from "@/components/ThemeProvider";
 import DriverNavbar from "@/components/driver/shared/DriverNavbar";
 import ChatBot from "@/components/shared/ChatBot";
 
+// Renders the driver layout component.
 export default function DriverLayout({
   children,
 }: {

@@ -6,6 +6,7 @@ type DetailTileProps = {
   className?: string;
 };
 
+// Renders the detail tile component.
 export default function DetailTile({
   label,
   children,

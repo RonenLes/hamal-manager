@@ -36,6 +36,7 @@ const initialFilters: MissionStatusFilter = {
   orderByDeliveryDate: true,
 };
 
+// Returns the initial filters from query.
 function getInitialFiltersFromQuery(): MissionStatusFilter {
   if (typeof window === "undefined") return initialFilters;
 
@@ -69,6 +70,7 @@ const initialForm: NewMissionForm = {
   heavyLoad: "no",
 };
 
+// Returns the mission state.
 function getMissionState(mission: Mission) {
   if (mission.status === "in_transit") return "active";
   if (mission.status === "assigned") return "assigned";
@@ -79,6 +81,7 @@ function getMissionState(mission: Mission) {
   return mission.status;
 }
 
+// Returns the state classes.
 function getStateClasses(state: string) {
   if (state === "active") {
     return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
@@ -103,6 +106,7 @@ function getStateClasses(state: string) {
   return "border-slate-500/30 bg-slate-500/10 text-muted";
 }
 
+// Returns the priority rank.
 function getPriorityRank(priority: MissionPriority) {
   switch (priority) {
     case "critical":
@@ -118,6 +122,7 @@ function getPriorityRank(priority: MissionPriority) {
   }
 }
 
+// Returns the ideal delivery iso.
 function getIdealDeliveryIso(body: NewMissionForm) {
   if (!body.idealDeliveryDate || !body.idealDeliveryTime) return null;
 
@@ -126,6 +131,7 @@ function getIdealDeliveryIso(body: NewMissionForm) {
   ).toISOString();
 }
 
+// Builds the mission payload.
 function buildMissionPayload(body: NewMissionForm): CreateMissionPayload {
   const isHeavyLoad = body.heavyLoad === "yes";
   const requiresCooling = body.cooling === "yes";
@@ -157,6 +163,7 @@ function buildMissionPayload(body: NewMissionForm): CreateMissionPayload {
   };
 }
 
+// Converts the value to a date input value.
 function toDateInputValue(dateValue?: string | null) {
   if (!dateValue) return "";
 
@@ -170,6 +177,7 @@ function toDateInputValue(dateValue?: string | null) {
   return `${year}-${month}-${day}`;
 }
 
+// Converts the value to a time input value.
 function toTimeInputValue(dateValue?: string | null) {
   if (!dateValue) return "";
 
@@ -182,6 +190,7 @@ function toTimeInputValue(dateValue?: string | null) {
   return `${hours}:${minutes}`;
 }
 
+// Handles the mission to form logic.
 function missionToForm(mission: Mission): NewMissionForm {
   const isHeavyLoad =
     mission.cargo.weight_kg >= 80 || mission.cargo.volume_liters >= 150;
@@ -199,6 +208,7 @@ function missionToForm(mission: Mission): NewMissionForm {
   };
 }
 
+// Renders the missions page component.
 export default function MissionsPage() {
   const router = useRouter();
 
@@ -224,6 +234,7 @@ export default function MissionsPage() {
     }
   }, [router]);
 
+  // Fetches the latest page data.
   async function fetchData() {
     try {
       const missionsData = await getMissions();
@@ -300,6 +311,7 @@ export default function MissionsPage() {
     return result;
   }, [missions, filters]);
 
+  // Updates the filter.
   function updateFilter(key: keyof MissionStatusFilter) {
     setFilters((current) => ({
       ...current,
@@ -307,6 +319,7 @@ export default function MissionsPage() {
     }));
   }
 
+  // Updates the form.
   function updateForm<K extends keyof NewMissionForm>(
     key: K,
     value: NewMissionForm[K]
@@ -317,11 +330,13 @@ export default function MissionsPage() {
     }));
   }
 
+  // Handles the reset mission form logic.
   function resetMissionForm() {
     setForm(initialForm);
     setEditingMissionId(null);
   }
 
+  // Handles the edit mission action.
   function handleEditMission(mission: Mission) {
     setForm(missionToForm(mission));
     setEditingMissionId(mission.id);
@@ -329,6 +344,7 @@ export default function MissionsPage() {
     setIsAddOpen(true);
   }
 
+  // Handles the submit mission action.
   async function handleSubmitMission() {
     if (!form.cargoDescription.trim() || !form.from.trim() || !form.to.trim()) {
       alert("Please fill cargo description, from, and to.");

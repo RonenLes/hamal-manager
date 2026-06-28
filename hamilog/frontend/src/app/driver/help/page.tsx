@@ -73,6 +73,7 @@ const driverHelpPages: HelpPageItem[] = [
   },
 ];
 
+// Renders the driver help page component.
 export default function DriverHelpPage() {
   return (
     <HelpPage

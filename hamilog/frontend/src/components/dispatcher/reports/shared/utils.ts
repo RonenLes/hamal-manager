@@ -3,6 +3,7 @@ import autoTable from "jspdf-autotable";
 
 import type { DatePreset, ExportColumn, ExportRow } from "./types";
 
+// Converts the value to a date input value.
 export function toDateInputValue(date: Date) {
   return [
     date.getFullYear(),
@@ -11,6 +12,7 @@ export function toDateInputValue(date: Date) {
   ].join("-");
 }
 
+// Formats the date for display.
 export function formatDateDisplay(date: Date) {
   return [
     String(date.getDate()).padStart(2, "0"),
@@ -19,6 +21,7 @@ export function formatDateDisplay(date: Date) {
   ].join("/");
 }
 
+// Formats the date and time for display.
 export function formatDateTimeDisplay(date: Date) {
   return `${formatDateDisplay(date)} ${String(date.getHours()).padStart(
     2,
@@ -26,24 +29,29 @@ export function formatDateTimeDisplay(date: Date) {
   )}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
 
+// Formats the date for filenames.
 export function formatDateForFilename(date: Date) {
   return formatDateDisplay(date).replaceAll("/", "-");
 }
 
+// Returns the start of month.
 export function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
 
+// Returns the end of month.
 export function endOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
 }
 
+// Returns the end of day.
 export function endOfDay(date: Date) {
   const result = new Date(date);
   result.setHours(23, 59, 59, 999);
   return result;
 }
 
+// Returns the date range.
 export function getDateRange(
   preset: DatePreset,
   manualDates: boolean,
@@ -74,16 +82,19 @@ export function getDateRange(
   return { start, end: now };
 }
 
+// Checks whether the value is within range.
 export function isWithinRange(value: string, start: Date, end: Date) {
   const date = new Date(value);
   return date >= start && date <= end;
 }
 
+// Calculates a percentage value.
 export function percent(value: number, total: number) {
   if (total === 0) return 0;
   return Math.round((value / total) * 100);
 }
 
+// Formats the duration for display.
 export function formatDuration(ms: number) {
   if (!ms) return "No completed missions";
   const hours = ms / (1000 * 60 * 60);
@@ -91,6 +102,7 @@ export function formatDuration(ms: number) {
   return `${(hours / 24).toFixed(1)} days`;
 }
 
+// Groups the count.
 export function groupCount<T extends string>(items: T[]) {
   return items.reduce<Record<T, number>>((acc, item) => {
     acc[item] = (acc[item] ?? 0) + 1;
@@ -98,6 +110,7 @@ export function groupCount<T extends string>(items: T[]) {
   }, {} as Record<T, number>);
 }
 
+// Converts a raw label into readable text.
 export function labelize(value: string) {
   return value
     .split("_")
@@ -105,10 +118,12 @@ export function labelize(value: string) {
     .join(" ");
 }
 
+// Converts the value to a day key.
 export function toDayKey(value: string | Date) {
   return toDateInputValue(typeof value === "string" ? new Date(value) : value);
 }
 
+// Returns the date buckets.
 export function getDateBuckets(start: Date, end: Date) {
   const buckets: string[] = [];
   const current = new Date(start);
@@ -124,6 +139,7 @@ export function getDateBuckets(start: Date, end: Date) {
   return buckets.slice(-14);
 }
 
+// Escapes HTML text.
 function escapeHtml(value: string | number) {
   const text = String(value);
   return text
@@ -134,6 +150,7 @@ function escapeHtml(value: string | number) {
     .replaceAll("'", "&#039;");
 }
 
+// Downloads the text file.
 function downloadTextFile(filename: string, content: string, type: string) {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
@@ -146,6 +163,7 @@ function downloadTextFile(filename: string, content: string, type: string) {
   URL.revokeObjectURL(url);
 }
 
+// Sanitizes the filename.
 function sanitizeFilename(value: string) {
   return value
     .trim()
@@ -154,6 +172,7 @@ function sanitizeFilename(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+// Builds the export table.
 function buildExportTable(columns: ExportColumn[], rows: ExportRow[]) {
   const header = columns
     .map((column) => `<th>${escapeHtml(column.label)}</th>`)
@@ -170,6 +189,7 @@ function buildExportTable(columns: ExportColumn[], rows: ExportRow[]) {
   return `<table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table>`;
 }
 
+// Exports the table to excel.
 export function exportTableToExcel(
   filename: string,
   columns: ExportColumn[],
@@ -189,6 +209,7 @@ export function exportTableToExcel(
   );
 }
 
+// Exports the table to pdf.
 export function exportTableToPdf(
   title: string,
   subtitle: string,

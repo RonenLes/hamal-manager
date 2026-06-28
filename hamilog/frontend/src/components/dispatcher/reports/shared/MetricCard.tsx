@@ -4,6 +4,7 @@ type MetricCardProps = {
   note: string;
 };
 
+// Renders the metric card component.
 export default function MetricCard({ title, value, note }: MetricCardProps) {
   return (
     <div className="rounded-2xl border border-app bg-card p-5 shadow-xl">

@@ -7,12 +7,14 @@ type BackToMenuButtonProps = {
   label?: string;
 };
 
+// Renders the back to menu button component.
 export default function BackToMenuButton({
   href,
   label = "Back",
 }: BackToMenuButtonProps) {
   const router = useRouter();
 
+  // Handles the back action.
   function handleBack() {
     if (window.history.length > 1) {
       router.back();

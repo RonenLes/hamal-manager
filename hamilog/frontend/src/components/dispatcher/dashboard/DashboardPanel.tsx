@@ -16,6 +16,7 @@ const accentClasses = {
   purple: "from-violet-600 to-indigo-700",
 };
 
+// Renders the dashboard panel component.
 export default function DashboardPanel({
   title,
   count,

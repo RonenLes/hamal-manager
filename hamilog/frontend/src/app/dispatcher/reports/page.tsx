@@ -70,12 +70,14 @@ const missionGraphLabels: Record<MissionGraph, string> = {
   completedByDate: "Missions completed by date",
 };
 
+// Returns the initial date.
 function getInitialDate(daysAgo: number) {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
   return toDateInputValue(date);
 }
 
+// Renders the dispatcher reports page component.
 export default function DispatcherReportsPage() {
   const router = useRouter();
   const [missions, setMissions] = useState<Mission[]>([]);
@@ -113,6 +115,7 @@ export default function DispatcherReportsPage() {
   }, [router]);
 
   useEffect(() => {
+    // Fetches the latest page data.
     async function fetchData() {
       try {
         const [missionsData, driversData] = await Promise.all([
@@ -221,6 +224,7 @@ export default function DispatcherReportsPage() {
     const standardTrucks = drivers.filter(
       (driver) => driver.car_type !== "refrigerated_van",
     );
+    // Checks whether the value is active.
     const isActive = (driver: Driver) =>
       driver.status === "on_mission" || Boolean(driver.current_mission_id);
 
@@ -484,6 +488,7 @@ export default function DispatcherReportsPage() {
     return inReportRange && statusMatches && priorityMatches && cargoMatches;
   });
 
+  // Exports the overview graph to excel.
   function exportOverviewGraphToExcel() {
     exportTableToExcel(
       `hamilog-mission-trend-${formatDateForFilename(range.start)}-to-${formatDateForFilename(range.end)}`,
@@ -500,6 +505,7 @@ export default function DispatcherReportsPage() {
     );
   }
 
+  // Exports the overview graph to pdf.
   function exportOverviewGraphToPdf() {
     exportTableToPdf(
       "Hamilog Mission Trend",
@@ -517,6 +523,7 @@ export default function DispatcherReportsPage() {
     );
   }
 
+  // Exports the mission graph to excel.
   function exportMissionGraphToExcel() {
     exportTableToExcel(
       `hamilog-${missionGraph}-${formatDateForFilename(range.start)}-to-${formatDateForFilename(range.end)}`,
@@ -525,6 +532,7 @@ export default function DispatcherReportsPage() {
     );
   }
 
+  // Exports the mission graph to pdf.
   function exportMissionGraphToPdf() {
     exportTableToPdf(
       `Hamilog ${selectedMissionGraphLabel}`,
@@ -534,6 +542,7 @@ export default function DispatcherReportsPage() {
     );
   }
 
+  // Exports the driver graph to excel.
   function exportDriverGraphToExcel() {
     exportTableToExcel(
       `hamilog-${driverGraph}-${formatDateForFilename(range.start)}-to-${formatDateForFilename(range.end)}`,
@@ -545,6 +554,7 @@ export default function DispatcherReportsPage() {
     );
   }
 
+  // Exports the driver graph to pdf.
   function exportDriverGraphToPdf() {
     exportTableToPdf(
       `Hamilog ${selectedDriverGraphLabel}`,
@@ -557,6 +567,7 @@ export default function DispatcherReportsPage() {
     );
   }
 
+  // Exports the cargo graph to excel.
   function exportCargoGraphToExcel() {
     exportTableToExcel(
       `hamilog-cargo-${formatDateForFilename(range.start)}-to-${formatDateForFilename(range.end)}`,
@@ -569,6 +580,7 @@ export default function DispatcherReportsPage() {
     );
   }
 
+  // Exports the cargo graph to pdf.
   function exportCargoGraphToPdf() {
     exportTableToPdf(
       "Hamilog Cargo Type By Date",
@@ -582,6 +594,7 @@ export default function DispatcherReportsPage() {
     );
   }
 
+  // Exports the mission details to pdf.
   function exportMissionDetailsToPdf() {
     exportTableToPdf(
       "Hamilog Mission Detail Report",

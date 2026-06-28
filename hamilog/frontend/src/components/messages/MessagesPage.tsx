@@ -26,10 +26,12 @@ type MessagesPageProps = {
   fallbackHref: string;
 };
 
+// Returns the participant key.
 function getParticipantKey(role: string, id: string) {
   return `${role}:${id}`;
 }
 
+// Returns the driver rank.
 function getDriverRank(participant: MessageParticipant) {
   if (participant.status === "on_mission") return 0;
   if (participant.status === "available") return 1;
@@ -37,10 +39,12 @@ function getDriverRank(participant: MessageParticipant) {
   return 3;
 }
 
+// Returns the dispatcher rank.
 function getDispatcherRank(participant: MessageParticipant) {
   return participant.is_online ? 0 : 1;
 }
 
+// Filters the by presence.
 function filterByPresence(
   participant: MessageParticipant,
   filter: PresenceFilter
@@ -53,6 +57,7 @@ function filterByPresence(
   return !participant.is_online;
 }
 
+// Attaches the conversations.
 function attachConversations(
   participants: MessageParticipant[],
   conversations: MessageConversation[]
@@ -80,6 +85,7 @@ function attachConversations(
   });
 }
 
+// Renders the messages page component.
 export default function MessagesPage({ role, fallbackHref }: MessagesPageProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<ParticipantTab>("drivers");
@@ -140,6 +146,7 @@ export default function MessagesPage({ role, fallbackHref }: MessagesPageProps) 
     });
   }, [activeFilter, activeTab, conversations, participants]);
 
+  // Handles the mission href for logic.
   function missionHrefFor(participant: ParticipantWithConversation) {
     const missionId = participant.current_mission_id;
     if (!missionId) {
@@ -151,6 +158,7 @@ export default function MessagesPage({ role, fallbackHref }: MessagesPageProps) 
       : `/driver/my-missions?missionId=${missionId}`;
   }
 
+  // Handles the conversation href for logic.
   function conversationHrefFor(participant: ParticipantWithConversation) {
     return role === "dispatcher"
       ? `/dispatcher/messages/${participant.role}/${participant.id}`

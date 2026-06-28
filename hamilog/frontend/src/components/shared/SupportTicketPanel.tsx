@@ -45,11 +45,13 @@ const subSubjectsByMain: Record<TicketMainSubject, TicketSubSubject[]> = {
   other: ["other"],
 };
 
+// Returns the api error message.
 function getApiErrorMessage(error: unknown): string {
   const apiError = error as Partial<ApiError>;
   return apiError.detail || "Could not create the support ticket.";
 }
 
+// Renders the support ticket panel component.
 export default function SupportTicketPanel({
   onClose,
   onSubmitted,
@@ -74,12 +76,14 @@ export default function SupportTicketPanel({
     [mainSubject],
   );
 
+  // Handles the main subject change action.
   const handleMainSubjectChange = (value: TicketMainSubject) => {
     const nextSubSubjects = subSubjectsByMain[value];
     setMainSubject(value);
     setSubSubject(nextSubSubjects[0]);
   };
 
+  // Handles the submit action.
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);

@@ -1,5 +1,6 @@
 import type { DatePreset, ReportFilterProps } from "./types";
 
+// Renders the report filters component.
 export default function ReportFilters({
   datePreset,
   manualDates,
