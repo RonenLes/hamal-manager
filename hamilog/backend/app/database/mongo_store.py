@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+import certifi
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.collection import Collection
@@ -39,7 +40,11 @@ class MongoDB:
         if not mongo_uri:
             raise RuntimeError("MONGO_URI is not set")
 
-        self.client = MongoClient(mongo_uri, serverSelectionTimeoutMS=8000)
+        self.client = MongoClient(
+            mongo_uri,
+            serverSelectionTimeoutMS=8000,
+            tlsCAFile=certifi.where(),
+        )
         self.client.admin.command("ping")
         self.database = self.client[db_name]
         self.missions: Collection = self.database["missions"]
