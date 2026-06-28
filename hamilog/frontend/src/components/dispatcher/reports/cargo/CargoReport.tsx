@@ -81,9 +81,9 @@ export default function CargoReport({
         emptyText="No cargo data for this range."
       />
 
-      <section className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_320px]">
-        <div className="space-y-5">
-          <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+      <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+        <div className="space-y-4">
+          <div>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <label className="block w-full max-w-md">
                 <span className="text-sm font-semibold text-main">
@@ -103,7 +103,9 @@ export default function CargoReport({
               </label>
               <ExportButtons onExcel={onExportExcel} onPdf={onExportPdf} />
             </div>
-          </section>
+          </div>
+
+          <ReportFilters {...filterProps} />
 
           <GroupedBarChart
             title="Cargo Type By Date"
@@ -115,7 +117,6 @@ export default function CargoReport({
             ]}
           />
         </div>
-        <ReportFilters {...filterProps} />
       </section>
     </>
   );

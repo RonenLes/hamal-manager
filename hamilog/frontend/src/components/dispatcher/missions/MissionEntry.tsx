@@ -36,7 +36,7 @@ export default function MissionEntry({
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-card-soft"
+        className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left transition hover:bg-card-soft sm:items-center sm:px-5 sm:py-4"
       >
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -84,8 +84,8 @@ export default function MissionEntry({
       </button>
 
       {isExpanded && (
-        <div className="border-t border-app bg-app/60 px-5 py-5">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="border-t border-app bg-app/60 px-3 py-3 sm:px-5 sm:py-5">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
             <DetailTile label="Status">
               <p
                 className={`inline-flex rounded-full border px-3 py-1 text-sm font-bold capitalize ${getStateClasses(
@@ -101,46 +101,46 @@ export default function MissionEntry({
             </DetailTile>
 
             <DetailTile label="Published">
-              <p className="font-semibold text-main">
+              <p className="break-words text-sm font-semibold text-main sm:text-base">
                 {formatDateTime(mission.created_at)}
               </p>
             </DetailTile>
 
             <DetailTile label="Ideal Time">
-              <p className="font-semibold text-main">
+              <p className="break-words text-sm font-semibold text-main sm:text-base">
                 {formatIdealDeliveryTime(mission.ideal_delivery_time)}
               </p>
             </DetailTile>
 
             <DetailTile label="Delivered At">
-              <p className="font-semibold text-main">
+              <p className="break-words text-sm font-semibold text-main sm:text-base">
                 {deliveredAt ? formatDateTime(deliveredAt) : "Not delivered"}
               </p>
             </DetailTile>
 
             <DetailTile label="From">
-              <p className="font-semibold text-main">
+              <p className="break-words text-sm font-semibold text-main sm:text-base">
                 {mission.pickup?.address || "Pickup location TBD"}
               </p>
             </DetailTile>
 
             <DetailTile label="To">
-              <p className="font-semibold text-main">
+              <p className="break-words text-sm font-semibold text-main sm:text-base">
                 {mission.dropoff?.address || "Dropoff location TBD"}
               </p>
             </DetailTile>
 
             <DetailTile label="Assigned Driver">
-              <p className="font-semibold text-main">
+              <p className="break-words text-sm font-semibold text-main sm:text-base">
                 {mission.assigned_driver_id || "No driver assigned"}
               </p>
             </DetailTile>
 
             <DetailTile label="Cargo" className="md:col-span-2">
-              <p className="font-semibold text-main">
+              <p className="break-words text-sm font-semibold text-main sm:text-base">
                 {mission.description || "No cargo description"}
               </p>
-              <p className="mt-1 text-sm text-muted">
+              <p className="mt-1 text-xs text-muted sm:text-sm">
                 {mission.cargo?.weight_kg ?? "?"} kg -{" "}
                 {mission.cargo?.volume_liters ?? "?"} L
                 {mission.cargo?.requires_cooling
@@ -150,7 +150,7 @@ export default function MissionEntry({
             </DetailTile>
 
             <DetailTile label="Mission ID">
-              <p className="font-mono text-sm text-muted">{mission.id}</p>
+              <p className="break-all font-mono text-xs text-muted sm:text-sm">{mission.id}</p>
             </DetailTile>
           </div>
         </div>

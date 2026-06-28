@@ -11,10 +11,10 @@ export default function DispatcherStatBox({
   subtitle,
 }: DispatcherStatBoxProps) {
   return (
-    <div className="rounded-2xl border border-app bg-card p-5 shadow-xl">
-      <p className="text-sm text-muted">{title}</p>
-      <p className="mt-2 text-3xl font-black text-main">{value}</p>
-      <p className="mt-1 text-xs text-soft">{subtitle}</p>
+    <div className="min-h-28 rounded-2xl border border-app bg-card p-3 shadow-xl sm:min-h-0 sm:p-5">
+      <p className="text-xs font-semibold leading-tight text-muted sm:text-sm">{title}</p>
+      <p className="mt-2 text-2xl font-black leading-none text-main sm:text-3xl">{value}</p>
+      <p className="mt-1 text-xs leading-snug text-soft">{subtitle}</p>
     </div>
   );
 }

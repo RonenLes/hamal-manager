@@ -116,7 +116,7 @@ export default function MissionsReport({
         />
       </section>
 
-      <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+      <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
         <div className="flex flex-col gap-5">
           <div>
             <h2 className="text-lg font-black text-main">Mission Detail PDF Report</h2>
@@ -125,7 +125,7 @@ export default function MissionsReport({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-5 md:gap-4">
             <label className="block">
               <span className="text-sm font-semibold text-main">From: date</span>
               <input
@@ -212,9 +212,9 @@ export default function MissionsReport({
         </div>
       </section>
 
-      <section className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_320px]">
-        <div className="space-y-5">
-          <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+      <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+        <div className="space-y-4">
+          <div>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <label className="block w-full max-w-md">
                 <span className="text-sm font-semibold text-main">
@@ -234,7 +234,9 @@ export default function MissionsReport({
               </label>
               <ExportButtons onExcel={onExportGraphExcel} onPdf={onExportGraphPdf} />
             </div>
-          </section>
+          </div>
+
+          <ReportFilters {...filterProps} />
 
           {missionGraph === "createdByDate" ? (
             <GroupedBarChart
@@ -262,7 +264,6 @@ export default function MissionsReport({
             />
           )}
         </div>
-        <ReportFilters {...filterProps} />
       </section>
     </>
   );

@@ -186,9 +186,9 @@ export default function TodaysSchedulePage() {
   }
 
   return (
-    <main className="min-h-screen bg-app p-6 text-main">
+    <main className="min-h-screen bg-app px-3 py-4 text-main sm:p-6">
       <div className="mx-auto max-w-7xl">
-        <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <header className="mb-4 flex flex-col gap-4 md:mb-6">
           <div>
             <div className="mb-4">
               <BackToMenuButton href="/dispatcher/menu" />
@@ -196,7 +196,7 @@ export default function TodaysSchedulePage() {
             <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
               Date Schedule
             </p>
-            <h1 className="mt-1 text-3xl font-black">
+            <h1 className="mt-1 text-2xl font-black sm:text-3xl">
               {formatReadableDate(selectedDate)} Schedule
             </h1>
             <p className="mt-2 text-muted">
@@ -205,30 +205,10 @@ export default function TodaysSchedulePage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-app bg-card p-4">
-            <label className="mb-2 block text-sm font-semibold text-muted">
-              Change date
-            </label>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(event) => {
-                setSelectedDate(event.target.value);
-                setExpandedId(null);
-              }}
-              className="rounded-xl border border-app bg-app px-4 py-2 text-main outline-none focus:border-blue-500"
-            />
-            <button
-              type="button"
-              onClick={() => setShowCalendar((current) => !current)}
-              className="mt-3 w-full rounded-xl border border-blue-500/40 bg-blue-500/10 px-4 py-2 text-sm font-bold text-blue-200 transition hover:bg-blue-500/20"
-            >
-              {showCalendar ? "Hide calendar" : "View in calendar"}
-            </button>
-          </div>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+        <section className="mb-4 rounded-2xl border border-app bg-card p-3 shadow-xl sm:mb-6 sm:p-4">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
           <DispatcherStatBox
             title="Selected Date"
             value={stats.total}
@@ -254,10 +234,33 @@ export default function TodaysSchedulePage() {
             value={stats.delivered}
             subtitle="Completed"
           />
+          </div>
         </section>
 
-        {showCalendar && (
-          <div className="mb-6">
+        <section className="mb-6 rounded-2xl border border-app bg-card p-3 shadow-xl sm:p-4">
+          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold text-muted">Change date</span>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(event) => {
+                  setSelectedDate(event.target.value);
+                  setExpandedId(null);
+                }}
+                className="w-full rounded-xl border border-app bg-app px-4 py-2 text-main outline-none focus:border-blue-500"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowCalendar((current) => !current)}
+              className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-4 py-2 text-sm font-bold text-blue-200 transition hover:bg-blue-500/20"
+            >
+              {showCalendar ? "Hide calendar" : "View in calendar"}
+            </button>
+          </div>
+
+          {showCalendar && (
             <Calendar
               selectedDate={selectedDate}
               onSelectDate={(date) => {
@@ -265,12 +268,13 @@ export default function TodaysSchedulePage() {
                 setExpandedId(null);
               }}
               markers={calendarMarkers}
+              embedded
             />
-          </div>
-        )}
+          )}
+        </section>
 
         <section className="rounded-2xl border border-app bg-card shadow-xl">
-          <div className="border-b border-app px-5 py-4">
+          <div className="border-b border-app px-4 py-3 sm:px-5 sm:py-4">
             <h2 className="text-xl font-bold">Delivery Entries</h2>
             <p className="mt-1 text-sm text-muted">
               Click a delivery to expand its full information.

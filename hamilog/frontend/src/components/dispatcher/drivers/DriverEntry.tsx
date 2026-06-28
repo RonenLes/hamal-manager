@@ -90,11 +90,11 @@ export default function DriverEntry({
 
   return (
     <article className="bg-card">
-      <div className="flex w-full items-center justify-between gap-4 px-5 py-4 transition hover:bg-[var(--bg-card-soft)]">
+      <div className="flex w-full flex-col gap-3 px-4 py-3 transition hover:bg-[var(--bg-card-soft)] sm:px-5 sm:py-4 lg:flex-row lg:items-center lg:justify-between">
         <button
           type="button"
           onClick={onToggle}
-          className="flex min-w-0 flex-1 items-center gap-4 text-left"
+          className="flex min-w-0 flex-1 items-center gap-3 text-left sm:gap-4"
         >
           <span
             className={`h-3 w-3 shrink-0 rounded-full ${getStatusDotClasses(
@@ -124,21 +124,21 @@ export default function DriverEntry({
           </div>
         </button>
 
-        <div className="flex shrink-0 items-center gap-3">
-          <span className={`text-sm font-black ${getScoreClasses(score)}`}>
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:shrink-0 sm:items-center sm:gap-3">
+          <span className={`col-span-2 text-center text-sm font-black sm:col-span-1 ${getScoreClasses(score)}`}>
             {score}%
           </span>
 
           <Link
             href={`/dispatcher/messages/driver/${driver.id}`}
-            className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-4 py-2 text-xs font-bold text-blue-200 transition hover:bg-blue-500/20"
+            className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-2.5 py-2 text-center text-xs font-bold text-blue-200 transition hover:bg-blue-500/20 sm:px-4"
           >
             Message
           </Link>
 
           <Link
             href={`/dispatcher/drivers/${driver.id}/history`}
-            className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-500"
+            className="rounded-xl bg-blue-600 px-2.5 py-2 text-center text-xs font-bold text-white transition hover:bg-blue-500 sm:px-4"
           >
             History
           </Link>
@@ -146,12 +146,12 @@ export default function DriverEntry({
           <button
             type="button"
             onClick={onToggleGraph}
-            className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-4 py-2 text-xs font-bold text-blue-200 transition hover:bg-blue-500/20"
+            className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-2.5 py-2 text-center text-xs font-bold text-blue-200 transition hover:bg-blue-500/20 sm:px-4"
           >
             {isGraphExpanded ? "Hide graph" : "Score graph"}
           </button>
 
-          <button type="button" onClick={onToggle} className="text-xl text-muted">
+          <button type="button" onClick={onToggle} className="col-span-2 rounded-xl border border-app bg-card-soft px-3 py-2 text-xl text-muted sm:col-span-1 sm:border-0 sm:bg-transparent sm:p-0">
             {isExpanded ? "^" : "v"}
           </button>
         </div>
@@ -165,10 +165,10 @@ export default function DriverEntry({
       )}
 
       {isExpanded && (
-        <div className="border-t border-app bg-card-soft px-5 py-5">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="border-t border-app bg-card-soft px-3 py-3 sm:px-5 sm:py-5">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
             <DetailTile label="Full Name">
-              <p className="font-semibold text-main">{driver.name}</p>
+              <p className="break-words text-sm font-semibold text-main sm:text-base">{driver.name}</p>
             </DetailTile>
 
             <DetailTile label="Driver Score">
@@ -204,15 +204,15 @@ export default function DriverEntry({
             </DetailTile>
 
             <DetailTile label="Address" className="md:col-span-2">
-              <p className="font-semibold text-main">{address}</p>
+              <p className="break-words text-sm font-semibold text-main sm:text-base">{address}</p>
             </DetailTile>
 
             <DetailTile label="Deliveries Made">
-              <p className="text-3xl font-black text-main">{deliveriesMade}</p>
+              <p className="text-2xl font-black sm:text-3xl text-main">{deliveriesMade}</p>
             </DetailTile>
 
             <DetailTile label="Vehicle">
-              <p className="font-semibold text-main">
+              <p className="break-words text-sm font-semibold text-main sm:text-base">
                 {spec?.icon || "Car"} {spec?.label || driver.car_type}
               </p>
               <p className="mt-1 text-sm text-muted">
@@ -227,7 +227,7 @@ export default function DriverEntry({
           </div>
 
           {isActive && activeMission && (
-            <div className="mt-5 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+            <div className="mt-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-3 sm:mt-5 sm:p-5">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-wider text-emerald-300">
@@ -243,7 +243,7 @@ export default function DriverEntry({
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <DetailTile label="Delivery Status">
                   <p className="font-semibold capitalize text-main">
                     {activeMission.status.replace("_", " ")}
@@ -255,31 +255,31 @@ export default function DriverEntry({
                 </DetailTile>
 
                 <DetailTile label="Start Time">
-                  <p className="font-semibold text-main">
+                  <p className="break-words text-sm font-semibold text-main sm:text-base">
                     {formatDateTime(activeMission.created_at)}
                   </p>
                 </DetailTile>
 
                 <DetailTile label="Ideal Delivery Time">
-                  <p className="font-semibold text-main">
+                  <p className="break-words text-sm font-semibold text-main sm:text-base">
                     {formatIdealDeliveryTime(activeMission.ideal_delivery_time)}
                   </p>
                 </DetailTile>
 
                 <DetailTile label="From">
-                  <p className="font-semibold text-main">
+                  <p className="break-words text-sm font-semibold text-main sm:text-base">
                     {activeMission.pickup?.address || "Pickup location TBD"}
                   </p>
                 </DetailTile>
 
                 <DetailTile label="To">
-                  <p className="font-semibold text-main">
+                  <p className="break-words text-sm font-semibold text-main sm:text-base">
                     {activeMission.dropoff?.address || "Dropoff location TBD"}
                   </p>
                 </DetailTile>
 
                 <DetailTile label="Cargo">
-                  <p className="font-semibold text-main">
+                  <p className="break-words text-sm font-semibold text-main sm:text-base">
                     {activeMission.description || "No product description"}
                   </p>
                   <p className="mt-1 text-sm text-muted">
@@ -295,7 +295,7 @@ export default function DriverEntry({
           )}
 
           {!isActive && (
-            <div className="mt-5 rounded-2xl border border-app bg-card p-5 text-muted">
+            <div className="mt-4 rounded-2xl border border-app bg-card p-3 text-sm text-muted sm:mt-5 sm:p-5">
               This driver is not currently assigned to an active delivery.
             </div>
           )}

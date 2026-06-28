@@ -17,10 +17,10 @@ export default function MenuCard({
   disabled = false,
 }: MenuCardProps) {
   const content = (
-    <div className="flex h-full flex-col items-center justify-center text-center">
-      <div className="mb-4 text-5xl">{icon}</div>
-      <h2 className="text-xl font-black text-main">{title}</h2>
-      <p className="mt-2 text-sm text-muted">{description}</p>
+    <div className="flex h-full min-h-32 flex-col items-center justify-center text-center sm:min-h-44">
+      <div className="mb-2 text-3xl sm:mb-4 sm:text-5xl">{icon}</div>
+      <h2 className="text-sm font-black leading-tight text-main sm:text-xl">{title}</h2>
+      <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted sm:mt-2 sm:text-sm">{description}</p>
       {disabled && (
         <span className="mt-4 rounded-full bg-card-soft px-3 py-1 text-xs text-muted">
           Coming soon
@@ -31,7 +31,7 @@ export default function MenuCard({
 
   if (disabled) {
     return (
-      <div className="aspect-square rounded-2xl border border-app bg-card p-6 opacity-50">
+      <div className="min-h-36 rounded-2xl border border-app bg-card p-3 opacity-50 sm:aspect-square sm:p-6">
         {content}
       </div>
     );
@@ -40,7 +40,7 @@ export default function MenuCard({
   return (
     <Link
       href={href}
-      className="aspect-square rounded-2xl border border-app bg-card p-6 transition hover:-translate-y-1 hover:border-blue-500/50 hover:bg-card-soft hover:shadow-xl hover:shadow-blue-950/30"
+      className="min-h-36 rounded-2xl border border-app bg-card p-3 transition hover:-translate-y-1 hover:border-blue-500/50 hover:bg-card-soft hover:shadow-xl hover:shadow-blue-950/30 sm:aspect-square sm:p-6"
     >
       {content}
     </Link>

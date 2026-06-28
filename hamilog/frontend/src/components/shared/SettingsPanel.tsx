@@ -103,6 +103,14 @@ function OptionButton({
 }
 
 // Renders the tab button component.
+function ScrollTabsButton({ direction }: { direction: "left" | "right" }) {
+  return (
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-black text-muted sm:hidden">
+      {direction === "left" ? "<" : ">"}
+    </span>
+  );
+}
+
 function TabButton({
   label,
   active,
@@ -116,7 +124,7 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-xl px-4 py-3 text-sm font-black transition ${
+      className={`shrink-0 rounded-xl px-4 py-3 text-sm font-black transition ${
         active
           ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20"
           : "text-muted hover:bg-card-soft hover:text-main"
@@ -349,7 +357,9 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
         </div>
       )}
 
-      <nav className="mb-6 grid grid-cols-1 gap-2 rounded-2xl border border-app bg-card p-2 shadow-xl sm:grid-cols-3">
+      <div className="mb-6 flex items-center gap-2 rounded-2xl border border-app bg-card p-2 shadow-xl">
+        <ScrollTabsButton direction="left" />
+        <nav className="flex min-w-0 flex-1 gap-2 overflow-x-auto">
         <TabButton
           label="Accessibility"
           active={activeTab === "accessibility"}
@@ -365,7 +375,9 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
           active={activeTab === "notifications"}
           onClick={() => setActiveTab("notifications")}
         />
-      </nav>
+        </nav>
+        <ScrollTabsButton direction="right" />
+      </div>
 
       {activeTab === "accessibility" && accessibilityPanel}
       {activeTab === "sound" && soundPanel}

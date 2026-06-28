@@ -385,9 +385,9 @@ export default function MissionsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-app p-6 text-main">
+    <main className="min-h-screen bg-app px-3 py-4 text-main sm:p-6">
       <div className="mx-auto max-w-7xl">
-        <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <header className="mb-4 sm:mb-6">
           <div>
             <div className="mb-4">
               <BackToMenuButton href="/dispatcher/menu" />
@@ -395,26 +395,11 @@ export default function MissionsPage() {
             <p className="text-sm font-semibold uppercase tracking-wider text-red-400">
               Mission Management
             </p>
-            <h1 className="mt-1 text-3xl font-black">Missions</h1>
+            <h1 className="mt-1 text-2xl font-black sm:text-3xl">Missions</h1>
             <p className="mt-2 text-muted">
               Add missions, review delivery details, and filter the mission pool.
             </p>
           </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              if (isAddOpen) {
-                setIsAddOpen(false);
-                resetMissionForm();
-              } else {
-                setIsAddOpen(true);
-              }
-            }}
-            className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-main transition hover:bg-emerald-500"
-          >
-            {isAddOpen ? "Close Mission Form" : "+ Add New Mission"}
-          </button>
         </header>
 
         <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
@@ -445,7 +430,28 @@ export default function MissionsPage() {
           />
         </section>
 
-        {isAddOpen && (
+        <section className="mb-6 rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-black text-main">Mission actions</h2>
+              <p className="mt-1 text-sm text-muted">Create or edit a mission in this window.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (isAddOpen) {
+                  setIsAddOpen(false);
+                  resetMissionForm();
+                } else {
+                  setIsAddOpen(true);
+                }
+              }}
+              className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-main transition hover:bg-emerald-500"
+            >
+              {isAddOpen ? "Close Mission Form" : "+ Add New Mission"}
+            </button>
+          </div>
+          {isAddOpen && (
           <NewMissionFormPanel
             form={form}
             posting={posting}
@@ -465,15 +471,22 @@ export default function MissionsPage() {
             submittingLabel={editingMissionId ? "Updating..." : "Posting..."}
           />
         )}
+        </section>
 
-        <section className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_320px]">
+        <section>
           <div className="rounded-2xl border border-app bg-card shadow-xl">
-            <div className="border-b border-app px-5 py-4">
+            <div className="border-b border-app px-4 py-3 sm:px-5 sm:py-4">
               <h2 className="text-xl font-bold">Mission Entries</h2>
               <p className="mt-1 text-sm text-muted">
                 Click a mission to expand its full delivery details.
               </p>
             </div>
+
+            <MissionFilters
+              filters={filters}
+              onToggle={updateFilter}
+              onReset={() => setFilters(initialFilters)}
+            />
 
             <div className="divide-y divide-white/10">
               {filteredMissions.length === 0 && (
@@ -502,12 +515,6 @@ export default function MissionsPage() {
               })}
             </div>
           </div>
-
-          <MissionFilters
-            filters={filters}
-            onToggle={updateFilter}
-            onReset={() => setFilters(initialFilters)}
-          />
         </section>
       </div>
     </main>

@@ -56,13 +56,13 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="border-b border-app bg-app/90 px-4 py-4 backdrop-blur sm:px-6">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <Link href="/dispatcher" className="text-xl font-black text-main">
+    <nav className="border-b border-app bg-app/90 px-3 py-3 backdrop-blur sm:px-6 sm:py-4">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <Link href="/dispatcher" className="text-lg font-black text-main sm:text-xl">
           Hamilog
         </Link>
 
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:items-center lg:gap-3">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:overflow-visible lg:pb-0">
           {links.map((link) => {
             const isMessages = link.href.endsWith("/messages");
             const isActive =
@@ -73,7 +73,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-xl px-3 py-2 text-center text-sm font-semibold transition sm:px-4 ${
+                className={`shrink-0 rounded-xl px-2.5 py-2 text-center text-xs font-semibold transition sm:px-4 sm:text-sm ${
                   isActive
                     ? "bg-blue-600 text-main"
                     : "text-muted hover:bg-card-soft hover:text-main"
@@ -81,7 +81,7 @@ export default function Navbar() {
               >
                 {link.label}
                 {isMessages && unreadMessages > 0 && (
-                  <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-black text-white">
+                  <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-black text-white sm:ml-2 sm:h-5 sm:min-w-5 sm:px-1.5 sm:text-xs">
                     {unreadMessages}
                   </span>
                 )}
@@ -89,14 +89,14 @@ export default function Navbar() {
             );
           })}
 
-          <div className="flex justify-center">
+          <div className="flex shrink-0 justify-center">
             <ThemeToggleButton />
           </div>
 
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm font-semibold text-red-300 transition hover:bg-red-500 hover:text-white sm:px-4"
+            className="shrink-0 rounded-xl border border-red-500/30 bg-red-500/10 px-2.5 py-2 text-center text-xs font-semibold text-red-300 transition hover:bg-red-500 hover:text-white sm:px-4 sm:text-sm"
           >
             Logout
           </button>

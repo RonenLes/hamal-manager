@@ -118,7 +118,7 @@ export default function LiveDeliveryMapPage() {
   }
 
   return (
-    <main className="min-h-screen bg-app p-6 text-main">
+    <main className="min-h-screen bg-app px-3 py-4 text-main sm:p-6">
       <div className="mx-auto max-w-7xl">
         <header className="mb-6">
           <div className="mb-4">
@@ -128,7 +128,7 @@ export default function LiveDeliveryMapPage() {
             Live Operations
           </p>
 
-          <h1 className="mt-1 text-3xl font-black">Live Delivery Map</h1>
+          <h1 className="mt-1 text-2xl font-black sm:text-3xl">Live Delivery Map</h1>
 
           <p className="mt-2 text-muted">
             View deliveries to make on the map. Active deliveries are marked in
@@ -168,15 +168,16 @@ export default function LiveDeliveryMapPage() {
           />
         </section>
 
-        <LiveMapFiltersPanel filters={filters} onChange={setFilters} />
-
         <section className="grid grid-cols-1 gap-5 xl:grid-cols-[2fr_1fr]">
-          <LiveMapCanvas
+          <div className="rounded-2xl border border-app bg-card p-3 shadow-xl sm:p-4">
+            <LiveMapFiltersPanel filters={filters} onChange={setFilters} />
+            <LiveMapCanvas
             points={mapPoints}
             filters={filters}
             selectedMissionId={selectedMissionId}
             onSelectMission={setSelectedMissionId}
           />
+          </div>
 
           <DeliveryDetailsPanel selectedPoint={selectedPoint} />
         </section>

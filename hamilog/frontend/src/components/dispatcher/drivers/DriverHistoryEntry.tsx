@@ -134,7 +134,7 @@ export default function DriverHistoryEntry({
 
       {isExpanded && (
         <div className="border-t border-app bg-card-soft px-5 py-5">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
             <DetailTile label="Delivery Status">
               <p
                 className={`inline-flex rounded-full border px-3 py-1 text-sm font-bold ${getStateClasses(

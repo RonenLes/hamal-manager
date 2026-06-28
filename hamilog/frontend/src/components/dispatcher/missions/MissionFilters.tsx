@@ -30,7 +30,7 @@ function FilterCheckbox({
     <button
       type="button"
       onClick={onChange}
-      className="flex w-full items-center justify-between rounded-xl border border-app bg-app px-4 py-3 text-left text-sm transition hover:bg-card-soft"
+      className="flex w-full items-center justify-between rounded-xl border border-app bg-app px-3 py-2.5 text-left text-xs transition hover:bg-card-soft sm:px-4 sm:py-3 sm:text-sm"
     >
       <span className="text-muted">{label}</span>
 
@@ -54,15 +54,15 @@ export default function MissionFilters({
   onReset,
 }: MissionFiltersProps) {
   return (
-    <aside className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+    <div className="border-b border-app p-4 sm:p-5">
       <div className="mb-4">
-        <h2 className="text-xl font-bold text-main">Filters</h2>
+        <h2 className="text-lg font-bold text-main sm:text-xl">Filters</h2>
         <p className="mt-1 text-sm text-muted">
           Tick filters with x to control the mission list.
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
         <FilterCheckbox
           label="Unassigned"
           checked={filters.unassigned}
@@ -89,9 +89,9 @@ export default function MissionFilters({
           onChange={() => onToggle("orderByDeliveryDate")}
         />
 
-        <div className="pt-3">
+        <div className="col-span-2 sm:col-span-3 lg:col-span-5">
           <p className="mb-2 text-sm font-bold text-muted">Urgency</p>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <FilterCheckbox
               label="Urgency: Low"
               checked={filters.urgencyLow}
@@ -118,11 +118,11 @@ export default function MissionFilters({
         <button
           type="button"
           onClick={onReset}
-          className="mt-4 w-full rounded-xl border border-app bg-card-soft px-4 py-3 text-sm font-bold text-main transition hover:bg-card-soft"
+          className="w-full rounded-xl border border-app bg-card-soft px-3 py-2.5 text-xs font-bold text-main transition hover:bg-card-soft sm:px-4 sm:py-3 sm:text-sm"
         >
           Reset Filters
         </button>
       </div>
-    </aside>
+    </div>
   );
 }

@@ -49,7 +49,7 @@ export default function LiveMapFiltersPanel({
   }
 
   return (
-    <section className="mb-6 rounded-2xl border border-app bg-card p-5 shadow-xl">
+    <div className="mb-4 rounded-2xl border border-app bg-card-soft p-3 sm:p-4">
       <div className="mb-4">
         <h2 className="text-lg font-black text-main">Map Filters</h2>
         <p className="mt-1 text-sm text-muted">
@@ -57,7 +57,7 @@ export default function LiveMapFiltersPanel({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
         {filterOptions.map((option) => (
           <label
             key={option.key}
@@ -79,6 +79,6 @@ export default function LiveMapFiltersPanel({
           </label>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

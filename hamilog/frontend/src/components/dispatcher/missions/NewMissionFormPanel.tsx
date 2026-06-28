@@ -49,13 +49,13 @@ export default function NewMissionFormPanel({
   onCancel,
 }: NewMissionFormPanelProps) {
   return (
-    <section className="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 shadow-xl">
+    <div className="mt-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-5">
       <div className="mb-5">
         <h2 className="text-xl font-black text-main">{title}</h2>
         <p className="mt-1 text-sm text-muted">{description}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
         <div>
           <label className="mb-2 block text-sm font-semibold text-muted">
             Mission title
@@ -64,7 +64,7 @@ export default function NewMissionFormPanel({
             value={form.title}
             onChange={(event) => onUpdate("title", event.target.value)}
             placeholder="Example: Medical supplies delivery"
-            className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
           />
         </div>
 
@@ -77,7 +77,7 @@ export default function NewMissionFormPanel({
             onChange={(event) =>
               onUpdate("urgency", event.target.value as MissionPriority)
             }
-            className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
           >
             <option value="low">Low</option>
             <option value="medium">Medium</option>
@@ -95,7 +95,7 @@ export default function NewMissionFormPanel({
             onChange={(event) =>
               onUpdate("cooling", event.target.value as "yes" | "no")
             }
-            className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
           >
             <option value="no">No</option>
             <option value="yes">Yes</option>
@@ -111,7 +111,7 @@ export default function NewMissionFormPanel({
             onChange={(event) =>
               onUpdate("heavyLoad", event.target.value as "yes" | "no")
             }
-            className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
           >
             <option value="no">No</option>
             <option value="yes">Yes</option>
@@ -128,7 +128,7 @@ export default function NewMissionFormPanel({
             onChange={(event) =>
               onUpdate("idealDeliveryDate", event.target.value)
             }
-            className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
           />
         </div>
 
@@ -141,7 +141,7 @@ export default function NewMissionFormPanel({
             onChange={(event) =>
               onUpdate("idealDeliveryTime", event.target.value)
             }
-            className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
           >
             <option value="">Select time</option>
             {timeOptions.map((time) => (
@@ -160,7 +160,7 @@ export default function NewMissionFormPanel({
             value={form.from}
             onChange={(event) => onUpdate("from", event.target.value)}
             placeholder="Pickup address"
-            className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
           />
         </div>
 
@@ -172,7 +172,7 @@ export default function NewMissionFormPanel({
             value={form.to}
             onChange={(event) => onUpdate("to", event.target.value)}
             placeholder="Dropoff address"
-            className="w-full rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
           />
         </div>
 
@@ -187,12 +187,12 @@ export default function NewMissionFormPanel({
             }
             placeholder="Describe what should be delivered..."
             rows={4}
-            className="w-full resize-none rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-emerald-500"
+            className="w-full resize-none rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
           />
         </div>
       </div>
 
-      <div className="mt-5 flex justify-end gap-3">
+      <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
         {onCancel && (
           <button
             type="button"
@@ -213,6 +213,6 @@ export default function NewMissionFormPanel({
           {posting ? submittingLabel : submitLabel}
         </button>
       </div>
-    </section>
+    </div>
   );
 }

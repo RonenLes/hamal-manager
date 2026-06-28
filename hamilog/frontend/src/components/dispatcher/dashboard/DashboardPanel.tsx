@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 
 type DashboardPanelProps = {
@@ -5,7 +8,7 @@ type DashboardPanelProps = {
   count?: number;
   accent?: "blue" | "orange" | "red" | "green" | "purple";
   seeAllHref?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 const accentClasses = {
@@ -24,6 +27,8 @@ export default function DashboardPanel({
   seeAllHref,
   children,
 }: DashboardPanelProps) {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
     <section className="overflow-hidden rounded-2xl border border-app bg-card shadow-xl">
       <header
@@ -46,12 +51,23 @@ export default function DashboardPanel({
               See all
             </Link>
           )}
+
+          <button
+            type="button"
+            onClick={() => setCollapsed((current) => !current)}
+            className="rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold text-white transition hover:bg-white/25"
+            aria-expanded={!collapsed}
+          >
+            {collapsed ? "Open" : "Close"}
+          </button>
         </div>
       </header>
 
-      <div className="max-h-[340px] overflow-y-auto p-4 sm:p-5">
-        {children}
-      </div>
+      {!collapsed && (
+        <div className="max-h-[340px] overflow-y-auto p-4 sm:p-5">
+          {children}
+        </div>
+      )}
     </section>
   );
 }

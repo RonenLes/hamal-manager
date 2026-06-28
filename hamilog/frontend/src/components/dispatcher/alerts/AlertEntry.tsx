@@ -147,7 +147,7 @@ export default function AlertEntry({
 
       {isExpanded && (
         <div className="border-t border-app bg-app/60 px-5 py-5">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
             <DetailTile label="Alert Type">
               <p className="font-semibold text-main">{alert.type}</p>
             </DetailTile>

@@ -15,12 +15,12 @@ export default function ReportFilters({
   onIncludeCancelledChange,
 }: ReportFilterProps) {
   return (
-    <aside className="h-fit rounded-2xl border border-app bg-card p-5 shadow-xl xl:min-h-[520px]">
-      <h2 className="text-lg font-black">Filters</h2>
+    <div className="rounded-2xl border border-app bg-card-soft p-3 sm:p-4">
+      <h2 className="text-base font-black sm:text-lg">Filters</h2>
       <p className="mt-1 text-sm text-muted">Change the reporting period.</p>
 
-      <div className="mt-5 space-y-5">
-        <label className="flex items-center justify-between gap-4 rounded-xl border border-app bg-card-soft px-4 py-3">
+      <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-5 lg:items-end">
+        <label className="flex items-center justify-between gap-3 rounded-xl border border-app bg-app px-3 py-2.5 lg:items-center">
           <span>
             <span className="block text-sm font-semibold text-main">Choose manually</span>
             <span className="block text-xs text-muted">Use exact calendar dates</span>
@@ -39,7 +39,7 @@ export default function ReportFilters({
             value={datePreset}
             disabled={manualDates}
             onChange={(event) => onDatePresetChange(event.target.value as DatePreset)}
-            className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-3 text-sm text-main outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
+            className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <option value="last30">Past 30 days</option>
             <option value="thisMonth">This month</option>
@@ -47,7 +47,7 @@ export default function ReportFilters({
           </select>
         </label>
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-2 gap-3 lg:col-span-2">
           <label className="block">
             <span className="text-sm font-semibold text-main">From: date</span>
             <input
@@ -55,7 +55,7 @@ export default function ReportFilters({
               value={fromDate}
               disabled={!manualDates}
               onChange={(event) => onFromDateChange(event.target.value)}
-              className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-3 text-sm text-main outline-none disabled:cursor-not-allowed disabled:opacity-40"
+              className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none disabled:cursor-not-allowed disabled:opacity-40"
             />
           </label>
 
@@ -66,7 +66,7 @@ export default function ReportFilters({
               value={toDate}
               disabled={!manualDates}
               onChange={(event) => onToDateChange(event.target.value)}
-              className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-3 text-sm text-main outline-none disabled:cursor-not-allowed disabled:opacity-40"
+              className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none disabled:cursor-not-allowed disabled:opacity-40"
             />
           </label>
         </div>
@@ -84,11 +84,11 @@ export default function ReportFilters({
           />
         </label>
 
-        <div className="rounded-xl border border-app bg-card-soft p-4 text-sm text-muted">
+        <div className="rounded-xl border border-app bg-app p-3 text-sm text-muted">
           <p className="font-semibold text-main">Current range</p>
           <p className="mt-1">{rangeLabel}</p>
         </div>
       </div>
-    </aside>
+    </div>
   );
 }

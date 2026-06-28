@@ -35,9 +35,9 @@ export default function TrendChart({ title, points }: TrendChartProps) {
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3 sm:mt-6 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
+      <div className="mt-5 overflow-x-auto sm:mt-6"><div className="flex min-w-[620px] gap-3 sm:gap-4">
         {points.map((point) => (
-          <div key={point.label} className="flex min-h-44 flex-col justify-end gap-3 sm:min-h-56">
+          <div key={point.label} className="flex min-h-44 min-w-24 flex-1 flex-col justify-end gap-3 sm:min-h-56">
             <div className="flex h-32 items-end justify-center gap-2 rounded-xl bg-card-soft px-3 py-3 sm:h-44">
               <div
                 className="w-5 rounded-t-md bg-blue-500"
@@ -62,7 +62,7 @@ export default function TrendChart({ title, points }: TrendChartProps) {
             </div>
           </div>
         ))}
-      </div>
+      </div></div>
     </div>
   );
 }

@@ -12,6 +12,7 @@ type CalendarProps = {
   markers?: CalendarMarker[];
   selectedDates?: string[];
   removalDates?: string[];
+  embedded?: boolean;
 };
 
 const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -69,6 +70,7 @@ export default function Calendar({
   markers = [],
   selectedDates = [],
   removalDates = [],
+  embedded = false,
 }: CalendarProps) {
   const selected = fromDateInputValue(selectedDate);
   const monthDays = getMonthDays(selected);
@@ -85,7 +87,7 @@ export default function Calendar({
   }).format(selected);
 
   return (
-    <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+    <section className={embedded ? "rounded-xl border border-app bg-app/40 p-3" : "rounded-2xl border border-app bg-card p-5 shadow-xl"}>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <button
@@ -113,7 +115,7 @@ export default function Calendar({
           type="date"
           value={selectedDate}
           onChange={(event) => onSelectDate(event.target.value)}
-          className="rounded-xl border border-app bg-input px-4 py-2 text-sm text-main outline-none focus:border-blue-500"
+          className="rounded-xl border border-app bg-input px-3 py-2 text-sm text-main outline-none focus:border-blue-500"
         />
       </div>
 
@@ -123,10 +125,10 @@ export default function Calendar({
         ))}
       </div>
 
-      <div className="mt-2 grid grid-cols-7 gap-2">
+      <div className="mt-2 grid grid-cols-7 gap-1.5 sm:gap-2">
         {monthDays.map((date, index) => {
           if (!date) {
-            return <div key={`blank-${index}`} className="min-h-24" />;
+            return <div key={`blank-${index}`} className="min-h-14 sm:min-h-24" />;
           }
 
           const value = toDateInputValue(date);
@@ -140,7 +142,7 @@ export default function Calendar({
               key={value}
               type="button"
               onClick={() => onSelectDate(value)}
-              className={`min-h-24 rounded-xl border p-2 text-left transition ${
+              className={`min-h-14 rounded-xl border p-1.5 text-left transition sm:min-h-24 sm:p-2 ${
                 isRemovalSelected
                   ? "border-red-500 bg-red-500/10"
                   : isMultiSelected

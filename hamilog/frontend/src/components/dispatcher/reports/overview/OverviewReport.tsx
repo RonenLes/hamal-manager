@@ -69,22 +69,18 @@ export default function OverviewReport({
         />
       </section>
 
-      <section className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_320px]">
-        <div className="space-y-5">
-          <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <h2 className="text-lg font-black text-main">Mission Trend</h2>
-                <p className="mt-1 text-sm text-muted">
-                  Export the current overview graph.
-                </p>
-              </div>
-              <ExportButtons onExcel={onExportExcel} onPdf={onExportPdf} />
-            </div>
-          </section>
-          <TrendChart title="Mission Trend" points={trendPoints} />
+      <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+        <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h2 className="text-lg font-black text-main">Mission Trend</h2>
+            <p className="mt-1 text-sm text-muted">Export the current overview graph.</p>
+          </div>
+          <ExportButtons onExcel={onExportExcel} onPdf={onExportPdf} />
         </div>
         <ReportFilters {...filterProps} />
+        <div className="mt-4">
+          <TrendChart title="Mission Trend" points={trendPoints} />
+        </div>
       </section>
     </>
   );

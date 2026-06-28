@@ -13,9 +13,9 @@ export default function DetailTile({
   className = "",
 }: DetailTileProps) {
   return (
-    <div className={`rounded-xl border border-app bg-card p-4 ${className}`}>
-      <p className="text-xs uppercase tracking-wider text-soft">{label}</p>
-      <div className="mt-2">{children}</div>
+    <div className={`rounded-xl border border-app bg-card p-3 sm:p-4 ${className}`}>
+      <p className="text-[11px] font-bold uppercase text-soft sm:text-xs">{label}</p>
+      <div className="mt-1.5 text-sm sm:mt-2">{children}</div>
     </div>
   );
 }

@@ -80,14 +80,14 @@ const menuItems = [
 // Renders the dispatcher menu page component.
 export default function DispatcherMenuPage() {
   return (
-    <main className="min-h-screen bg-app p-6 text-main">
+    <main className="min-h-screen bg-app px-3 py-4 text-main sm:p-6">
       <div className="mx-auto max-w-7xl">
-        <header className="mb-8">
-          <h1 className="text-3xl font-black">Dispatcher Menu</h1>
+        <header className="mb-5 sm:mb-8">
+          <h1 className="text-2xl font-black sm:text-3xl">Dispatcher Menu</h1>
           <p className="mt-2 text-muted">Choose a dispatcher page or tool.</p>
         </header>
 
-        <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
           {menuItems.map((item) => (
             <MenuCard
               key={item.href}

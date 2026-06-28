@@ -116,7 +116,7 @@ export default function CargoAnalysisPage() {
                 Analysis Result
               </h2>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
                 {/* Weight */}
                 <div className="rounded-xl border border-app bg-card-soft p-4 text-center">
                   <div className="text-3xl font-black text-blue-400">
