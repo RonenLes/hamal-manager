@@ -10,7 +10,7 @@ async def health_check() -> dict:
     return {
         "status": "ok",
         "service": "hamilog-backend",
-        "database": "in-memory",
+        "database": "mongodb-atlas",
         "active_ws_drivers": len(manager.driver_connections),
         "active_ws_dispatchers": len(manager.dispatcher_connections),
     }

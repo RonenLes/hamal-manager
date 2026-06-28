@@ -10,7 +10,6 @@ from pymongo.collection import Collection
 from ..core.security import get_seed_users
 from ..features.driver_requests.service import SAMPLE_DRIVER_REQUESTS
 from ..features.missions.models import MissionStatus
-from .memory_store import InMemoryDB
 
 load_dotenv()
 
@@ -81,20 +80,6 @@ class MongoDB:
         self.users.create_index("role")
 
     def _seed_if_empty(self) -> None:
-        sample_db = InMemoryDB()
-
-        if not self.missions.estimated_document_count():
-            self.missions.insert_many([
-                _to_mongo_value(mission)
-                for mission in sample_db.get_all_missions()
-            ])
-
-        if not self.drivers.estimated_document_count():
-            self.drivers.insert_many([
-                _to_mongo_value(driver)
-                for driver in sample_db.get_all_drivers()
-            ])
-
         if not self.driver_requests.estimated_document_count():
             self.driver_requests.insert_many([
                 _to_mongo_value(request)
