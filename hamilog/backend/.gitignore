@@ -6,6 +6,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Local environment files (may contain credentials)
 .env
 .env.*
 !.env.example
