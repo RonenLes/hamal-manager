@@ -7,10 +7,10 @@ type MetricCardProps = {
 // Renders the metric card component.
 export default function MetricCard({ title, value, note }: MetricCardProps) {
   return (
-    <div className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
-      <p className="text-sm text-muted">{title}</p>
-      <p className="mt-3 text-2xl font-black text-main sm:text-3xl">{value}</p>
-      <p className="mt-2 text-sm text-muted">{note}</p>
+    <div className="flex aspect-square w-36 shrink-0 flex-col justify-center rounded-xl border border-app bg-card p-3 shadow-sm sm:w-44 sm:p-4 lg:flex-1">
+      <p className="text-xs font-semibold leading-tight text-muted sm:text-sm">{title}</p>
+      <p className="mt-2 text-xl font-black leading-none text-main sm:text-2xl">{value}</p>
+      <p className="mt-2 text-xs leading-snug text-muted sm:text-sm">{note}</p>
     </div>
   );
 }

@@ -101,7 +101,6 @@ export default function CargoReport({
                   ))}
                 </select>
               </label>
-              <ExportButtons onExcel={onExportExcel} onPdf={onExportPdf} />
             </div>
           </div>
 
@@ -116,6 +115,9 @@ export default function CargoReport({
               { key: "cooling", label: "Cooling cargo", color: "bg-cyan-500" },
             ]}
           />
+          <div className="flex justify-end border-t border-app pt-4">
+            <ExportButtons onExcel={onExportExcel} onPdf={onExportPdf} />
+          </div>
         </div>
       </section>
     </>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import CargoReport from "@/components/dispatcher/reports/cargo/CargoReport";
@@ -9,6 +9,8 @@ import MissionsReport from "@/components/dispatcher/reports/missions/MissionsRep
 import OverviewReport from "@/components/dispatcher/reports/overview/OverviewReport";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 import MetricCard from "@/components/dispatcher/reports/shared/MetricCard";
+import CountWindow from "@/components/dispatcher/reports/shared/CountWindow";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 import type {
   CargoGraph,
   DatePreset,
@@ -84,6 +86,7 @@ export default function DispatcherReportsPage() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<ReportView>("overview");
+  const reportTabsRef = useRef<HTMLDivElement>(null);
   const [datePreset, setDatePreset] = useState<DatePreset>("last30");
   const [manualDates, setManualDates] = useState(false);
   const [fromDate, setFromDate] = useState(() => getInitialDate(30));
@@ -193,6 +196,13 @@ export default function DispatcherReportsPage() {
       completionRate: percent(delivered, filteredMissions.length),
     };
   }, [drivers, filteredMissions]);
+
+  function scrollReportTabs(direction: "left" | "right") {
+    reportTabsRef.current?.scrollBy({
+      left: direction === "left" ? -180 : 180,
+      behavior: "smooth",
+    });
+  }
 
   const filterProps: ReportFilterProps = {
     datePreset,
@@ -647,7 +657,7 @@ export default function DispatcherReportsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-app p-6 text-main">
+    <main className="min-h-screen bg-app px-3 py-4 text-main sm:p-6">
       <div className="mx-auto max-w-7xl">
         <header className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -657,38 +667,15 @@ export default function DispatcherReportsPage() {
             <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
               Dispatcher Analytics
             </p>
-            <h1 className="mt-1 text-3xl font-black">Statistics & Reports</h1>
+            <h1 className="mt-1 text-2xl font-black sm:text-3xl">Statistics & Reports</h1>
             <p className="mt-2 max-w-2xl text-muted">
               Review mission flow, driver availability, and cargo patterns for the selected time range.
             </p>
           </div>
         </header>
 
-        <section className="mb-6 rounded-2xl border border-app bg-card p-2 shadow-xl">
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-            {reportViews.map((view) => {
-              const isActive = activeView === view.id;
-
-              return (
-                <button
-                  key={view.id}
-                  type="button"
-                  onClick={() => setActiveView(view.id)}
-                  className={`rounded-xl px-4 py-3 text-sm font-bold transition ${
-                    isActive
-                      ? "bg-blue-600 text-main"
-                      : "text-muted hover:bg-card-soft hover:text-main"
-                  }`}
-                >
-                  {view.label}
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
         <section className="space-y-5">
-          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <DispatcherStatsWindow>
             <MetricCard
               title="Completion Rate"
               value={`${stats.completionRate}%`}
@@ -709,11 +696,80 @@ export default function DispatcherReportsPage() {
               value={`${Math.round(stats.totalWeight)} kg`}
               note={`${Math.round(stats.totalVolume)} liters total volume`}
             />
+          </DispatcherStatsWindow>
+
+          <section className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            <CountWindow
+              title="Mission Status"
+              rows={[
+                {
+                  title: "Open Missions",
+                  value: stats.open,
+                  note: "Waiting to be delivered",
+                  href: "/dispatcher/missions?status=open",
+                  color: "orange",
+                },
+                {
+                  title: "Active Missions",
+                  value: stats.active,
+                  note: "Currently in transit",
+                  href: "/dispatcher/missions?status=active",
+                  color: "blue",
+                },
+              ]}
+            />
+            <CountWindow
+              title="Driver Availability"
+              rows={[
+                {
+                  title: "Available Drivers",
+                  value: stats.availableDrivers,
+                  note: "Ready for assignment",
+                  href: "/dispatcher/drivers?status=available",
+                  color: "emerald",
+                },
+                {
+                  title: "Drivers In Mission",
+                  value: stats.driversInMission,
+                  note: "Currently delivering",
+                  href: "/dispatcher/drivers?status=on_mission",
+                  color: "blue",
+                },
+              ]}
+            />
+          </section>
+
+          <section className="rounded-2xl border border-app bg-card p-2 shadow-xl">
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={() => scrollReportTabs("left")} className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-black text-muted transition hover:text-main sm:hidden" aria-label="Scroll report tabs left">{"<"}</button>
+              <div ref={reportTabsRef} className="min-w-0 flex-1 overflow-x-auto">
+                <div className="flex min-w-max gap-2 md:w-full md:min-w-0">
+                  {reportViews.map((view) => {
+                    const isActive = activeView === view.id;
+
+                    return (
+                      <button
+                        key={view.id}
+                        type="button"
+                        onClick={() => setActiveView(view.id)}
+                        className={`shrink-0 rounded-xl px-4 py-2.5 text-sm font-bold transition md:flex-1 ${
+                          isActive
+                            ? "bg-blue-600 text-main"
+                            : "text-muted hover:bg-card-soft hover:text-main"
+                        }`}
+                      >
+                        {view.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <button type="button" onClick={() => scrollReportTabs("right")} className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-black text-muted transition hover:text-main sm:hidden" aria-label="Scroll report tabs right">{">"}</button>
+            </div>
           </section>
 
           {activeView === "overview" && (
             <OverviewReport
-              stats={stats}
               trendPoints={trendPoints}
               filterProps={filterProps}
               onExportExcel={exportOverviewGraphToExcel}

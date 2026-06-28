@@ -62,8 +62,6 @@ export default function DriversReport({
                   ))}
                 </select>
               </label>
-
-              <ExportButtons onExcel={onExportExcel} onPdf={onExportPdf} />
             </div>
           </div>
 
@@ -91,6 +89,9 @@ export default function DriversReport({
               driverGraph === "score" ? "/100" : driverGraph === "km" ? " km" : ""
             }
           />
+          <div className="flex justify-end border-t border-app pt-4">
+            <ExportButtons onExcel={onExportExcel} onPdf={onExportPdf} />
+          </div>
         </div>
       </section>
     </>

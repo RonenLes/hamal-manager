@@ -28,7 +28,7 @@ function CountLinkCard({
 
   if (!href) {
     return (
-      <div className={`min-h-32 rounded-2xl border p-3 sm:p-5 ${colorClasses[color]}`}>
+      <div className={`min-h-24 rounded-xl border p-3 sm:min-h-28 sm:p-4 ${colorClasses[color]}`}>
         {content}
       </div>
     );
@@ -37,7 +37,7 @@ function CountLinkCard({
   return (
     <Link
       href={href}
-      className={`block min-h-32 rounded-2xl border p-3 transition hover:-translate-y-0.5 hover:opacity-90 sm:p-5 ${colorClasses[color]}`}
+      className={`block min-h-24 rounded-xl border p-3 transition sm:min-h-28 hover:-translate-y-0.5 hover:opacity-90 sm:p-5 ${colorClasses[color]}`}
     >
       {content}
     </Link>
@@ -52,8 +52,8 @@ type CountWindowProps = {
 // Renders the count window component.
 export default function CountWindow({ title, rows }: CountWindowProps) {
   return (
-    <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
-      <h2 className="text-lg font-black text-main">{title}</h2>
+    <section className="rounded-2xl border border-app bg-card p-3 shadow-xl sm:p-4">
+      <h2 className="text-base font-black text-main sm:text-lg">{title}</h2>
       <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
         {rows.map((row) => (
           <CountLinkCard key={row.title} {...row} />

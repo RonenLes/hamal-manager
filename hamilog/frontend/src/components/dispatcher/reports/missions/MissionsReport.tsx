@@ -232,7 +232,6 @@ export default function MissionsReport({
                   ))}
                 </select>
               </label>
-              <ExportButtons onExcel={onExportGraphExcel} onPdf={onExportGraphPdf} />
             </div>
           </div>
 
@@ -263,6 +262,9 @@ export default function MissionsReport({
               ]}
             />
           )}
+          <div className="flex justify-end border-t border-app pt-4">
+            <ExportButtons onExcel={onExportGraphExcel} onPdf={onExportGraphPdf} />
+          </div>
         </div>
       </section>
     </>
