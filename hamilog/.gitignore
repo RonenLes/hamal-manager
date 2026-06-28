@@ -19,6 +19,12 @@ ENV/
 .env.*
 *.env
 
+# Local server/IP overrides
+*.local.ps1
+*.local.bat
+frontend/.env.local
+backend/.env.local
+
 # Distribution / packaging
 build/
 dist/
