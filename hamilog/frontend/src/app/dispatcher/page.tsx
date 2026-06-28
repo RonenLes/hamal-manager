@@ -97,20 +97,20 @@ export default function DispatcherPage() {
   }
 
   return (
-      <main className="min-h-screen bg-app p-6 text-main">
-    <header className="mb-6">
+      <main className="min-h-screen bg-app px-3 py-4 text-main sm:p-6">
+    <header className="mb-4 sm:mb-6">
       <div>
         <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
           Hello, {getDisplayName(user)}
         </p>
-        <h1 className="text-3xl font-black">Dispatcher Dashboard</h1>
+        <h1 className="text-2xl font-black sm:text-3xl">Dispatcher Dashboard</h1>
         <p className="text-sm text-muted">
           Real-time delivery operations
         </p>
       </div>
     </header>
 
-    <section className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+    <section className="mb-4 grid grid-cols-2 gap-3 sm:mb-6 sm:gap-4">
       <StatCard
         title="Deliveries Today"
         value={`${
@@ -132,7 +132,7 @@ export default function DispatcherPage() {
       />
     </section>
 
-    <section className="grid grid-cols-1 gap-5 xl:grid-cols-3">
+    <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5">
       <TodaysSchedule missions={missions} drivers={drivers} />
 
       <PendingRequests

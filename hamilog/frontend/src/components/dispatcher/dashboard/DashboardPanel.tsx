@@ -27,9 +27,9 @@ export default function DashboardPanel({
   return (
     <section className="overflow-hidden rounded-2xl border border-app bg-card shadow-xl">
       <header
-        className={`flex items-center justify-between bg-gradient-to-r ${accentClasses[accent]} px-5 py-4`}
+        className={`flex items-center justify-between bg-gradient-to-r ${accentClasses[accent]} px-4 py-3 sm:px-5 sm:py-4`}
       >
-        <h2 className="text-lg font-bold text-white">{title}</h2>
+        <h2 className="text-base font-bold text-white sm:text-lg">{title}</h2>
 
         <div className="flex items-center gap-2">
           {count !== undefined && (
@@ -49,7 +49,7 @@ export default function DashboardPanel({
         </div>
       </header>
 
-      <div className="max-h-[340px] overflow-y-auto p-5">
+      <div className="max-h-[340px] overflow-y-auto p-4 sm:p-5">
         {children}
       </div>
     </section>

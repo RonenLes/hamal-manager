@@ -136,7 +136,7 @@ export default function LiveDeliveryMapPage() {
           </p>
         </header>
 
-        <section className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
           <DispatcherStatBox
             title="Deliveries"
             value={stats.total}

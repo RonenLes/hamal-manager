@@ -156,7 +156,7 @@ export default function DriverDashboardPage() {
           </div>
         </header>
 
-        <section className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+        <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
           <StatCard
             title="Active Mission"
             value={activeMission ? "1" : "0"}
@@ -190,7 +190,7 @@ export default function DriverDashboardPage() {
           />
         </section>
 
-        <section className="grid grid-cols-1 gap-5 xl:grid-cols-3">
+        <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5">
           <div className="xl:col-span-2">
             {activeMission ? (
               <ActiveMissionCard

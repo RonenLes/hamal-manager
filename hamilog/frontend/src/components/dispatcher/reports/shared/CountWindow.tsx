@@ -20,15 +20,15 @@ function CountLinkCard({
 
   const content = (
     <>
-      <p className="text-sm font-bold">{title}</p>
-      <p className="mt-3 text-3xl font-black text-main">{value}</p>
-      <p className="mt-2 text-sm text-muted">{note}</p>
+      <p className="text-xs font-bold leading-tight sm:text-sm">{title}</p>
+      <p className="mt-2 text-2xl font-black leading-none text-main sm:mt-3 sm:text-3xl">{value}</p>
+      <p className="mt-2 text-xs leading-snug text-muted sm:text-sm">{note}</p>
     </>
   );
 
   if (!href) {
     return (
-      <div className={`rounded-2xl border p-5 ${colorClasses[color]}`}>
+      <div className={`min-h-32 rounded-2xl border p-3 sm:p-5 ${colorClasses[color]}`}>
         {content}
       </div>
     );
@@ -37,7 +37,7 @@ function CountLinkCard({
   return (
     <Link
       href={href}
-      className={`block rounded-2xl border p-5 transition hover:-translate-y-0.5 hover:opacity-90 ${colorClasses[color]}`}
+      className={`block min-h-32 rounded-2xl border p-3 transition hover:-translate-y-0.5 hover:opacity-90 sm:p-5 ${colorClasses[color]}`}
     >
       {content}
     </Link>
@@ -52,9 +52,9 @@ type CountWindowProps = {
 // Renders the count window component.
 export default function CountWindow({ title, rows }: CountWindowProps) {
   return (
-    <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+    <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
       <h2 className="text-lg font-black text-main">{title}</h2>
-      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
         {rows.map((row) => (
           <CountLinkCard key={row.title} {...row} />
         ))}
