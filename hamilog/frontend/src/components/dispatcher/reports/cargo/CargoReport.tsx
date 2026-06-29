@@ -28,7 +28,6 @@ type CargoReportProps = {
   cargoByDateGroups: GroupedBarGroup[];
   filterProps: ReportFilterProps;
   onCargoGraphChange: (value: CargoGraph) => void;
-  onExportExcel: () => void;
   onExportPdf: () => void;
 };
 
@@ -40,7 +39,6 @@ export default function CargoReport({
   cargoByDateGroups,
   filterProps,
   onCargoGraphChange,
-  onExportExcel,
   onExportPdf,
 }: CargoReportProps) {
   return (
@@ -116,7 +114,7 @@ export default function CargoReport({
             ]}
           />
           <div className="flex justify-end border-t border-app pt-4">
-            <ExportButtons onExcel={onExportExcel} onPdf={onExportPdf} />
+            <ExportButtons onPdf={onExportPdf} />
           </div>
         </div>
       </section>

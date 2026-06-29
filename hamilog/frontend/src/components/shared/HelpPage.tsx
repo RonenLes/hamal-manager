@@ -21,27 +21,42 @@ type HelpPageProps = {
 
 // Renders the help page card component.
 function HelpPageCard({ title, href, description, features }: HelpPageItem) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
     <article className="rounded-2xl border border-app bg-card p-5 shadow-xl">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+        <div className="min-w-0">
           <h2 className="text-xl font-black text-main">{title}</h2>
           <p className="mt-1 text-sm text-muted">{description}</p>
         </div>
 
-        <span className="shrink-0 rounded-full border border-app bg-card-soft px-3 py-1 text-xs font-bold text-soft">
-          {href}
-        </span>
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="rounded-full border border-app bg-card-soft px-3 py-1 text-xs font-bold text-soft">
+            {href}
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsExpanded((current) => !current)}
+            aria-expanded={isExpanded}
+            aria-label={`${isExpanded ? "Collapse" : "Expand"} ${title}`}
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-black text-main transition hover:bg-app"
+          >
+            {isExpanded ? "^" : "v"}
+          </button>
+        </div>
       </div>
 
-      <ul className="mt-4 space-y-2">
-        {features.map((feature) => (
-          <li key={feature} className="flex gap-2 text-sm text-muted">
-            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
+      {isExpanded && (
+        <ul className="mt-4 space-y-2">
+          {features.map((feature) => (
+            <li key={feature} className="flex gap-2 text-sm text-muted">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
+              <span>{feature}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </article>
   );
 }

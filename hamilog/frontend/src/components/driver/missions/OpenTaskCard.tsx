@@ -51,7 +51,7 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "No cooling needed.
   };
 
   return (
-    <article className="rounded-2xl border border-app bg-card p-5 shadow-xl transition hover:bg-card-soft">
+    <article className="w-full overflow-hidden rounded-2xl border border-app bg-card p-4 shadow-xl transition hover:bg-card-soft sm:p-5">
       <div
         role="button"
         tabIndex={0}
@@ -67,14 +67,14 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "No cooling needed.
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <h3 className="truncate text-lg font-black text-main">
+            <h3 className="break-words text-lg font-black text-main">
               {mission.title}
             </h3>
             <p className="mt-1 line-clamp-2 text-sm text-muted">
               {mission.description}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 flex-wrap items-center gap-2 sm:gap-3">
             <TextToSpeechButton text={missionSpeechText} />
 
             <PriorityBadge priority={mission.priority} />
@@ -109,7 +109,7 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "No cooling needed.
 
       {isExpanded && (
         <div className="mt-5 border-t border-app pt-5">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
             <DetailTile label="Description" className="md:col-span-2">
               <p className="text-sm leading-6 text-muted">
                 {mission.description || "No description provided."}

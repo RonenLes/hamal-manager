@@ -19,8 +19,8 @@ export default function ReportFilters({
       <h2 className="text-base font-black sm:text-lg">Filters</h2>
       <p className="mt-1 text-sm text-muted">Change the reporting period.</p>
 
-      <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-5 lg:items-end">
-        <label className="flex items-center justify-between gap-3 rounded-xl border border-app bg-app px-3 py-2.5 lg:items-center">
+      <div className="mt-4 flex flex-wrap items-end gap-3">
+        <label className="flex min-w-52 flex-1 items-center justify-between gap-3 rounded-xl border border-app bg-app px-3 py-2.5">
           <span>
             <span className="block text-sm font-semibold text-main">Choose manually</span>
             <span className="block text-xs text-muted">Use exact calendar dates</span>
@@ -33,7 +33,7 @@ export default function ReportFilters({
           />
         </label>
 
-        <label className="block">
+        <label className="block min-w-44 flex-1">
           <span className="text-sm font-semibold text-main">Period</span>
           <select
             value={datePreset}
@@ -47,31 +47,31 @@ export default function ReportFilters({
           </select>
         </label>
 
-        <div className="grid grid-cols-2 gap-3 lg:col-span-2">
-          <label className="block">
+        <div className="grid min-w-64 flex-[2] grid-cols-1 gap-3 sm:grid-cols-2">
+          <label className="block min-w-0">
             <span className="text-sm font-semibold text-main">From: date</span>
             <input
               type="date"
               value={fromDate}
               disabled={!manualDates}
               onChange={(event) => onFromDateChange(event.target.value)}
-              className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none disabled:cursor-not-allowed disabled:opacity-40"
+              className="mt-2 w-full min-w-0 rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none disabled:cursor-not-allowed disabled:opacity-40"
             />
           </label>
 
-          <label className="block">
+          <label className="block min-w-0">
             <span className="text-sm font-semibold text-main">To: date</span>
             <input
               type="date"
               value={toDate}
               disabled={!manualDates}
               onChange={(event) => onToDateChange(event.target.value)}
-              className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none disabled:cursor-not-allowed disabled:opacity-40"
+              className="mt-2 w-full min-w-0 rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none disabled:cursor-not-allowed disabled:opacity-40"
             />
           </label>
         </div>
 
-        <label className="flex items-center justify-between gap-4 rounded-xl border border-app bg-card-soft px-4 py-3">
+        <label className="flex min-w-52 flex-1 items-center justify-between gap-4 rounded-xl border border-app bg-card-soft px-4 py-3">
           <span>
             <span className="block text-sm font-semibold text-main">Include cancelled</span>
             <span className="block text-xs text-muted">Add cancelled missions to reports</span>
@@ -84,7 +84,7 @@ export default function ReportFilters({
           />
         </label>
 
-        <div className="rounded-xl border border-app bg-app p-3 text-sm text-muted">
+        <div className="min-w-52 flex-1 rounded-xl border border-app bg-app p-3 text-sm text-muted">
           <p className="font-semibold text-main">Current range</p>
           <p className="mt-1">{rangeLabel}</p>
         </div>

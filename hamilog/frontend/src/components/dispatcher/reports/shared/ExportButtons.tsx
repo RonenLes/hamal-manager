@@ -1,19 +1,11 @@
 type ExportButtonsProps = {
-  onExcel: () => void;
   onPdf: () => void;
 };
 
 // Renders the export buttons component.
-export default function ExportButtons({ onExcel, onPdf }: ExportButtonsProps) {
+export default function ExportButtons({ onPdf }: ExportButtonsProps) {
   return (
     <div className="flex flex-col gap-2 sm:flex-row">
-      <button
-        type="button"
-        onClick={onExcel}
-        className="rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-3 text-sm font-bold text-emerald-300 transition hover:bg-emerald-500/25"
-      >
-        Export Excel
-      </button>
       <button
         type="button"
         onClick={onPdf}

@@ -29,11 +29,11 @@ export default function DriverHistoryMissionCard({
   const deliveredAt = getMissionDeliveredAt(mission);
 
   return (
-    <article className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+    <article className="w-full overflow-hidden rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
+        <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-xl font-black text-main">{mission.title}</h2>
+            <h2 className="min-w-0 break-words text-xl font-black text-main">{mission.title}</h2>
             <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300">
               Delivered
             </span>
@@ -44,17 +44,17 @@ export default function DriverHistoryMissionCard({
           </p>
         </div>
 
-        <p className="text-sm font-semibold text-muted">
+        <p className="shrink-0 text-sm font-semibold text-muted">
           Finished {formatDate(deliveredAt ?? mission.updated_at)}
         </p>
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-xl border border-app bg-card-soft p-4">
           <p className="text-xs font-bold uppercase tracking-wider text-muted">
             Pickup
           </p>
-          <p className="mt-1 text-sm font-semibold text-main">
+          <p className="mt-1 break-words text-sm font-semibold text-main">
             {mission.pickup?.address ?? "Unknown"}
           </p>
         </div>
@@ -63,7 +63,7 @@ export default function DriverHistoryMissionCard({
           <p className="text-xs font-bold uppercase tracking-wider text-muted">
             Dropoff
           </p>
-          <p className="mt-1 text-sm font-semibold text-main">
+          <p className="mt-1 break-words text-sm font-semibold text-main">
             {mission.dropoff?.address ?? "Unknown"}
           </p>
         </div>

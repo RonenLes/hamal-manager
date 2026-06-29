@@ -29,9 +29,7 @@ import {
   endOfDay,
   endOfMonth,
   formatDateDisplay,
-  formatDateForFilename,
   formatDateTimeDisplay,
-  exportTableToExcel,
   exportTableToPdf,
   getDateBuckets,
   getDateRange,
@@ -498,23 +496,6 @@ export default function DispatcherReportsPage() {
     return inReportRange && statusMatches && priorityMatches && cargoMatches;
   });
 
-  // Exports the overview graph to excel.
-  function exportOverviewGraphToExcel() {
-    exportTableToExcel(
-      `hamilog-mission-trend-${formatDateForFilename(range.start)}-to-${formatDateForFilename(range.end)}`,
-      [
-        { key: "period", label: "Period" },
-        { key: "created", label: "Created" },
-        { key: "delivered", label: "Delivered" },
-      ],
-      trendPoints.map((point) => ({
-        period: point.label,
-        created: point.created,
-        delivered: point.delivered,
-      })),
-    );
-  }
-
   // Exports the overview graph to pdf.
   function exportOverviewGraphToPdf() {
     exportTableToPdf(
@@ -533,15 +514,6 @@ export default function DispatcherReportsPage() {
     );
   }
 
-  // Exports the mission graph to excel.
-  function exportMissionGraphToExcel() {
-    exportTableToExcel(
-      `hamilog-${missionGraph}-${formatDateForFilename(range.start)}-to-${formatDateForFilename(range.end)}`,
-      selectedMissionGraphColumns,
-      selectedMissionGraphRows,
-    );
-  }
-
   // Exports the mission graph to pdf.
   function exportMissionGraphToPdf() {
     exportTableToPdf(
@@ -549,18 +521,6 @@ export default function DispatcherReportsPage() {
       rangeLabel,
       selectedMissionGraphColumns,
       selectedMissionGraphRows,
-    );
-  }
-
-  // Exports the driver graph to excel.
-  function exportDriverGraphToExcel() {
-    exportTableToExcel(
-      `hamilog-${driverGraph}-${formatDateForFilename(range.start)}-to-${formatDateForFilename(range.end)}`,
-      [
-        { key: "driver", label: "Driver" },
-        { key: "value", label: selectedDriverMeasurement },
-      ],
-      selectedDriverExportRows,
     );
   }
 
@@ -574,19 +534,6 @@ export default function DispatcherReportsPage() {
         { key: "value", label: selectedDriverMeasurement },
       ],
       selectedDriverExportRows,
-    );
-  }
-
-  // Exports the cargo graph to excel.
-  function exportCargoGraphToExcel() {
-    exportTableToExcel(
-      `hamilog-cargo-${formatDateForFilename(range.start)}-to-${formatDateForFilename(range.end)}`,
-      [
-        { key: "date", label: "Date" },
-        { key: "standard", label: "Standard cargo" },
-        { key: "cooling", label: "Cooling cargo" },
-      ],
-      cargoGraphRows,
     );
   }
 
@@ -772,7 +719,6 @@ export default function DispatcherReportsPage() {
             <OverviewReport
               trendPoints={trendPoints}
               filterProps={filterProps}
-              onExportExcel={exportOverviewGraphToExcel}
               onExportPdf={exportOverviewGraphToPdf}
             />
           )}
@@ -798,7 +744,6 @@ export default function DispatcherReportsPage() {
               onMissionDetailStatusChange={setMissionDetailStatus}
               onMissionDetailPriorityChange={setMissionDetailPriority}
               onMissionDetailCargoChange={setMissionDetailCargo}
-              onExportGraphExcel={exportMissionGraphToExcel}
               onExportGraphPdf={exportMissionGraphToPdf}
               onExportMissionDetailsPdf={exportMissionDetailsToPdf}
             />
@@ -812,7 +757,6 @@ export default function DispatcherReportsPage() {
               selectedDriverGraphLabel={selectedDriverGraphLabel}
               filterProps={filterProps}
               onDriverGraphChange={setDriverGraph}
-              onExportExcel={exportDriverGraphToExcel}
               onExportPdf={exportDriverGraphToPdf}
             />
           )}
@@ -825,7 +769,6 @@ export default function DispatcherReportsPage() {
               cargoByDateGroups={cargoByDateGroups}
               filterProps={filterProps}
               onCargoGraphChange={setCargoGraph}
-              onExportExcel={exportCargoGraphToExcel}
               onExportPdf={exportCargoGraphToPdf}
             />
           )}

@@ -72,7 +72,7 @@ export default function DriverHistoryPage() {
   );
 
   return (
-    <main className="min-h-screen bg-app p-6 text-main">
+    <main className="min-h-screen bg-app px-3 py-4 text-main sm:p-6">
       <div className="mx-auto max-w-7xl">
         <DriverHeader
           title="History"

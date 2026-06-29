@@ -4,9 +4,9 @@ import BackToMenuButton from "@/components/shared/BackToMenuButton";
 // Renders the driver open tasks page component.
 export default function DriverOpenTasksPage() {
   return( 
-    <div className="p-4 space-y-4">
+    <div className="space-y-4 p-3 sm:p-4">
       <BackToMenuButton href="/driver/menu" />
-      <DriverMissionWorkspace initialTab="open-tasks" />;
+      <DriverMissionWorkspace initialTab="open-tasks" />
       </div>
   );
 }

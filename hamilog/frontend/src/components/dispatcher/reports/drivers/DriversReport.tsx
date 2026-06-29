@@ -17,7 +17,6 @@ type DriversReportProps = {
   selectedDriverGraphLabel: string;
   filterProps: ReportFilterProps;
   onDriverGraphChange: (value: DriverGraph) => void;
-  onExportExcel: () => void;
   onExportPdf: () => void;
 };
 
@@ -29,7 +28,6 @@ export default function DriversReport({
   selectedDriverGraphLabel,
   filterProps,
   onDriverGraphChange,
-  onExportExcel,
   onExportPdf,
 }: DriversReportProps) {
   return (
@@ -90,7 +88,7 @@ export default function DriversReport({
             }
           />
           <div className="flex justify-end border-t border-app pt-4">
-            <ExportButtons onExcel={onExportExcel} onPdf={onExportPdf} />
+            <ExportButtons onPdf={onExportPdf} />
           </div>
         </div>
       </section>

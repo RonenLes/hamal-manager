@@ -9,7 +9,6 @@ import {
   type Mission,
   type StoredUser,
   cancelMission,
-  clearToken,
   getMessageParticipants,
   getMissions,
   getStoredUser,
@@ -18,6 +17,7 @@ import {
 } from "@/lib/api-client";
 import StatCard from "@/components/dispatcher/dashboard/StatCard";
 import ActiveMissionCard from "@/components/driver/missions/ActiveMissionCard";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 import { getMissionDistanceLabel } from "@/lib/mission-distance";
 import { toDateInputValue } from "@/components/shared/Calendar";
 
@@ -40,7 +40,6 @@ export default function DriverDashboardPage() {
       return;
     }
 
-    setUser(storedUser);
     const driverId = storedUser.driver_id;
 
     // Fetches the latest page data.
@@ -61,6 +60,7 @@ export default function DriverDashboardPage() {
           openData.filter((mission) => mission.status === "available")
         );
         setDispatchers(participantData.dispatchers);
+        setUser(storedUser);
       } finally {
         setLoading(false);
       }
@@ -70,12 +70,6 @@ export default function DriverDashboardPage() {
     const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
   }, [router]);
-
-  // Handles the logout action.
-  function handleLogout() {
-    clearToken();
-    router.push("/");
-  }
 
   // Handles the refresh dashboard logic.
   async function refreshDashboard() {
@@ -144,19 +138,9 @@ export default function DriverDashboardPage() {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="rounded-xl border border-app bg-card-soft px-4 py-2 text-sm text-main hover:bg-card-soft"
-            >
-              Logout
-            </button>
-          </div>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+        <DispatcherStatsWindow>
           <StatCard
             title="Active Mission"
             value={activeMission ? "1" : "0"}
@@ -188,7 +172,7 @@ export default function DriverDashboardPage() {
             icon="km"
             color="blue"
           />
-        </section>
+        </DispatcherStatsWindow>
 
         <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5">
           <div className="xl:col-span-2">

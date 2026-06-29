@@ -12,7 +12,6 @@ type TrendPoint = {
 type OverviewReportProps = {
   trendPoints: TrendPoint[];
   filterProps: ReportFilterProps;
-  onExportExcel: () => void;
   onExportPdf: () => void;
 };
 
@@ -20,7 +19,6 @@ type OverviewReportProps = {
 export default function OverviewReport({
   trendPoints,
   filterProps,
-  onExportExcel,
   onExportPdf,
 }: OverviewReportProps) {
   return (
@@ -37,7 +35,7 @@ export default function OverviewReport({
           <TrendChart title="Mission Trend" points={trendPoints} />
         </div>
         <div className="mt-4 flex justify-end border-t border-app pt-4">
-          <ExportButtons onExcel={onExportExcel} onPdf={onExportPdf} />
+          <ExportButtons onPdf={onExportPdf} />
         </div>
       </section>
     </>

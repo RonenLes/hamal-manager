@@ -14,7 +14,7 @@ export default function DriverHistoryList({
 }: DriverHistoryListProps) {
   if (loading) {
     return (
-      <section className="space-y-3">
+      <section className="w-full space-y-3">
         {["history-loading-1", "history-loading-2", "history-loading-3"].map(
           (item) => (
             <div
@@ -42,7 +42,7 @@ export default function DriverHistoryList({
   }
 
   return (
-    <section className="space-y-3">
+    <section className="w-full space-y-3">
       {missions.map((mission) => (
         <DriverHistoryMissionCard key={mission.id} mission={mission} />
       ))}

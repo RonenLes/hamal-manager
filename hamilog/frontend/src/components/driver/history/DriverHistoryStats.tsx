@@ -1,4 +1,5 @@
-﻿import type { Mission } from "@/lib/api-client";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
+import type { Mission } from "@/lib/api-client";
 
 type DriverHistoryStatsProps = {
   missions: Mission[];
@@ -26,11 +27,11 @@ export default function DriverHistoryStats({
   ];
 
   return (
-    <section className="mb-5 grid grid-cols-1 gap-4 md:grid-cols-3">
+    <DispatcherStatsWindow>
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="rounded-2xl border border-app bg-card p-5 shadow-xl"
+          className="min-h-24 w-44 shrink-0 rounded-xl border border-app bg-card p-4 shadow-sm sm:w-56 lg:flex-1"
         >
           <p className="text-sm font-semibold uppercase tracking-wider text-muted">
             {stat.label}
@@ -38,6 +39,6 @@ export default function DriverHistoryStats({
           <p className="mt-2 text-2xl font-black text-main">{stat.value}</p>
         </div>
       ))}
-    </section>
+    </DispatcherStatsWindow>
   );
 }

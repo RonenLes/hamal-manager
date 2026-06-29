@@ -43,7 +43,6 @@ type MissionsReportProps = {
   onMissionDetailStatusChange: (value: MissionDetailStatus) => void;
   onMissionDetailPriorityChange: (value: MissionDetailPriority) => void;
   onMissionDetailCargoChange: (value: MissionDetailCargo) => void;
-  onExportGraphExcel: () => void;
   onExportGraphPdf: () => void;
   onExportMissionDetailsPdf: () => void;
 };
@@ -69,7 +68,6 @@ export default function MissionsReport({
   onMissionDetailStatusChange,
   onMissionDetailPriorityChange,
   onMissionDetailCargoChange,
-  onExportGraphExcel,
   onExportGraphPdf,
   onExportMissionDetailsPdf,
 }: MissionsReportProps) {
@@ -125,14 +123,14 @@ export default function MissionsReport({
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-5 md:gap-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:gap-4">
             <label className="block">
               <span className="text-sm font-semibold text-main">From: date</span>
               <input
                 type="date"
                 value={missionDetailFromDate}
                 onChange={(event) => onMissionDetailFromDateChange(event.target.value)}
-                className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-3 text-sm text-main outline-none focus:border-blue-500"
+                className="mt-2 w-full min-w-0 rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none focus:border-blue-500"
               />
             </label>
 
@@ -142,7 +140,7 @@ export default function MissionsReport({
                 type="date"
                 value={missionDetailToDate}
                 onChange={(event) => onMissionDetailToDateChange(event.target.value)}
-                className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-3 text-sm text-main outline-none focus:border-blue-500"
+                className="mt-2 w-full min-w-0 rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none focus:border-blue-500"
               />
             </label>
 
@@ -153,7 +151,7 @@ export default function MissionsReport({
                 onChange={(event) =>
                   onMissionDetailStatusChange(event.target.value as MissionDetailStatus)
                 }
-                className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-3 text-sm text-main outline-none focus:border-blue-500"
+                className="mt-2 w-full min-w-0 rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none focus:border-blue-500"
               >
                 <option value="all">All statuses</option>
                 <option value="open">Open</option>
@@ -170,7 +168,7 @@ export default function MissionsReport({
                 onChange={(event) =>
                   onMissionDetailPriorityChange(event.target.value as MissionDetailPriority)
                 }
-                className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-3 text-sm text-main outline-none focus:border-blue-500"
+                className="mt-2 w-full min-w-0 rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none focus:border-blue-500"
               >
                 <option value="all">All priorities</option>
                 <option value="critical">Critical</option>
@@ -187,7 +185,7 @@ export default function MissionsReport({
                 onChange={(event) =>
                   onMissionDetailCargoChange(event.target.value as MissionDetailCargo)
                 }
-                className="mt-2 w-full rounded-xl border border-app bg-input px-3 py-3 text-sm text-main outline-none focus:border-blue-500"
+                className="mt-2 w-full min-w-0 rounded-xl border border-app bg-input px-3 py-2.5 text-sm text-main outline-none focus:border-blue-500"
               >
                 <option value="all">All cargo</option>
                 <option value="standard">Standard cargo</option>
@@ -263,7 +261,7 @@ export default function MissionsReport({
             />
           )}
           <div className="flex justify-end border-t border-app pt-4">
-            <ExportButtons onExcel={onExportGraphExcel} onPdf={onExportGraphPdf} />
+            <ExportButtons onPdf={onExportGraphPdf} />
           </div>
         </div>
       </section>

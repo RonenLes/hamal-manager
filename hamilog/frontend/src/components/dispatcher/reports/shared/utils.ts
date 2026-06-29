@@ -139,30 +139,6 @@ export function getDateBuckets(start: Date, end: Date) {
   return buckets.slice(-14);
 }
 
-// Escapes HTML text.
-function escapeHtml(value: string | number) {
-  const text = String(value);
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-// Downloads the text file.
-function downloadTextFile(filename: string, content: string, type: string) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-
 // Sanitizes the filename.
 function sanitizeFilename(value: string) {
   return value
@@ -170,43 +146,6 @@ function sanitizeFilename(value: string) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-}
-
-// Builds the export table.
-function buildExportTable(columns: ExportColumn[], rows: ExportRow[]) {
-  const header = columns
-    .map((column) => `<th>${escapeHtml(column.label)}</th>`)
-    .join("");
-  const body = rows
-    .map(
-      (row) =>
-        `<tr>${columns
-          .map((column) => `<td>${escapeHtml(row[column.key] ?? "")}</td>`)
-          .join("")}</tr>`,
-    )
-    .join("");
-
-  return `<table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table>`;
-}
-
-// Exports the table to excel.
-export function exportTableToExcel(
-  filename: string,
-  columns: ExportColumn[],
-  rows: ExportRow[],
-) {
-  const html = `
-    <html>
-      <head><meta charset="utf-8" /></head>
-      <body>${buildExportTable(columns, rows)}</body>
-    </html>
-  `;
-
-  downloadTextFile(
-    `${filename}.xls`,
-    html,
-    "application/vnd.ms-excel;charset=utf-8",
-  );
 }
 
 // Exports the table to pdf.
