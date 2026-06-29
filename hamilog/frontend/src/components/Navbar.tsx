@@ -57,12 +57,8 @@ export default function Navbar() {
 
   return (
     <nav className="border-b border-app bg-app/90 px-3 py-3 backdrop-blur sm:px-6 sm:py-4">
-      <div className="mx-auto flex w-full max-w-none items-center gap-3">
-        <Link href="/dispatcher" className="shrink-0 text-lg font-black text-main sm:text-xl">
-          Hamilog
-        </Link>
-
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-2 overflow-x-auto pb-1">
+      <div className="mx-auto flex w-full max-w-none items-center justify-center">
+        <div className="flex max-w-full items-center justify-center gap-2 overflow-x-auto pb-1">
           {links.map((link) => {
             const isMessages = link.href.endsWith("/messages");
             const isActive =

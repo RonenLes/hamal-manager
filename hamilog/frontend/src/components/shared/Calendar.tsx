@@ -145,10 +145,10 @@ export default function Calendar({
               className={`min-h-14 rounded-xl border p-1.5 text-left transition sm:min-h-24 sm:p-2 ${
                 isRemovalSelected
                   ? "border-red-500 bg-red-500/10"
-                  : isMultiSelected
-                  ? "border-emerald-500 bg-emerald-500/10"
                   : isSelected
                   ? "border-blue-500 bg-blue-500/10"
+                  : isMultiSelected
+                  ? "border-emerald-500 bg-emerald-500/10"
                   : "border-app bg-card-soft hover:border-blue-500/60"
               }`}
             >
