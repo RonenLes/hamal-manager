@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import ThemeToggleButton from "@/components/shared/ThemeToggleButton";
 
-import { getMessageConversations, getToken } from "@/lib/api-client";
+import { clearToken, getMessageConversations, getToken } from "@/lib/api-client";
 
 const links = [
   { label: "Dashboard", href: "/driver" },
@@ -16,6 +16,7 @@ const links = [
 // Renders the driver navbar component.
 export default function DriverNavbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
@@ -46,6 +47,12 @@ export default function DriverNavbar() {
       window.clearInterval(interval);
     };
   }, []);
+
+  // Handles the logout action.
+  function handleLogout() {
+    clearToken();
+    router.replace("/login");
+  }
 
   return (
     <nav className="border-b border-app bg-app/90 px-3 py-3 backdrop-blur sm:px-6 sm:py-4">
@@ -83,6 +90,14 @@ export default function DriverNavbar() {
           <div className="flex shrink-0 justify-center">
             <ThemeToggleButton />
           </div>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="shrink-0 rounded-xl border border-red-500/30 bg-red-500/10 px-2.5 py-2 text-center text-xs font-semibold text-red-300 transition hover:bg-red-500 hover:text-white sm:px-4 sm:text-sm"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </nav>

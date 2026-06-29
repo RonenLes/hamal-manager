@@ -124,21 +124,21 @@ export default function DriverEntry({
           </div>
         </button>
 
-        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:shrink-0 sm:items-center sm:gap-3">
-          <span className={`col-span-2 text-center text-sm font-black sm:col-span-1 ${getScoreClasses(score)}`}>
+        <div className="flex w-full min-w-0 items-center gap-1.5 overflow-x-auto pb-1 sm:w-auto sm:shrink-0 sm:gap-2 sm:overflow-visible sm:pb-0">
+          <span className={`shrink-0 px-1 text-center text-sm font-black ${getScoreClasses(score)}`}>
             {score}%
           </span>
 
           <Link
             href={`/dispatcher/messages/driver/${driver.id}`}
-            className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-2.5 py-2 text-center text-xs font-bold text-blue-200 transition hover:bg-blue-500/20 sm:px-4"
+            className="shrink-0 rounded-lg border border-blue-500/40 bg-blue-500/10 px-2 py-1.5 text-center text-[11px] font-bold text-blue-200 transition hover:bg-blue-500/20 sm:px-3 sm:py-2 sm:text-xs"
           >
-            Message
+            Msg
           </Link>
 
           <Link
             href={`/dispatcher/drivers/${driver.id}/history`}
-            className="rounded-xl bg-blue-600 px-2.5 py-2 text-center text-xs font-bold text-white transition hover:bg-blue-500 sm:px-4"
+            className="shrink-0 rounded-lg bg-blue-600 px-2 py-1.5 text-center text-[11px] font-bold text-white transition hover:bg-blue-500 sm:px-3 sm:py-2 sm:text-xs"
           >
             History
           </Link>
@@ -146,12 +146,12 @@ export default function DriverEntry({
           <button
             type="button"
             onClick={onToggleGraph}
-            className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-2.5 py-2 text-center text-xs font-bold text-blue-200 transition hover:bg-blue-500/20 sm:px-4"
+            className="shrink-0 rounded-lg border border-blue-500/40 bg-blue-500/10 px-2 py-1.5 text-center text-[11px] font-bold text-blue-200 transition hover:bg-blue-500/20 sm:px-3 sm:py-2 sm:text-xs"
           >
-            {isGraphExpanded ? "Hide graph" : "Score graph"}
+            {isGraphExpanded ? "Hide" : "Graph"}
           </button>
 
-          <button type="button" onClick={onToggle} className="col-span-2 rounded-xl border border-app bg-card-soft px-3 py-2 text-xl text-muted sm:col-span-1 sm:border-0 sm:bg-transparent sm:p-0">
+          <button type="button" onClick={onToggle} className="shrink-0 rounded-lg border border-app bg-card-soft px-2 py-1.5 text-base text-muted sm:border-0 sm:bg-transparent sm:p-0 sm:text-xl">
             {isExpanded ? "^" : "v"}
           </button>
         </div>
