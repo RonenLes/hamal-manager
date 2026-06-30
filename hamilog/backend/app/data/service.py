@@ -7,6 +7,7 @@ CITY_COLUMNS = ("city", "city_name_he", "city_name_en", "שם_ישוב", "שם �
 STREET_COLUMNS = ("street", "street_name_he", "street_name_en", "שם_רחוב", "שם רחוב")
 CSV_ENCODINGS = ("utf-8-sig", "cp1255")
 
+
 def load_locations():
     for encoding in CSV_ENCODINGS:
         try:
