@@ -7,9 +7,13 @@ import { useRouter } from "next/navigation";
 import {
   type MessageParticipant,
   type Mission,
+  type MissionDeliveryRequest,
   type StoredUser,
+  approveMissionRequest,
   cancelMission,
+  declineMissionRequest,
   getMessageParticipants,
+  getMissionRequests,
   getMissions,
   getStoredUser,
   getToken,
@@ -17,6 +21,7 @@ import {
 } from "@/lib/api-client";
 import StatCard from "@/components/dispatcher/dashboard/StatCard";
 import ActiveMissionCard from "@/components/driver/missions/ActiveMissionCard";
+import DispatcherRequestCard from "@/components/driver/requests/DispatcherRequestCard";
 import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 import { getMissionDistanceLabel } from "@/lib/mission-distance";
 import { toDateInputValue } from "@/components/shared/Calendar";
@@ -28,7 +33,15 @@ export default function DriverDashboardPage() {
   const [user, setUser] = useState<StoredUser | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [openMissions, setOpenMissions] = useState<Mission[]>([]);
+  const [dispatcherRequests, setDispatcherRequests] = useState<
+    MissionDeliveryRequest[]
+  >([]);
   const [dispatchers, setDispatchers] = useState<MessageParticipant[]>([]);
+  const [isRequestsPanelOpen, setIsRequestsPanelOpen] = useState(true);
+  const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null);
+  const [requestActionLoadingId, setRequestActionLoadingId] = useState<
+    string | null
+  >(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,10 +58,11 @@ export default function DriverDashboardPage() {
     // Fetches the latest page data.
     async function fetchData() {
       try {
-        const [myData, openData, participantData] = await Promise.all([
+        const [myData, openData, participantData, requestData] = await Promise.all([
           getMissions({ driverUid: driverId }),
           getMissions({ status: "available" }),
           getMessageParticipants(),
+          getMissionRequests({ status: "pending" }),
         ]);
 
         setMissions(
@@ -60,6 +74,11 @@ export default function DriverDashboardPage() {
           openData.filter((mission) => mission.status === "available")
         );
         setDispatchers(participantData.dispatchers);
+        setDispatcherRequests(
+          requestData.filter(
+            (request) => request.source === "dispatcher" && request.mission
+          )
+        );
         setUser(storedUser);
       } finally {
         setLoading(false);
@@ -75,10 +94,11 @@ export default function DriverDashboardPage() {
   async function refreshDashboard() {
     if (!user?.driver_id) return;
 
-    const [myData, openData, participantData] = await Promise.all([
+    const [myData, openData, participantData, requestData] = await Promise.all([
       getMissions({ driverUid: user.driver_id }),
       getMissions({ status: "available" }),
       getMessageParticipants(),
+      getMissionRequests({ status: "pending" }),
     ]);
 
     setMissions(
@@ -86,6 +106,11 @@ export default function DriverDashboardPage() {
     );
     setOpenMissions(openData.filter((mission) => mission.status === "available"));
     setDispatchers(participantData.dispatchers);
+    setDispatcherRequests(
+      requestData.filter(
+        (request) => request.source === "dispatcher" && request.mission
+      )
+    );
   }
 
   // Handles the mark delivered action.
@@ -104,6 +129,46 @@ export default function DriverDashboardPage() {
   async function handleCancelMission(missionId: string, reason: string) {
     await cancelMission(missionId, reason);
     await refreshDashboard();
+  }
+
+  // Handles accepting a dispatcher suggestion.
+  async function handleAcceptDispatcherRequest(requestId: string) {
+    setRequestActionLoadingId(requestId);
+
+    try {
+      await approveMissionRequest(requestId);
+      await refreshDashboard();
+      setExpandedRequestId(null);
+    } catch (error: unknown) {
+      const detail =
+        error && typeof error === "object" && "detail" in error
+          ? String((error as { detail: unknown }).detail)
+          : null;
+
+      alert(detail || "Could not accept dispatcher request.");
+    } finally {
+      setRequestActionLoadingId(null);
+    }
+  }
+
+  // Handles declining a dispatcher suggestion.
+  async function handleDeclineDispatcherRequest(requestId: string) {
+    setRequestActionLoadingId(requestId);
+
+    try {
+      await declineMissionRequest(requestId);
+      await refreshDashboard();
+      setExpandedRequestId(null);
+    } catch (error: unknown) {
+      const detail =
+        error && typeof error === "object" && "detail" in error
+          ? String((error as { detail: unknown }).detail)
+          : null;
+
+      alert(detail || "Could not decline dispatcher request.");
+    } finally {
+      setRequestActionLoadingId(null);
+    }
   }
 
   const activeMission = missions.find(
@@ -199,6 +264,65 @@ export default function DriverDashboardPage() {
                 </Link>
               </div>
             )}
+
+            <section
+              className={`mt-5 overflow-auto rounded-2xl border border-app bg-card shadow-xl ${
+                isRequestsPanelOpen ? "resize-y" : ""
+              }`}
+              style={{
+                minHeight: isRequestsPanelOpen ? "220px" : undefined,
+                maxHeight: isRequestsPanelOpen ? "620px" : undefined,
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setIsRequestsPanelOpen((current) => !current)}
+                className="flex w-full items-center justify-between gap-3 border-b border-app px-5 py-4 text-left transition hover:bg-card-soft"
+              >
+                <div>
+                  <h2 className="text-xl font-black text-main">
+                    Dispatcher Requests
+                  </h2>
+                  <p className="mt-1 text-sm text-muted">
+                    Suggested deliveries waiting for your answer.
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="rounded-xl bg-blue-500/15 px-3 py-2 text-sm font-black text-blue-300">
+                    {dispatcherRequests.length}
+                  </span>
+                  <span className="text-xl text-muted">
+                    {isRequestsPanelOpen ? "^" : "v"}
+                  </span>
+                </div>
+              </button>
+
+              {isRequestsPanelOpen && (
+                <div className="grid gap-3 p-4">
+                  {dispatcherRequests.length === 0 && (
+                    <p className="rounded-xl border border-app bg-card-soft p-4 text-sm text-muted">
+                      No dispatcher requests are waiting.
+                    </p>
+                  )}
+
+                  {dispatcherRequests.map((request) => (
+                    <DispatcherRequestCard
+                      key={request.id}
+                      request={request}
+                      isExpanded={expandedRequestId === request.id}
+                      isActionLoading={requestActionLoadingId === request.id}
+                      onToggle={() =>
+                        setExpandedRequestId((current) =>
+                          current === request.id ? null : request.id
+                        )
+                      }
+                      onAccept={handleAcceptDispatcherRequest}
+                      onDecline={handleDeclineDispatcherRequest}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
 
             <section className="mt-5 rounded-2xl border border-app bg-card shadow-xl">
               <div className="border-b border-app px-5 py-4">

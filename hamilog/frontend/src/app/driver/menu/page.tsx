@@ -26,6 +26,12 @@ const menuItems = [
     href: "/driver/open-tasks",
   },
   {
+    title: "Dispatcher Requests",
+    description: "Accept or decline suggested deliveries.",
+    icon: "?",
+    href: "/driver/requests",
+  },
+  {
     title: "Availability",
     description: "Mark the dates you are available.",
     icon: "📅",

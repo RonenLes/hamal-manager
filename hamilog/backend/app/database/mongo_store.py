@@ -444,6 +444,19 @@ class MongoDB:
             "status": "pending",
         })
         if existing:
+            if request_data.get("source") == "dispatcher":
+                self.mission_requests.update_one(
+                    {"id": existing["id"]},
+                    {
+                        "$set": {
+                            "source": "dispatcher",
+                            "note": request_data.get("note", ""),
+                            "updated_at": datetime.now(timezone.utc).isoformat(),
+                        },
+                    },
+                )
+                return self.get_mission_request_by_id(existing["id"]) or request_data
+
             return _without_object_id(existing) or request_data
 
         request_data = _to_mongo_value(request_data)
@@ -455,6 +468,16 @@ class MongoDB:
 
     def list_mission_requests(self, status_filter: Optional[str] = None) -> List[dict]:
         query = {"status": status_filter} if status_filter else None
+        return self._all(self.mission_requests, query)
+
+    def list_mission_requests_for_driver(
+        self,
+        driver_id: str,
+        status_filter: Optional[str] = None,
+    ) -> List[dict]:
+        query: Dict[str, Any] = {"driver_id": driver_id}
+        if status_filter:
+            query["status"] = status_filter
         return self._all(self.mission_requests, query)
 
     def review_mission_request(self, request_id: str, next_status: str) -> Optional[dict]:

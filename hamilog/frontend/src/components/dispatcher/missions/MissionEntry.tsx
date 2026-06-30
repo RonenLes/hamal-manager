@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import type { Mission } from "@/lib/api-client";
 import { formatDateTime24 } from "@/lib/date-format";
 import { formatIdealDeliveryTime, getMissionDeliveredAt } from "@/lib/mission-time";
@@ -12,6 +14,7 @@ type MissionEntryProps = {
   onToggle: () => void;
   onEdit: (mission: Mission) => void;
   onCancel: (mission: Mission) => void;
+  assignedDriverName?: string;
   getStateClasses: (state: string) => string;
 };
 
@@ -28,11 +31,13 @@ export default function MissionEntry({
   onToggle,
   onEdit,
   onCancel,
+  assignedDriverName,
   getStateClasses,
 }: MissionEntryProps) {
   const deliveredAt = getMissionDeliveredAt(mission);
   const canEdit =
     mission.status !== "cancelled" && mission.status !== "delivered";
+  const canSuggest = mission.status === "available" && !mission.assigned_driver_id;
   const canCancel =
     mission.status === "available" ||
     mission.status === "assigned" ||
@@ -90,6 +95,16 @@ export default function MissionEntry({
             >
               Edit
             </button>
+          )}
+
+          {canSuggest && (
+            <Link
+              href={`/dispatcher/missions/${mission.id}/suggestions`}
+              onClick={(event) => event.stopPropagation()}
+              className="rounded-xl bg-orange-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-orange-500"
+            >
+              Suggest to
+            </Link>
           )}
 
           {canCancel && (
@@ -158,8 +173,15 @@ export default function MissionEntry({
 
             <DetailTile label="Assigned Driver">
               <p className="break-words text-sm font-semibold text-main sm:text-base">
-                {mission.assigned_driver_id || "No driver assigned"}
+                {assignedDriverName ||
+                  mission.assigned_driver_id ||
+                  "No driver assigned"}
               </p>
+              {assignedDriverName && mission.assigned_driver_id && (
+                <p className="mt-1 break-all font-mono text-xs text-muted">
+                  {mission.assigned_driver_id}
+                </p>
+              )}
             </DetailTile>
 
             <DetailTile label="Cargo" className="md:col-span-2">

@@ -9,11 +9,13 @@ from ...database.state import db, manager
 from ...features.assignments.service import (
     calculate_match_score,
     check_driver_mission_compatibility,
+    driver_matches_mission_date,
+    get_suggested_drivers_for_mission,
 )
 from ...features.drivers.models import DriverStatus
 from ...features.missions.models import MissionStatus
 from ...shared.serializers import serialize_single
-from .schemas import CreateMissionDeliveryRequest
+from .schemas import CreateDispatcherMissionSuggestion, CreateMissionDeliveryRequest
 
 router = APIRouter(prefix="/api", tags=["Mission Requests"])
 
@@ -78,21 +80,99 @@ async def create_mission_request(
     return payload["request"]
 
 
+@router.get("/missions/{mission_id}/suggested-drivers")
+async def list_suggested_drivers(
+    mission_id: str,
+    user: dict = Depends(require_role("dispatcher")),
+) -> List[dict]:
+    mission = db.get_mission_by_id(mission_id)
+    if mission is None:
+        raise HTTPException(status_code=404, detail="Mission not found")
+    if mission.get("status") != MissionStatus.available.value:
+        raise HTTPException(
+            status_code=400,
+            detail="Only unassigned missions can receive suggestions",
+        )
+
+    return [
+        {
+            "driver": serialize_single(driver),
+            "match_score": calculate_match_score(driver, mission),
+            "availability_reason": driver_matches_mission_date(driver, mission)[1],
+        }
+        for driver in get_suggested_drivers_for_mission(mission, db)
+    ]
+
+
+@router.post("/mission-requests/suggestions", status_code=201)
+async def create_dispatcher_suggestion(
+    body: CreateDispatcherMissionSuggestion,
+    user: dict = Depends(require_role("dispatcher")),
+) -> dict:
+    mission = db.get_mission_by_id(body.mission_id)
+    if mission is None:
+        raise HTTPException(status_code=404, detail="Mission not found")
+    if mission.get("status") != MissionStatus.available.value:
+        raise HTTPException(
+            status_code=400,
+            detail="Only unassigned missions can receive suggestions",
+        )
+
+    driver = db.get_driver_by_id(body.driver_id)
+    if driver is None:
+        raise HTTPException(status_code=404, detail="Driver not found")
+
+    compatible, reason = check_driver_mission_compatibility(driver, mission)
+    if not compatible:
+        raise HTTPException(status_code=400, detail=reason)
+
+    date_ok, date_reason = driver_matches_mission_date(driver, mission)
+    if not date_ok:
+        raise HTTPException(status_code=400, detail=date_reason)
+
+    now = datetime.now(timezone.utc).isoformat()
+    created = db.create_mission_request({
+        "id": f"mreq_{uuid.uuid4().hex[:8]}",
+        "mission_id": body.mission_id,
+        "driver_id": body.driver_id,
+        "status": "pending",
+        "source": "dispatcher",
+        "note": body.note.strip(),
+        "created_at": now,
+        "reviewed_at": None,
+    })
+
+    payload = {
+        "type": "mission_suggestion_created",
+        "request": _enrich_mission_request(created),
+    }
+    await manager.broadcast_to_dispatchers(payload)
+    await manager.send_to_driver(body.driver_id, payload)
+    return payload["request"]
+
+
 @router.get("/mission-requests")
 async def list_mission_requests(
     status_filter: Optional[str] = Query(None, alias="status"),
-    user: dict = Depends(require_role("dispatcher")),
+    user: dict = Depends(get_current_user),
 ) -> List[dict]:
-    return [
-        _enrich_mission_request(request)
-        for request in db.list_mission_requests(status_filter)
-    ]
+    if user.get("role") == "dispatcher":
+        requests = db.list_mission_requests(status_filter)
+    elif user.get("role") == "driver" and user.get("driver_id"):
+        requests = db.list_mission_requests_for_driver(
+            user["driver_id"],
+            status_filter,
+        )
+    else:
+        raise HTTPException(status_code=403, detail="Invalid role")
+
+    return [_enrich_mission_request(request) for request in requests]
 
 
 @router.post("/mission-requests/{request_id}/approve")
 async def approve_mission_request(
     request_id: str,
-    user: dict = Depends(require_role("dispatcher")),
+    user: dict = Depends(get_current_user),
 ) -> dict:
     request = db.get_mission_request_by_id(request_id)
     if request is None:
@@ -102,6 +182,18 @@ async def approve_mission_request(
             status_code=400,
             detail="Only pending mission requests can be approved",
         )
+
+    if user.get("role") == "driver":
+        if (
+            request.get("source") != "dispatcher"
+            or request.get("driver_id") != user.get("driver_id")
+        ):
+            raise HTTPException(
+                status_code=403,
+                detail="Drivers can only accept suggestions sent to them",
+            )
+    elif user.get("role") != "dispatcher":
+        raise HTTPException(status_code=403, detail="Invalid role")
 
     mission = db.get_mission_by_id(request["mission_id"])
     driver = db.get_driver_by_id(request["driver_id"])
@@ -148,7 +240,7 @@ async def approve_mission_request(
 @router.post("/mission-requests/{request_id}/decline")
 async def decline_mission_request(
     request_id: str,
-    user: dict = Depends(require_role("dispatcher")),
+    user: dict = Depends(get_current_user),
 ) -> dict:
     request = db.get_mission_request_by_id(request_id)
     if request is None:
@@ -158,6 +250,18 @@ async def decline_mission_request(
             status_code=400,
             detail="Only pending mission requests can be declined",
         )
+
+    if user.get("role") == "driver":
+        if (
+            request.get("source") != "dispatcher"
+            or request.get("driver_id") != user.get("driver_id")
+        ):
+            raise HTTPException(
+                status_code=403,
+                detail="Drivers can only decline suggestions sent to them",
+            )
+    elif user.get("role") != "dispatcher":
+        raise HTTPException(status_code=403, detail="Invalid role")
 
     updated = db.review_mission_request(request_id, "declined")
     payload = {

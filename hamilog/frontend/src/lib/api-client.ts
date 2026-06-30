@@ -14,6 +14,7 @@ import type {
   ApiError,
   DriverRequest,
   MissionDeliveryRequest,
+  SuggestedDriver,
   Message,
   MessageConversation,
   MessageParticipantsResponse,
@@ -44,6 +45,7 @@ export type {
   Driver,
   DriverRequest,
   MissionDeliveryRequest,
+  SuggestedDriver,
   Message,
   MessageConversation,
   MessageParticipant,
@@ -442,6 +444,29 @@ export async function markMessagesRead(
     `/api/messages/${participantRole}/${participantId}/read`,
     { method: 'POST' },
   );
+}
+
+// Returns drivers suited for an unassigned mission.
+export async function getSuggestedDrivers(
+  missionId: string,
+): Promise<SuggestedDriver[]> {
+  return apiFetch<SuggestedDriver[]>(`/api/missions/${missionId}/suggested-drivers`);
+}
+
+// Sends a dispatcher suggestion to a specific driver.
+export async function suggestMissionToDriver(
+  missionId: string,
+  driverId: string,
+  note: string,
+): Promise<MissionDeliveryRequest> {
+  return apiFetch<MissionDeliveryRequest>('/api/mission-requests/suggestions', {
+    method: 'POST',
+    body: JSON.stringify({
+      mission_id: missionId,
+      driver_id: driverId,
+      note,
+    }),
+  });
 }
 
 // Returns the available location cities.

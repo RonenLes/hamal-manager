@@ -6,12 +6,14 @@ import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 import {
   type CreateMissionPayload,
+  type Driver,
   type Mission,
   type MissionPriority,
   createMission as createMissionApi,
   cancelMission,
   getLocationCities,
   getLocationStreets,
+  getDrivers,
   getMissions,
   getToken,
   getStoredUser,
@@ -238,6 +240,7 @@ export default function MissionsPage() {
   const router = useRouter();
 
   const [missions, setMissions] = useState<Mission[]>([]);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
   const [expandedMissionId, setExpandedMissionId] = useState<string | null>(
     null
   );
@@ -267,8 +270,12 @@ export default function MissionsPage() {
   // Fetches the latest page data.
   async function fetchData() {
     try {
-      const missionsData = await getMissions();
+      const [missionsData, driversData] = await Promise.all([
+        getMissions(),
+        getDrivers(),
+      ]);
       setMissions(missionsData);
+      setDrivers(driversData);
     } finally {
       setLoading(false);
     }
@@ -392,6 +399,10 @@ export default function MissionsPage() {
 
     return result;
   }, [missions, filters]);
+
+  const driverNameById = useMemo(() => {
+    return new Map(drivers.map((driver) => [driver.id, driver.name]));
+  }, [drivers]);
 
   // Updates the filter.
   function updateFilter(key: keyof MissionStatusFilter) {
@@ -635,6 +646,11 @@ export default function MissionsPage() {
                     }
                     onEdit={handleEditMission}
                     onCancel={handleCancelMission}
+                    assignedDriverName={
+                      mission.assigned_driver_id
+                        ? driverNameById.get(mission.assigned_driver_id)
+                        : undefined
+                    }
                     getStateClasses={getStateClasses}
                   />
                 );

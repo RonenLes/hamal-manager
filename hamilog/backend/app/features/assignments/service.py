@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import List, Tuple
 
 from ..drivers.models import CAR_SPECS, CarType, DriverStatus
@@ -59,6 +60,40 @@ def get_compatible_missions(driver: dict, db) -> List[dict]:
         if ok:
             compatible.append(mission)
     return compatible
+
+
+def driver_matches_mission_date(driver: dict, mission: dict) -> Tuple[bool, str]:
+    """Check whether a driver marked availability for the mission date."""
+
+    ideal_delivery_time = mission.get("ideal_delivery_time")
+    if not ideal_delivery_time:
+        return True, "Mission has no ideal delivery date"
+
+    try:
+        mission_date = datetime.fromisoformat(
+            str(ideal_delivery_time).replace("Z", "+00:00")
+        ).date().isoformat()
+    except ValueError:
+        return True, "Mission date could not be parsed"
+
+    availability_dates = driver.get("availability_dates") or []
+    if mission_date not in availability_dates:
+        return False, f"Driver did not mark availability for {mission_date}"
+
+    return True, "Driver is available on the mission date"
+
+
+def get_suggested_drivers_for_mission(mission: dict, db) -> List[dict]:
+    """Return drivers that fit the cargo and marked availability for a mission."""
+
+    suggested: List[dict] = []
+    for driver in db.get_all_drivers():
+        compatible, _ = check_driver_mission_compatibility(driver, mission)
+        date_ok, _ = driver_matches_mission_date(driver, mission)
+        if compatible and date_ok:
+            suggested.append(driver)
+
+    return suggested
 
 
 

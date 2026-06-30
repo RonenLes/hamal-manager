@@ -201,11 +201,19 @@ export type MissionDeliveryRequest = {
   mission_id: string;
   driver_id: string;
   status: MissionRequestStatus;
+  source?: "driver" | "dispatcher";
+  note?: string;
   created_at: string;
   reviewed_at?: string | null;
   mission: Mission | null;
   driver: Driver | null;
   match_score: number;
+};
+
+export type SuggestedDriver = {
+  driver: Driver;
+  match_score: number;
+  availability_reason: string;
 };
 
 export type UserRole = "dispatcher" | "driver";
