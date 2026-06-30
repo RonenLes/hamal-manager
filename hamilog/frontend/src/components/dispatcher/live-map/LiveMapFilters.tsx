@@ -10,22 +10,18 @@ type LiveMapFiltersProps = {
 const filterOptions: {
   key: LiveMapFilterKey;
   label: string;
-  description: string;
 }[] = [
   {
     key: "activeDrivers",
     label: "Active drivers",
-    description: "Show live driver markers for active deliveries.",
   },
   {
     key: "activeDeliveryLocations",
     label: "Active delivery locations",
-    description: "Show locations for deliveries currently in transit.",
   },
   {
     key: "nonActiveDeliveryLocations",
     label: "Non-active delivery locations",
-    description: "Show assigned, unassigned, delivered, and cancelled locations.",
   },
 ];
 
@@ -49,35 +45,27 @@ export default function LiveMapFiltersPanel({
   }
 
   return (
-    <div className="mb-4 rounded-2xl border border-app bg-card-soft p-3 sm:p-4">
-      <div className="mb-4">
-        <h2 className="text-lg font-black text-main">Map Filters</h2>
-        <p className="mt-1 text-sm text-muted">
-          Choose which live map markers are visible.
-        </p>
-      </div>
+    <div className="mb-3 rounded-xl border border-app bg-card-soft px-3 py-2">
+      <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+        <h2 className="shrink-0 text-sm font-black text-main">Map Filters</h2>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
-        {filterOptions.map((option) => (
-          <label
-            key={option.key}
-            className="flex min-h-24 cursor-pointer gap-3 rounded-xl border border-app bg-card-soft p-4 transition hover:bg-[var(--bg-card-soft)]"
-          >
-            <input
-              type="checkbox"
-              checked={filters[option.key]}
-              onChange={() => toggleFilter(option.key)}
-              className="mt-1 h-4 w-4 accent-blue-500"
-            />
+        <div className="flex min-w-0 flex-wrap gap-2 lg:flex-1 lg:flex-nowrap">
+          {filterOptions.map((option) => (
+            <label
+              key={option.key}
+              className="flex min-w-0 cursor-pointer items-center gap-2 rounded-lg border border-app bg-card px-2.5 py-2 text-xs font-bold text-main transition hover:bg-[var(--bg-card-soft)] lg:flex-1"
+            >
+              <input
+                type="checkbox"
+                checked={filters[option.key]}
+                onChange={() => toggleFilter(option.key)}
+                className="h-3.5 w-3.5 shrink-0 accent-blue-500"
+              />
 
-            <span>
-              <span className="block font-bold text-main">{option.label}</span>
-              <span className="mt-1 block text-sm leading-5 text-muted">
-                {option.description}
-              </span>
-            </span>
-          </label>
-        ))}
+              <span className="truncate">{option.label}</span>
+            </label>
+          ))}
+        </div>
       </div>
     </div>
   );
