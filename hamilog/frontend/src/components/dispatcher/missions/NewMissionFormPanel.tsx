@@ -27,6 +27,8 @@ type NewMissionFormPanelProps = {
   pickupStreets: string[];
   dropoffStreets: string[];
   locationsLoading?: boolean;
+  locationsError?: string | null;
+  onRetryLocations?: () => void;
   onUpdate: <K extends keyof NewMissionForm>(
     key: K,
     value: NewMissionForm[K]
@@ -56,6 +58,8 @@ export default function NewMissionFormPanel({
   pickupStreets,
   dropoffStreets,
   locationsLoading = false,
+  locationsError,
+  onRetryLocations,
   onUpdate,
   onSubmit,
   onCancel,
@@ -65,6 +69,24 @@ export default function NewMissionFormPanel({
       <div className="mb-5">
         <h2 className="text-xl font-black text-main">{title}</h2>
         <p className="mt-1 text-sm text-muted">{description}</p>
+        {(locationsLoading || locationsError || cities.length === 0) && (
+          <div className="mt-3 flex flex-col gap-2 rounded-xl border border-app bg-app px-3 py-2 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+            <span>
+              {locationsLoading
+                ? "Loading cities..."
+                : locationsError || "No cities loaded yet."}
+            </span>
+            {!locationsLoading && onRetryLocations && (
+              <button
+                type="button"
+                onClick={onRetryLocations}
+                className="self-start rounded-lg border border-app px-3 py-1.5 text-xs font-bold text-main transition hover:bg-card-soft sm:self-auto"
+              >
+                Retry
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">

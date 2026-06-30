@@ -11,6 +11,7 @@ type MissionEntryProps = {
   isExpanded: boolean;
   onToggle: () => void;
   onEdit: (mission: Mission) => void;
+  onCancel: (mission: Mission) => void;
   getStateClasses: (state: string) => string;
 };
 
@@ -26,10 +27,16 @@ export default function MissionEntry({
   isExpanded,
   onToggle,
   onEdit,
+  onCancel,
   getStateClasses,
 }: MissionEntryProps) {
   const deliveredAt = getMissionDeliveredAt(mission);
-  const canEdit = mission.status === "available" && !mission.assigned_driver_id;
+  const canEdit =
+    mission.status !== "cancelled" && mission.status !== "delivered";
+  const canCancel =
+    mission.status === "available" ||
+    mission.status === "assigned" ||
+    mission.status === "in_transit";
 
   return (
     <article
@@ -82,6 +89,19 @@ export default function MissionEntry({
               className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-500"
             >
               Edit
+            </button>
+          )}
+
+          {canCancel && (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onCancel(mission);
+              }}
+              className="rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-red-500"
+            >
+              Cancel
             </button>
           )}
 

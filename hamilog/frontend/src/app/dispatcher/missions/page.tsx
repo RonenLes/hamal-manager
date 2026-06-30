@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
@@ -9,6 +9,7 @@ import {
   type Mission,
   type MissionPriority,
   createMission as createMissionApi,
+  cancelMission,
   getLocationCities,
   getLocationStreets,
   getMissions,
@@ -249,6 +250,7 @@ export default function MissionsPage() {
   const [pickupStreets, setPickupStreets] = useState<string[]>([]);
   const [dropoffStreets, setDropoffStreets] = useState<string[]>([]);
   const [locationsLoading, setLocationsLoading] = useState(true);
+  const [locationsError, setLocationsError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
   const [editingMissionId, setEditingMissionId] = useState<string | null>(null);
@@ -279,19 +281,23 @@ export default function MissionsPage() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    async function fetchCities() {
-      try {
-        setLocationCities(await getLocationCities());
-      } catch {
-        setLocationCities([]);
-      } finally {
-        setLocationsLoading(false);
-      }
+  const fetchLocationCities = useCallback(async () => {
+    setLocationsLoading(true);
+    try {
+      const cities = await getLocationCities();
+      setLocationCities(cities);
+      setLocationsError(null);
+    } catch {
+      setLocationCities([]);
+      setLocationsError("Could not load cities. Make sure the backend is running.");
+    } finally {
+      setLocationsLoading(false);
     }
-
-    fetchCities();
   }, []);
+
+  useEffect(() => {
+    fetchLocationCities();
+  }, [fetchLocationCities]);
 
   useEffect(() => {
     if (!form.fromCity) {
@@ -420,6 +426,26 @@ export default function MissionsPage() {
     setIsAddOpen(true);
   }
 
+  // Handles dispatcher mission cancellation.
+  async function handleCancelMission(mission: Mission) {
+    const reason = window.prompt("Why cancel this mission?");
+    const cleanReason = reason?.trim();
+
+    if (!cleanReason) return;
+
+    try {
+      await cancelMission(mission.id, cleanReason);
+      await fetchData();
+    } catch (error: unknown) {
+      const detail =
+        error && typeof error === "object" && "detail" in error
+          ? String((error as { detail: unknown }).detail)
+          : null;
+
+      alert(detail || "Could not cancel mission.");
+    }
+  }
+
   // Handles the submit mission action.
   async function handleSubmitMission() {
     if (
@@ -533,6 +559,9 @@ export default function MissionsPage() {
                   setIsAddOpen(false);
                   resetMissionForm();
                 } else {
+                  if (locationCities.length === 0) {
+                    void fetchLocationCities();
+                  }
                   setIsAddOpen(true);
                 }
               }}
@@ -549,6 +578,8 @@ export default function MissionsPage() {
             pickupStreets={pickupStreets}
             dropoffStreets={dropoffStreets}
             locationsLoading={locationsLoading}
+            locationsError={locationsError}
+            onRetryLocations={fetchLocationCities}
             onUpdate={updateForm}
             onSubmit={handleSubmitMission}
             onCancel={() => {
@@ -603,6 +634,7 @@ export default function MissionsPage() {
                       setExpandedMissionId(isExpanded ? null : mission.id)
                     }
                     onEdit={handleEditMission}
+                    onCancel={handleCancelMission}
                     getStateClasses={getStateClasses}
                   />
                 );

@@ -188,13 +188,21 @@ async def cancel_mission(
     else:
         raise HTTPException(status_code=403, detail="Invalid role")
 
-    if mission.get("status") not in (
+    cancellable_statuses = (
         MissionStatus.assigned.value,
         MissionStatus.in_transit.value,
-    ):
+    )
+    if user.get("role") == "dispatcher":
+        cancellable_statuses = (
+            MissionStatus.available.value,
+            MissionStatus.assigned.value,
+            MissionStatus.in_transit.value,
+        )
+
+    if mission.get("status") not in cancellable_statuses:
         raise HTTPException(
             status_code=400,
-            detail="Only active assigned missions can be cancelled",
+            detail="This mission cannot be cancelled",
         )
 
     cancellation_record = CancellationRecord(
@@ -236,13 +244,13 @@ async def update_mission(
     mission = db.get_mission_by_id(mission_id)
     if mission is None:
         raise HTTPException(status_code=404, detail="Mission not found")
-    if (
-        mission.get("status") != MissionStatus.available.value
-        or mission.get("assigned_driver_id")
+    if mission.get("status") in (
+        MissionStatus.cancelled.value,
+        MissionStatus.delivered.value,
     ):
         raise HTTPException(
             status_code=400,
-            detail="Only unassigned missions can be edited",
+            detail="Cancelled or delivered missions cannot be edited",
         )
 
     updates = body.model_dump(exclude_unset=True)
