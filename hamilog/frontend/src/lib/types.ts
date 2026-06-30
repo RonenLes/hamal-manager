@@ -66,6 +66,8 @@ export interface Driver {
   name: string;
   email: string;
   phone: string;
+  address?: string;
+  city?: string;
   car_type: CarType;
   status: DriverStatus;
   current_location: Location | null;
@@ -94,6 +96,10 @@ export interface LoginResponse {
     name?: string;
     car_type?: CarType;
     driver_id?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
   };
 }
 
@@ -103,6 +109,10 @@ export interface StoredUser {
   name?: string;
   car_type?: CarType;
   driver_id?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -177,6 +187,7 @@ export type DriverRequest = {
   email?: string;
   phone: string;
   address: string;
+  city?: string;
   car_type: CarType;
   status: "pending" | "approved" | "declined";
   created_at: string;

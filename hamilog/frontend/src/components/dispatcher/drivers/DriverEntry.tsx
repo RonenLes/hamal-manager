@@ -13,6 +13,7 @@ import DriverScoreGraph from "./DriverScoreGraph";
 export type ExtendedDriver = Driver & {
   phone?: string;
   address?: string;
+  city?: string;
   score?: number;
 };
 
@@ -87,9 +88,21 @@ export default function DriverEntry({
   const spec = CAR_SPECS[driver.car_type];
   const phone = driver.phone || "No phone number yet";
   const address = driver.address || "No address yet";
+  const city = driver.city || "No city yet";
+  const fullAddress =
+    driver.address && driver.city
+      ? `${driver.address}, ${driver.city}`
+      : driver.address || driver.city || "No address yet";
+  const email = driver.email || "No email provided";
 
   return (
-    <article className="bg-card">
+    <article
+      className={`bg-card ${
+        isExpanded
+          ? "border-y-2 border-blue-500/70 shadow-[0_0_0_1px_rgba(59,130,246,0.25)]"
+          : ""
+      }`}
+    >
       <div className="flex w-full flex-col gap-3 px-4 py-3 transition hover:bg-[var(--bg-card-soft)] sm:px-5 sm:py-4 lg:flex-row lg:items-center lg:justify-between">
         <button
           type="button"
@@ -165,10 +178,14 @@ export default function DriverEntry({
       )}
 
       {isExpanded && (
-        <div className="border-t border-app bg-card-soft px-3 py-3 sm:px-5 sm:py-5">
+        <div className="border-t-2 border-blue-500/70 bg-card-soft px-3 py-3 sm:px-5 sm:py-5">
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
             <DetailTile label="Full Name">
               <p className="break-words text-sm font-semibold text-main sm:text-base">{driver.name}</p>
+            </DetailTile>
+
+            <DetailTile label="Email">
+              <p className="break-words text-sm font-semibold text-main sm:text-base">{email}</p>
             </DetailTile>
 
             <DetailTile label="Driver Score">
@@ -203,8 +220,16 @@ export default function DriverEntry({
               </div>
             </DetailTile>
 
-            <DetailTile label="Address" className="md:col-span-2">
+            <DetailTile label="City">
+              <p className="break-words text-sm font-semibold text-main sm:text-base">{city}</p>
+            </DetailTile>
+
+            <DetailTile label="Address">
               <p className="break-words text-sm font-semibold text-main sm:text-base">{address}</p>
+            </DetailTile>
+
+            <DetailTile label="Full Address" className="md:col-span-2">
+              <p className="break-words text-sm font-semibold text-main sm:text-base">{fullAddress}</p>
             </DetailTile>
 
             <DetailTile label="Deliveries Made">

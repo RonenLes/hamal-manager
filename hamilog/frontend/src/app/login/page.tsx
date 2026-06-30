@@ -62,7 +62,10 @@ function LoginForm() {
     email: "",
     phone: "",
     address: "",
+    city: "",
     car_type: "sedan" as CarType,
+    password: "",
+    confirm_password: "",
   });
   const [shaking, setShaking] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>(getSavedTheme);
@@ -137,17 +140,37 @@ function LoginForm() {
       setRegisterMessage("");
       setRegistering(true);
 
+      if (driverRequest.password !== driverRequest.confirm_password) {
+        setError("Passwords do not match.");
+        setShaking(true);
+        setTimeout(() => setShaking(false), 600);
+        setRegistering(false);
+        return;
+      }
+
       try {
-        await createDriverRequest(driverRequest);
+        await createDriverRequest({
+          name: driverRequest.name,
+          email: driverRequest.email,
+          phone: driverRequest.phone,
+          address: driverRequest.address,
+          city: driverRequest.city,
+          car_type: driverRequest.car_type,
+          password: driverRequest.password,
+        });
         setRegisterMessage(
           "Request sent. A dispatcher needs to approve your driver account.",
         );
+        setShowDriverRegistration(false);
         setDriverRequest({
           name: "",
           email: "",
           phone: "",
           address: "",
+          city: "",
           car_type: "sedan",
+          password: "",
+          confirm_password: "",
         });
       } catch (err: unknown) {
         const msg =
@@ -344,6 +367,12 @@ function LoginForm() {
           Register as Driver
         </button>
 
+        {registerMessage && (
+          <div className="mt-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+            {registerMessage}
+          </div>
+        )}
+
         {showDriverRegistration && (
           <form
             onSubmit={handleDriverRequestSubmit}
@@ -414,6 +443,20 @@ function LoginForm() {
               required
             />
 
+            <input
+              type="text"
+              value={driverRequest.city}
+              onChange={(event) =>
+                setDriverRequest((current) => ({
+                  ...current,
+                  city: event.target.value,
+                }))
+              }
+              className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500"
+              placeholder="City"
+              required
+            />
+
             <select
               value={driverRequest.car_type}
               onChange={(event) =>
@@ -431,11 +474,37 @@ function LoginForm() {
               ))}
             </select>
 
-            {registerMessage && (
-              <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
-                {registerMessage}
-              </div>
-            )}
+            <input
+              type="password"
+              value={driverRequest.password}
+              onChange={(event) =>
+                setDriverRequest((current) => ({
+                  ...current,
+                  password: event.target.value,
+                }))
+              }
+              className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500"
+              placeholder="Password"
+              autoComplete="new-password"
+              minLength={6}
+              required
+            />
+
+            <input
+              type="password"
+              value={driverRequest.confirm_password}
+              onChange={(event) =>
+                setDriverRequest((current) => ({
+                  ...current,
+                  confirm_password: event.target.value,
+                }))
+              }
+              className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500"
+              placeholder="Confirm password"
+              autoComplete="new-password"
+              minLength={6}
+              required
+            />
 
             <button
               type="submit"

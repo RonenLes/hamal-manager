@@ -48,9 +48,20 @@ export default function NewDriverRequestEntry({
   const spec = CAR_SPECS[driverRequest.car_type];
   const phone = driverRequest.phone || "No phone number yet";
   const address = driverRequest.address || "No address yet";
+  const city = driverRequest.city || "No city yet";
+  const fullAddress =
+    driverRequest.address && driverRequest.city
+      ? `${driverRequest.address}, ${driverRequest.city}`
+      : driverRequest.address || driverRequest.city || "No address yet";
 
   return (
-    <article className="bg-card">
+    <article
+      className={`bg-card ${
+        isExpanded
+          ? "border-y-2 border-blue-500/70 shadow-[0_0_0_1px_rgba(59,130,246,0.25)]"
+          : ""
+      }`}
+    >
       <button
         type="button"
         onClick={onToggle}
@@ -89,7 +100,7 @@ export default function NewDriverRequestEntry({
       </button>
 
       {isExpanded && (
-        <div className="border-t border-app bg-card-soft px-5 py-5">
+        <div className="border-t-2 border-blue-500/70 bg-card-soft px-5 py-5">
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
             <DetailTile label="Full Name">
               <p className="font-semibold text-main">{driverRequest.name}</p>
@@ -115,8 +126,16 @@ export default function NewDriverRequestEntry({
               </p>
             </DetailTile>
 
-            <DetailTile label="Address" className="md:col-span-2">
+            <DetailTile label="City">
+              <p className="font-semibold text-main">{city}</p>
+            </DetailTile>
+
+            <DetailTile label="Address">
               <p className="font-semibold text-main">{address}</p>
+            </DetailTile>
+
+            <DetailTile label="Full Address" className="md:col-span-2">
+              <p className="font-semibold text-main">{fullAddress}</p>
             </DetailTile>
 
             <DetailTile label="Request Date">

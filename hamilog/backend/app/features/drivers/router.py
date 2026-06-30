@@ -3,9 +3,9 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from ...core.security import get_current_user, require_role
+from ...core.security import get_current_user, hash_password, require_role
 
 from ...database.state import db
 from ...features.driver_requests.service import (
@@ -23,11 +23,25 @@ class CreateDriverRequest(BaseModel):
     email: str
     phone: str
     address: str
+    city: str
     car_type: CarType
+    password: str = Field(min_length=6)
 
 
 class UpdateDriverAvailabilityRequest(BaseModel):
     availability_dates: List[str]
+
+
+def _public_driver_request(request: dict) -> dict:
+    return {
+        key: value
+        for key, value in serialize_single(request).items()
+        if key not in {"password_hash"}
+    }
+
+
+def _public_driver_requests(requests: List[dict]) -> List[dict]:
+    return [_public_driver_request(request) for request in requests]
 
 
 @router.get("/drivers", tags=["Drivers"])
@@ -85,23 +99,32 @@ async def list_driver_requests(
     status_filter: Optional[str] = Query(None, alias="status"),
     user: dict = Depends(require_role("dispatcher")),
 ) -> List[dict]:
-    return db.list_driver_requests(status_filter)
+    return _public_driver_requests(db.list_driver_requests(status_filter))
 
 
 @router.post("/driver-requests", status_code=201, tags=["Driver Requests"])
 async def create_driver_request(body: CreateDriverRequest) -> dict:
+    email = body.email.strip().lower()
+    if db.get_user_by_username(email) is not None:
+        raise HTTPException(
+            status_code=400,
+            detail="A user with this email already exists",
+        )
+
     created = db.create_driver_request({
         "id": f"req_{uuid.uuid4().hex[:8]}",
         "name": body.name.strip(),
-        "email": body.email,
+        "email": email,
         "phone": body.phone.strip(),
         "address": body.address.strip(),
+        "city": body.city.strip(),
         "car_type": body.car_type.value,
+        "password_hash": hash_password(body.password),
         "status": "pending",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "reviewed_at": None,
     })
-    return serialize_single(created)
+    return _public_driver_request(created)
 
 
 @router.post("/driver-requests/{request_id}/approve", tags=["Driver Requests"])
@@ -156,12 +179,21 @@ def _review_driver_request(request_id: str, next_status: str) -> dict:
                 "name": reviewed.get("name", "New Driver"),
                 "email": reviewed.get("email") or f"{driver_id}@hamilog.local",
                 "phone": reviewed.get("phone", ""),
+                "address": reviewed.get("address", ""),
+                "city": reviewed.get("city", ""),
                 "car_type": reviewed.get("car_type"),
                 "status": DriverStatus.available.value,
                 "current_location": {
                     "lat": 0,
                     "lng": 0,
-                    "address": reviewed.get("address", ""),
+                    "address": ", ".join(
+                        item
+                        for item in [
+                            reviewed.get("address", ""),
+                            reviewed.get("city", ""),
+                        ]
+                        if item
+                    ),
                 },
                 "current_mission_id": None,
                 "score": 100,
@@ -169,4 +201,19 @@ def _review_driver_request(request_id: str, next_status: str) -> dict:
                 "joined_at": datetime.now(timezone.utc),
             })
 
-    return serialize_single(reviewed)
+        username = reviewed.get("email")
+        if username and db.get_user_by_username(username) is None:
+            db.create_user({
+                "username": username,
+                "password_hash": reviewed.get("password_hash"),
+                "role": "driver",
+                "name": reviewed.get("name", "New Driver"),
+                "email": reviewed.get("email"),
+                "phone": reviewed.get("phone", ""),
+                "address": reviewed.get("address", ""),
+                "city": reviewed.get("city", ""),
+                "car_type": reviewed.get("car_type"),
+                "driver_id": driver_id,
+            })
+
+    return _public_driver_request(reviewed)

@@ -35,6 +35,14 @@ async def login(body: LoginRequest) -> LoginResponse:
     }
     if user_record.get("name"):
         user_info["name"] = user_record["name"]
+    if user_record.get("email"):
+        user_info["email"] = user_record["email"]
+    if user_record.get("phone"):
+        user_info["phone"] = user_record["phone"]
+    if user_record.get("address"):
+        user_info["address"] = user_record["address"]
+    if user_record.get("city"):
+        user_info["city"] = user_record["city"]
     if user_record.get("car_type"):
         user_info["car_type"] = user_record["car_type"]
     if user_record.get("driver_id"):

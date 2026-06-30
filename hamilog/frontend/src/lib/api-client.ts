@@ -363,7 +363,9 @@ export type CreateDriverRequestPayload = {
   email: string;
   phone: string;
   address: string;
+  city: string;
   car_type: CarType;
+  password: string;
 };
 
 // Creates the driver request.

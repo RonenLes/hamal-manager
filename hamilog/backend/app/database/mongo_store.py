@@ -350,6 +350,11 @@ class MongoDB:
     def get_user_by_username(self, username: str) -> Optional[dict]:
         return self._one(self.users, {"username": username})
 
+    def create_user(self, user_data: dict) -> dict:
+        user_data = _to_mongo_value(user_data)
+        self.users.insert_one(user_data)
+        return self.get_user_by_username(user_data["username"]) or user_data
+
     def list_users(self, role_filter: Optional[str] = None) -> List[dict]:
         query = {"role": role_filter} if role_filter else None
         return self._all(self.users, query)

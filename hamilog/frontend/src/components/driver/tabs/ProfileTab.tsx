@@ -24,6 +24,17 @@ const DEFAULT_PROFILE: DriverProfileDetails = {
   zipcode: "6100001",
 };
 
+// Builds initial profile details from the logged-in user record.
+function getDefaultProfile(user: StoredUser | null): DriverProfileDetails {
+  return {
+    ...DEFAULT_PROFILE,
+    email: user?.email || DEFAULT_PROFILE.email,
+    phone: user?.phone || DEFAULT_PROFILE.phone,
+    address: user?.address || DEFAULT_PROFILE.address,
+    city: user?.city || DEFAULT_PROFILE.city,
+  };
+}
+
 // Returns the profile storage key.
 function getProfileStorageKey(user: StoredUser | null) {
   return `hamilog-driver-profile-${user?.driver_id || user?.username || "guest"}`;
@@ -31,15 +42,16 @@ function getProfileStorageKey(user: StoredUser | null) {
 
 // Returns the saved profile.
 function getSavedProfile(user: StoredUser | null): DriverProfileDetails {
-  if (typeof window === "undefined") return DEFAULT_PROFILE;
+  const defaultProfile = getDefaultProfile(user);
+  if (typeof window === "undefined") return defaultProfile;
 
   const savedProfile = localStorage.getItem(getProfileStorageKey(user));
-  if (!savedProfile) return DEFAULT_PROFILE;
+  if (!savedProfile) return defaultProfile;
 
   try {
-    return { ...DEFAULT_PROFILE, ...JSON.parse(savedProfile) };
+    return { ...defaultProfile, ...JSON.parse(savedProfile) };
   } catch {
-    return DEFAULT_PROFILE;
+    return defaultProfile;
   }
 }
 
