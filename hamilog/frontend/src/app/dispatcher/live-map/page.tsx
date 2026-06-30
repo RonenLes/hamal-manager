@@ -169,18 +169,17 @@ export default function LiveDeliveryMapPage() {
           />
         </DispatcherStatsWindow>
 
-        <section className="grid grid-cols-1 gap-5 xl:grid-cols-[2fr_1fr]">
+        <section>
           <div className="rounded-2xl border border-app bg-card p-3 shadow-xl sm:p-4">
             <LiveMapFiltersPanel filters={filters} onChange={setFilters} />
+            <DeliveryDetailsPanel selectedPoint={selectedPoint} />
             <LiveMapCanvas
-            points={mapPoints}
-            filters={filters}
-            selectedMissionId={selectedMissionId}
-            onSelectMission={setSelectedMissionId}
-          />
+              points={mapPoints}
+              filters={filters}
+              selectedMissionId={selectedMissionId}
+              onSelectMission={setSelectedMissionId}
+            />
           </div>
-
-          <DeliveryDetailsPanel selectedPoint={selectedPoint} />
         </section>
       </div>
     </main>
