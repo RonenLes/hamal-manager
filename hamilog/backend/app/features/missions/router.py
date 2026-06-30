@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from ...data.geocoding import GeocodingError, geocode_address
 from ...features.drivers.service import calculate_driver_score_for_mission
 from ...core.security import get_current_user, require_role
 from ...database.state import db, manager
@@ -20,6 +21,16 @@ router = APIRouter(prefix="/api", tags=["Missions"])
 
 def get_actor_id(user: dict) -> str:
     return user.get("driver_id") or user.get("sub") or user.get("username") or "unknown"
+
+
+async def geocode_location(location, label: str):
+    try:
+        return await geocode_address(location.address)
+    except GeocodingError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Could not find {label} address: {location.address}",
+        ) from exc
 
 
 @router.get("/missions")
@@ -55,12 +66,15 @@ async def create_mission(
     body: CreateMissionRequest,
     user: dict = Depends(get_current_user),
 ) -> dict:
+    pickup = await geocode_location(body.pickup, "pickup")
+    dropoff = await geocode_location(body.dropoff, "dropoff")
+
     mission = Mission(
         title=body.title,
         description=body.description,
         cargo=body.cargo,
-        pickup=body.pickup,
-        dropoff=body.dropoff,
+        pickup=pickup,
+        dropoff=dropoff,
         priority=body.priority,
         ideal_delivery_time=body.ideal_delivery_time,
     )
@@ -231,10 +245,13 @@ async def update_mission(
             detail="Only unassigned missions can be edited",
         )
 
-    updated = db.update_mission_details(
-        mission_id,
-        body.model_dump(exclude_unset=True),
-    )
+    updates = body.model_dump(exclude_unset=True)
+    if body.pickup is not None:
+        updates["pickup"] = (await geocode_location(body.pickup, "pickup")).model_dump()
+    if body.dropoff is not None:
+        updates["dropoff"] = (await geocode_location(body.dropoff, "dropoff")).model_dump()
+
+    updated = db.update_mission_details(mission_id, updates)
     await manager.broadcast_to_dispatchers({
         "type": "mission_updated",
         "mission": serialize_single(updated),

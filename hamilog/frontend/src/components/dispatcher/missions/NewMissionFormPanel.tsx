@@ -4,7 +4,9 @@ export type NewMissionForm = {
   title: string;
   cargoDescription: string;
   from: string;
+  fromStreetNumber: string;
   to: string;
+  toStreetNumber: string;
   urgency: MissionPriority;
   idealDeliveryDate: string;
   idealDeliveryTime: string;
@@ -152,28 +154,60 @@ export default function NewMissionFormPanel({
           </select>
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-muted">
-            From
-          </label>
-          <input
-            value={form.from}
-            onChange={(event) => onUpdate("from", event.target.value)}
-            placeholder="Pickup address"
-            className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
-          />
+        <div className="grid grid-cols-[1fr_120px] gap-2">
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-muted">
+              From
+            </label>
+            <input
+              value={form.from}
+              onChange={(event) => onUpdate("from", event.target.value)}
+              placeholder="Pickup street / address"
+              className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-muted">
+              No.
+            </label>
+            <input
+              value={form.fromStreetNumber}
+              onChange={(event) =>
+                onUpdate("fromStreetNumber", event.target.value)
+              }
+              placeholder="12"
+              className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-muted">
-            To
-          </label>
-          <input
-            value={form.to}
-            onChange={(event) => onUpdate("to", event.target.value)}
-            placeholder="Dropoff address"
-            className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
-          />
+        <div className="grid grid-cols-[1fr_120px] gap-2">
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-muted">
+              To
+            </label>
+            <input
+              value={form.to}
+              onChange={(event) => onUpdate("to", event.target.value)}
+              placeholder="Dropoff street / address"
+              className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-muted">
+              No.
+            </label>
+            <input
+              value={form.toStreetNumber}
+              onChange={(event) =>
+                onUpdate("toStreetNumber", event.target.value)
+              }
+              placeholder="34"
+              className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
+            />
+          </div>
         </div>
 
         <div className="md:col-span-2">

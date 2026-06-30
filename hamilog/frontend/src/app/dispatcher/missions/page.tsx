@@ -63,7 +63,9 @@ const initialForm: NewMissionForm = {
   title: "",
   cargoDescription: "",
   from: "",
+  fromStreetNumber: "",
   to: "",
+  toStreetNumber: "",
   urgency: "medium",
   idealDeliveryDate: "",
   idealDeliveryTime: "",
@@ -132,6 +134,15 @@ function getIdealDeliveryIso(body: NewMissionForm) {
   ).toISOString();
 }
 
+// Combines the selected street/address with a manually entered street number.
+function buildAddress(address: string, streetNumber: string) {
+  const cleanAddress = address.trim();
+  const cleanNumber = streetNumber.trim();
+
+  if (!cleanNumber) return cleanAddress;
+  return `${cleanAddress} ${cleanNumber}`;
+}
+
 // Builds the mission payload.
 function buildMissionPayload(body: NewMissionForm): CreateMissionPayload {
   const isHeavyLoad = body.heavyLoad === "yes";
@@ -154,12 +165,12 @@ function buildMissionPayload(body: NewMissionForm): CreateMissionPayload {
     pickup: {
       lat: 0,
       lng: 0,
-      address: body.from,
+      address: buildAddress(body.from, body.fromStreetNumber),
     },
     dropoff: {
       lat: 0,
       lng: 0,
-      address: body.to,
+      address: buildAddress(body.to, body.toStreetNumber),
     },
   };
 }
@@ -200,7 +211,9 @@ function missionToForm(mission: Mission): NewMissionForm {
     title: mission.title,
     cargoDescription: mission.description,
     from: mission.pickup.address,
+    fromStreetNumber: "",
     to: mission.dropoff.address,
+    toStreetNumber: "",
     urgency: mission.priority,
     idealDeliveryDate: toDateInputValue(mission.ideal_delivery_time),
     idealDeliveryTime: toTimeInputValue(mission.ideal_delivery_time),
@@ -347,8 +360,14 @@ export default function MissionsPage() {
 
   // Handles the submit mission action.
   async function handleSubmitMission() {
-    if (!form.cargoDescription.trim() || !form.from.trim() || !form.to.trim()) {
-      alert("Please fill cargo description, from, and to.");
+    if (
+      !form.cargoDescription.trim() ||
+      !form.from.trim() ||
+      !form.fromStreetNumber.trim() ||
+      !form.to.trim() ||
+      !form.toStreetNumber.trim()
+    ) {
+      alert("Please fill cargo description, pickup/dropoff address, and street numbers.");
       return;
     }
 
@@ -366,11 +385,17 @@ export default function MissionsPage() {
       resetMissionForm();
       setIsAddOpen(false);
       await fetchData();
-    } catch {
+    } catch (error: unknown) {
+      const detail =
+        error && typeof error === "object" && "detail" in error
+          ? String((error as { detail: unknown }).detail)
+          : null;
+
       alert(
-        editingMissionId
-          ? "Could not update mission. Make sure it is still unassigned."
-          : "Could not post mission. Make sure the backend is running."
+        detail ||
+          (editingMissionId
+            ? "Could not update mission. Make sure it is still unassigned."
+            : "Could not post mission. Make sure the backend is running.")
       );
     } finally {
       setPosting(false);

@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .core.keep_alive import start_keep_alive_task, stop_keep_alive_task
+from .data.router import router as locations_router
 from .features.assignments.router import router as assignments_router
 from .features.auth.router import router as auth_router
 from .features.cargo.router import router as cargo_router
@@ -58,6 +59,7 @@ def create_app() -> FastAPI:
     app.include_router(assignments_router)
     app.include_router(cargo_router)
     app.include_router(support_ticket_router)
+    app.include_router(locations_router)
     app.include_router(websockets_router)
     app.include_router(system_router)
     app.include_router(chatbot_router)
