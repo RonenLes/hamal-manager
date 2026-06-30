@@ -444,6 +444,17 @@ export async function markMessagesRead(
   );
 }
 
+// Returns the available location cities.
+export async function getLocationCities(): Promise<string[]> {
+  return apiFetch<string[]>('/api/locations/cities');
+}
+
+// Returns the streets for the selected city.
+export async function getLocationStreets(city: string): Promise<string[]> {
+  const query = new URLSearchParams({ city });
+  return apiFetch<string[]>(`/api/locations/streets?${query.toString()}`);
+}
+
 // Creates the support ticket.
 export async function createSupportTicket(
   data: CreateSupportTicketPayload,

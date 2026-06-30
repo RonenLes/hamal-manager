@@ -9,6 +9,8 @@ import {
   type Mission,
   type MissionPriority,
   createMission as createMissionApi,
+  getLocationCities,
+  getLocationStreets,
   getMissions,
   getToken,
   getStoredUser,
@@ -62,8 +64,10 @@ function getInitialFiltersFromQuery(): MissionStatusFilter {
 const initialForm: NewMissionForm = {
   title: "",
   cargoDescription: "",
+  fromCity: "",
   from: "",
   fromStreetNumber: "",
+  toCity: "",
   to: "",
   toStreetNumber: "",
   urgency: "medium",
@@ -135,12 +139,16 @@ function getIdealDeliveryIso(body: NewMissionForm) {
 }
 
 // Combines the selected street/address with a manually entered street number.
-function buildAddress(address: string, streetNumber: string) {
+function buildAddress(address: string, streetNumber: string, city: string) {
   const cleanAddress = address.trim();
   const cleanNumber = streetNumber.trim();
+  const cleanCity = city.trim();
 
-  if (!cleanNumber) return cleanAddress;
-  return `${cleanAddress} ${cleanNumber}`;
+  const streetAddress = cleanNumber
+    ? `${cleanAddress} ${cleanNumber}`
+    : cleanAddress;
+
+  return cleanCity ? `${streetAddress}, ${cleanCity}` : streetAddress;
 }
 
 // Builds the mission payload.
@@ -165,12 +173,12 @@ function buildMissionPayload(body: NewMissionForm): CreateMissionPayload {
     pickup: {
       lat: 0,
       lng: 0,
-      address: buildAddress(body.from, body.fromStreetNumber),
+      address: buildAddress(body.from, body.fromStreetNumber, body.fromCity),
     },
     dropoff: {
       lat: 0,
       lng: 0,
-      address: buildAddress(body.to, body.toStreetNumber),
+      address: buildAddress(body.to, body.toStreetNumber, body.toCity),
     },
   };
 }
@@ -210,8 +218,10 @@ function missionToForm(mission: Mission): NewMissionForm {
   return {
     title: mission.title,
     cargoDescription: mission.description,
+    fromCity: "",
     from: mission.pickup.address,
     fromStreetNumber: "",
+    toCity: "",
     to: mission.dropoff.address,
     toStreetNumber: "",
     urgency: mission.priority,
@@ -235,6 +245,10 @@ export default function MissionsPage() {
     getInitialFiltersFromQuery,
   );
   const [form, setForm] = useState<NewMissionForm>(initialForm);
+  const [locationCities, setLocationCities] = useState<string[]>([]);
+  const [pickupStreets, setPickupStreets] = useState<string[]>([]);
+  const [dropoffStreets, setDropoffStreets] = useState<string[]>([]);
+  const [locationsLoading, setLocationsLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
   const [editingMissionId, setEditingMissionId] = useState<string | null>(null);
@@ -264,6 +278,54 @@ export default function MissionsPage() {
     const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    async function fetchCities() {
+      try {
+        setLocationCities(await getLocationCities());
+      } catch {
+        setLocationCities([]);
+      } finally {
+        setLocationsLoading(false);
+      }
+    }
+
+    fetchCities();
+  }, []);
+
+  useEffect(() => {
+    if (!form.fromCity) {
+      setPickupStreets([]);
+      return;
+    }
+
+    async function fetchPickupStreets() {
+      try {
+        setPickupStreets(await getLocationStreets(form.fromCity));
+      } catch {
+        setPickupStreets([]);
+      }
+    }
+
+    fetchPickupStreets();
+  }, [form.fromCity]);
+
+  useEffect(() => {
+    if (!form.toCity) {
+      setDropoffStreets([]);
+      return;
+    }
+
+    async function fetchDropoffStreets() {
+      try {
+        setDropoffStreets(await getLocationStreets(form.toCity));
+      } catch {
+        setDropoffStreets([]);
+      }
+    }
+
+    fetchDropoffStreets();
+  }, [form.toCity]);
 
   const stats = useMemo(() => {
     return {
@@ -362,8 +424,10 @@ export default function MissionsPage() {
   async function handleSubmitMission() {
     if (
       !form.cargoDescription.trim() ||
+      !form.fromCity.trim() ||
       !form.from.trim() ||
       !form.fromStreetNumber.trim() ||
+      !form.toCity.trim() ||
       !form.to.trim() ||
       !form.toStreetNumber.trim()
     ) {
@@ -481,6 +545,10 @@ export default function MissionsPage() {
           <NewMissionFormPanel
             form={form}
             posting={posting}
+            cities={locationCities}
+            pickupStreets={pickupStreets}
+            dropoffStreets={dropoffStreets}
+            locationsLoading={locationsLoading}
             onUpdate={updateForm}
             onSubmit={handleSubmitMission}
             onCancel={() => {

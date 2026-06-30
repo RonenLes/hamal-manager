@@ -3,8 +3,10 @@ import type { MissionPriority } from "@/lib/api-client";
 export type NewMissionForm = {
   title: string;
   cargoDescription: string;
+  fromCity: string;
   from: string;
   fromStreetNumber: string;
+  toCity: string;
   to: string;
   toStreetNumber: string;
   urgency: MissionPriority;
@@ -21,6 +23,10 @@ type NewMissionFormPanelProps = {
   description?: string;
   submitLabel?: string;
   submittingLabel?: string;
+  cities: string[];
+  pickupStreets: string[];
+  dropoffStreets: string[];
+  locationsLoading?: boolean;
   onUpdate: <K extends keyof NewMissionForm>(
     key: K,
     value: NewMissionForm[K]
@@ -46,6 +52,10 @@ export default function NewMissionFormPanel({
   description = "Fill the delivery information and post it to the mission pool.",
   submitLabel = "Post Mission",
   submittingLabel = "Posting...",
+  cities,
+  pickupStreets,
+  dropoffStreets,
+  locationsLoading = false,
   onUpdate,
   onSubmit,
   onCancel,
@@ -154,17 +164,55 @@ export default function NewMissionFormPanel({
           </select>
         </div>
 
-        <div className="grid grid-cols-[1fr_120px] gap-2">
+        <div className="grid grid-cols-[1fr_1.2fr_100px] gap-2">
           <div>
             <label className="mb-2 block text-sm font-semibold text-muted">
-              From
+              Pickup city
             </label>
-            <input
-              value={form.from}
-              onChange={(event) => onUpdate("from", event.target.value)}
-              placeholder="Pickup street / address"
-              className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
-            />
+            <select
+              value={form.fromCity}
+              onChange={(event) => {
+                onUpdate("fromCity", event.target.value);
+                onUpdate("from", "");
+              }}
+              disabled={locationsLoading}
+              className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500 disabled:opacity-50"
+            >
+              <option value="">City</option>
+              {cities.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-muted">
+              Pickup street
+            </label>
+            {pickupStreets.length > 0 ? (
+              <select
+                value={form.from}
+                onChange={(event) => onUpdate("from", event.target.value)}
+                disabled={!form.fromCity}
+                className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500 disabled:opacity-50"
+              >
+                <option value="">Street</option>
+                {pickupStreets.map((street) => (
+                  <option key={street} value={street}>
+                    {street}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                value={form.from}
+                onChange={(event) => onUpdate("from", event.target.value)}
+                placeholder="Pickup street"
+                className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
+              />
+            )}
           </div>
 
           <div>
@@ -182,17 +230,55 @@ export default function NewMissionFormPanel({
           </div>
         </div>
 
-        <div className="grid grid-cols-[1fr_120px] gap-2">
+        <div className="grid grid-cols-[1fr_1.2fr_100px] gap-2">
           <div>
             <label className="mb-2 block text-sm font-semibold text-muted">
-              To
+              Dropoff city
             </label>
-            <input
-              value={form.to}
-              onChange={(event) => onUpdate("to", event.target.value)}
-              placeholder="Dropoff street / address"
-              className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
-            />
+            <select
+              value={form.toCity}
+              onChange={(event) => {
+                onUpdate("toCity", event.target.value);
+                onUpdate("to", "");
+              }}
+              disabled={locationsLoading}
+              className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500 disabled:opacity-50"
+            >
+              <option value="">City</option>
+              {cities.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-muted">
+              Dropoff street
+            </label>
+            {dropoffStreets.length > 0 ? (
+              <select
+                value={form.to}
+                onChange={(event) => onUpdate("to", event.target.value)}
+                disabled={!form.toCity}
+                className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500 disabled:opacity-50"
+              >
+                <option value="">Street</option>
+                {dropoffStreets.map((street) => (
+                  <option key={street} value={street}>
+                    {street}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                value={form.to}
+                onChange={(event) => onUpdate("to", event.target.value)}
+                placeholder="Dropoff street"
+                className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
+              />
+            )}
           </div>
 
           <div>
