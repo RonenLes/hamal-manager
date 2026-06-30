@@ -98,7 +98,7 @@ export default function DriverEntry({
   return (
     <article
       className={`bg-card ${
-        isExpanded
+        isExpanded || isGraphExpanded
           ? "relative z-10 rounded-xl outline outline-2 outline-blue-500/70 shadow-[0_0_0_4px_rgba(59,130,246,0.12)]"
           : ""
       }`}

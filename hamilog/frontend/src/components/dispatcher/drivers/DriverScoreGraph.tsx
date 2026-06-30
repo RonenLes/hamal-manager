@@ -43,7 +43,7 @@ export default function DriverScoreGraph({
   const latestScore = points[points.length - 1]?.score ?? 0;
 
   return (
-    <section className="border-y-2 border-blue-500/70 bg-card-soft px-5 py-5 shadow-[0_0_0_1px_rgba(59,130,246,0.25)]">
+    <section className="relative z-10 rounded-xl bg-card-soft px-5 py-5 outline outline-2 outline-blue-500/70 shadow-[0_0_0_4px_rgba(59,130,246,0.12)]">
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="text-lg font-black text-main">Driver Score Trend</h3>

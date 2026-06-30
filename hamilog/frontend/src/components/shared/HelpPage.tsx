@@ -24,7 +24,13 @@ function HelpPageCard({ title, href, description, features }: HelpPageItem) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <article className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+    <article
+      className={`rounded-2xl border border-app bg-card p-5 shadow-xl ${
+        isExpanded
+          ? "relative z-10 outline outline-2 outline-blue-500/70 shadow-[0_0_0_4px_rgba(59,130,246,0.12)]"
+          : ""
+      }`}
+    >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h2 className="text-xl font-black text-main">{title}</h2>
@@ -48,7 +54,7 @@ function HelpPageCard({ title, href, description, features }: HelpPageItem) {
       </div>
 
       {isExpanded && (
-        <ul className="mt-4 space-y-2">
+        <ul className="mt-4 space-y-2 border-t border-blue-500/40 pt-4">
           {features.map((feature) => (
             <li key={feature} className="flex gap-2 text-sm text-muted">
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />

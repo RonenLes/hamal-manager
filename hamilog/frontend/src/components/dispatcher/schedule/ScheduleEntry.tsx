@@ -84,7 +84,13 @@ export default function ScheduleEntry({
   const deliveredAt = getMissionDeliveredAt(mission);
 
   return (
-    <article className="bg-card">
+    <article
+      className={`bg-card ${
+        isExpanded
+          ? "relative z-10 rounded-xl outline outline-2 outline-blue-500/70 shadow-[0_0_0_4px_rgba(59,130,246,0.12)]"
+          : ""
+      }`}
+    >
       <button
         type="button"
         onClick={onToggle}
@@ -128,7 +134,7 @@ export default function ScheduleEntry({
       </button>
 
       {isExpanded && (
-        <div className="border-t border-app bg-app/60 px-3 py-3 sm:px-5 sm:py-5">
+        <div className="border-t border-blue-500/40 bg-app/60 px-3 py-3 sm:px-5 sm:py-5">
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
             <DetailTile label="Delivery Status">
               <p
