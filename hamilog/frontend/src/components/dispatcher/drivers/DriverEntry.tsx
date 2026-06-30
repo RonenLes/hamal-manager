@@ -99,7 +99,7 @@ export default function DriverEntry({
     <article
       className={`bg-card ${
         isExpanded
-          ? "border-y-2 border-blue-500/70 shadow-[0_0_0_1px_rgba(59,130,246,0.25)]"
+          ? "relative z-10 rounded-xl outline outline-2 outline-blue-500/70 shadow-[0_0_0_4px_rgba(59,130,246,0.12)]"
           : ""
       }`}
     >
@@ -178,7 +178,7 @@ export default function DriverEntry({
       )}
 
       {isExpanded && (
-        <div className="border-t-2 border-blue-500/70 bg-card-soft px-3 py-3 sm:px-5 sm:py-5">
+        <div className="border-t border-blue-500/40 bg-card-soft px-3 py-3 sm:px-5 sm:py-5">
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
             <DetailTile label="Full Name">
               <p className="break-words text-sm font-semibold text-main sm:text-base">{driver.name}</p>

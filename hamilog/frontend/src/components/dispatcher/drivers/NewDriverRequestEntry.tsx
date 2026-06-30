@@ -58,7 +58,7 @@ export default function NewDriverRequestEntry({
     <article
       className={`bg-card ${
         isExpanded
-          ? "border-y-2 border-blue-500/70 shadow-[0_0_0_1px_rgba(59,130,246,0.25)]"
+          ? "relative z-10 rounded-xl outline outline-2 outline-blue-500/70 shadow-[0_0_0_4px_rgba(59,130,246,0.12)]"
           : ""
       }`}
     >
@@ -100,7 +100,7 @@ export default function NewDriverRequestEntry({
       </button>
 
       {isExpanded && (
-        <div className="border-t-2 border-blue-500/70 bg-card-soft px-5 py-5">
+        <div className="border-t border-blue-500/40 bg-card-soft px-5 py-5">
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
             <DetailTile label="Full Name">
               <p className="font-semibold text-main">{driverRequest.name}</p>
