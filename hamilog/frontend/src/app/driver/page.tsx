@@ -239,6 +239,28 @@ export default function DriverDashboardPage() {
           />
         </DispatcherStatsWindow>
 
+        <section className="mb-5 rounded-2xl border border-app bg-card p-5 shadow-xl">
+          <h2 className="text-xl font-black text-main">Driver Status</h2>
+          <div className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
+            <div className="flex justify-between gap-4 rounded-xl border border-app bg-card-soft p-4">
+              <span className="text-muted">Account</span>
+              <span className="font-bold text-main">
+                {user?.username || "Driver"}
+              </span>
+            </div>
+            <div className="flex justify-between gap-4 rounded-xl border border-app bg-card-soft p-4">
+              <span className="text-muted">Vehicle</span>
+              <span className="font-bold capitalize text-main">
+                {user?.car_type?.replace("_", " ") || "Not set"}
+              </span>
+            </div>
+            <div className="flex justify-between gap-4 rounded-xl border border-app bg-card-soft p-4">
+              <span className="text-muted">Online</span>
+              <span className="font-bold text-emerald-300">Ready</span>
+            </div>
+          </div>
+        </section>
+
         <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5">
           <div className="xl:col-span-2">
             {activeMission ? (
@@ -368,28 +390,6 @@ export default function DriverDashboardPage() {
           </div>
 
           <div className="space-y-5">
-            <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
-              <h2 className="text-xl font-black text-main">Driver Status</h2>
-              <div className="mt-5 space-y-3 text-sm">
-                <div className="flex justify-between gap-4">
-                  <span className="text-muted">Account</span>
-                  <span className="font-bold text-main">
-                    {user?.username || "Driver"}
-                  </span>
-                </div>
-                <div className="flex justify-between gap-4">
-                  <span className="text-muted">Vehicle</span>
-                  <span className="font-bold capitalize text-main">
-                    {user?.car_type?.replace("_", " ") || "Not set"}
-                  </span>
-                </div>
-                <div className="flex justify-between gap-4">
-                  <span className="text-muted">Online</span>
-                  <span className="font-bold text-emerald-300">Ready</span>
-                </div>
-              </div>
-            </section>
-
             <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
               <div className="flex items-start justify-between gap-3">
                 <div>

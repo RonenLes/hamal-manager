@@ -5,6 +5,8 @@ import { useRouter} from "next/navigation";
 import {
   type CarType,
   createDriverRequest,
+  getLocationCities,
+  getLocationStreets,
   login as apiLogin,
   getStoredUser,
   getToken,
@@ -43,6 +45,14 @@ const carTypeOptions = Object.entries(CAR_SPECS).map(([value, spec]) => ({
   label: spec.label,
 }));
 
+// Combines a selected street, street number, and city for backend storage.
+function buildDriverAddress(street: string, streetNumber: string) {
+  const cleanStreet = street.trim();
+  const cleanNumber = streetNumber.trim();
+
+  return cleanNumber ? `${cleanStreet} ${cleanNumber}` : cleanStreet;
+}
+
 // ---------------------------------------------------------------------------
 // Inner component that uses useSearchParams
 // ---------------------------------------------------------------------------
@@ -62,17 +72,73 @@ function LoginForm() {
     email: "",
     phone: "",
     address: "",
+    street_number: "",
     city: "",
     car_type: "sedan" as CarType,
     password: "",
     confirm_password: "",
   });
+  const [locationCities, setLocationCities] = useState<string[]>([]);
+  const [locationStreets, setLocationStreets] = useState<string[]>([]);
+  const [locationsLoading, setLocationsLoading] = useState(false);
+  const [locationsError, setLocationsError] = useState<string | null>(null);
   const [shaking, setShaking] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>(getSavedTheme);
 
   useEffect(() => {
     applyTheme(theme);
   }, [theme]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function fetchCities() {
+      setLocationsLoading(true);
+      try {
+        const cities = await getLocationCities();
+        if (!isActive) return;
+        setLocationCities(cities);
+        setLocationsError(null);
+      } catch {
+        if (!isActive) return;
+        setLocationCities([]);
+        setLocationsError("Could not load city list.");
+      } finally {
+        if (isActive) setLocationsLoading(false);
+      }
+    }
+
+    fetchCities();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isActive = true;
+
+    if (!driverRequest.city) {
+      return;
+    }
+
+    async function fetchStreets() {
+      try {
+        const streets = await getLocationStreets(driverRequest.city);
+        if (!isActive) return;
+        setLocationStreets(streets);
+      } catch {
+        if (!isActive) return;
+        setLocationStreets([]);
+      }
+    }
+
+    fetchStreets();
+
+    return () => {
+      isActive = false;
+    };
+  }, [driverRequest.city]);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -149,11 +215,16 @@ function LoginForm() {
       }
 
       try {
+        const address = buildDriverAddress(
+          driverRequest.address,
+          driverRequest.street_number,
+        );
+
         await createDriverRequest({
           name: driverRequest.name,
           email: driverRequest.email,
           phone: driverRequest.phone,
-          address: driverRequest.address,
+          address,
           city: driverRequest.city,
           car_type: driverRequest.car_type,
           password: driverRequest.password,
@@ -167,11 +238,13 @@ function LoginForm() {
           email: "",
           phone: "",
           address: "",
+          street_number: "",
           city: "",
           car_type: "sedan",
           password: "",
           confirm_password: "",
         });
+        setLocationStreets([]);
       } catch (err: unknown) {
         const msg =
           err && typeof err === "object" && "detail" in err
@@ -431,6 +504,30 @@ function LoginForm() {
 
             <input
               type="text"
+              value={driverRequest.city}
+              onChange={(event) =>
+                setDriverRequest((current) => ({
+                  ...current,
+                  city: event.target.value,
+                  address: "",
+                  street_number: "",
+                }))
+              }
+              onInput={() => setLocationStreets([])}
+              className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500 disabled:opacity-50"
+              disabled={locationsLoading}
+              list="driver-registration-cities"
+              placeholder={locationsLoading ? "Loading cities..." : "City"}
+              required
+            />
+            <datalist id="driver-registration-cities">
+              {locationCities.map((city) => (
+                <option key={city} value={city} />
+              ))}
+            </datalist>
+
+            <input
+              type="text"
               value={driverRequest.address}
               onChange={(event) =>
                 setDriverRequest((current) => ({
@@ -438,24 +535,40 @@ function LoginForm() {
                   address: event.target.value,
                 }))
               }
-              className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500"
-              placeholder="Address"
+              className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500 disabled:opacity-50"
+              disabled={!driverRequest.city}
+              list="driver-registration-streets"
+              placeholder={
+                driverRequest.city ? "Street" : "Choose city first"
+              }
               required
             />
+            <datalist id="driver-registration-streets">
+              {locationStreets.map((street) => (
+                <option key={street} value={street} />
+              ))}
+            </datalist>
 
             <input
               type="text"
-              value={driverRequest.city}
+              inputMode="numeric"
+              value={driverRequest.street_number}
               onChange={(event) =>
                 setDriverRequest((current) => ({
                   ...current,
-                  city: event.target.value,
+                  street_number: event.target.value,
                 }))
               }
               className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500"
-              placeholder="City"
+              placeholder="Street number"
               required
             />
+
+            {locationsError && (
+              <p className="rounded-lg border border-orange-500/30 bg-orange-500/10 px-3 py-2 text-xs font-semibold text-orange-300">
+                {locationsError}
+              </p>
+            )}
 
             <select
               value={driverRequest.car_type}

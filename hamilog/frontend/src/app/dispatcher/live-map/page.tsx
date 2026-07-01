@@ -12,7 +12,6 @@ import {
   getToken,
   getStoredUser,
 } from "@/lib/api-client";
-import { formatDateTime24 } from "@/lib/date-format";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
 import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
@@ -82,14 +81,19 @@ export default function LiveDeliveryMapPage() {
   }, []);
 
   const mapPoints = useMemo<MapPoint[]>(() => {
-    return missions.map((mission) => {
-      return {
-        id: mission.id,
-        mission,
-        driver: getDriverForMission(mission, drivers),
-        state: getDeliveryState(mission),
-      };
-    });
+    return missions
+      .filter(
+        (mission) =>
+          mission.status !== "delivered" && mission.status !== "cancelled"
+      )
+      .map((mission) => {
+        return {
+          id: mission.id,
+          mission,
+          driver: getDriverForMission(mission, drivers),
+          state: getDeliveryState(mission),
+        };
+      });
   }, [missions, drivers]);
 
   const selectedPoint = useMemo(() => {
@@ -104,8 +108,6 @@ export default function LiveDeliveryMapPage() {
       active: mapPoints.filter((point) => point.state === "active").length,
       assigned: mapPoints.filter((point) => point.state === "assigned").length,
       unassigned: mapPoints.filter((point) => point.state === "unassigned")
-        .length,
-      delivered: mapPoints.filter((point) => point.state === "delivered")
         .length,
     };
   }, [mapPoints]);
@@ -132,7 +134,7 @@ export default function LiveDeliveryMapPage() {
           <h1 className="mt-1 text-2xl font-black sm:text-3xl">Live Delivery Map</h1>
 
           <p className="mt-2 text-muted">
-            View deliveries to make on the map. Active deliveries are marked in
+            View current deliveries on the map. Active deliveries are marked in
             green.
           </p>
         </header>
@@ -162,11 +164,6 @@ export default function LiveDeliveryMapPage() {
             subtitle="Needs driver"
           />
 
-          <DispatcherStatBox
-            title="Delivered"
-            value={stats.delivered}
-            subtitle="Completed"
-          />
         </DispatcherStatsWindow>
 
         <section>

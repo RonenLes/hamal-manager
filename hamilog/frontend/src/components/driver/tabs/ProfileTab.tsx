@@ -68,12 +68,12 @@ function EditableField({
   onChange: (value: string) => void;
 }) {
   return (
-    <DetailTile label={label}>
+    <DetailTile label={label} density="compact">
       {editing ? (
         <input
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="w-full rounded-xl border border-app bg-card-soft px-3 py-2 font-semibold text-main outline-none transition focus:border-blue-500"
+          className="w-full rounded-lg border border-app bg-card-soft px-2.5 py-2 text-sm font-semibold text-main outline-none transition focus:border-blue-500"
         />
       ) : (
         <p className="font-semibold text-main">{value}</p>
@@ -112,12 +112,12 @@ export default function ProfileTab() {
   );
 
   return (
-    <section className="space-y-5">
-      <div className="rounded-2xl border border-app bg-card p-5 shadow-xl">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <section className="space-y-3 sm:space-y-5">
+      <div className="rounded-xl border border-app bg-card p-3 shadow-lg sm:p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-xl font-black text-main">Profile</h2>
-            <p className="mt-1 text-sm text-muted">
+            <h2 className="text-lg font-black text-main sm:text-xl">Profile</h2>
+            <p className="mt-1 text-xs text-muted sm:text-sm">
               Driver account, contact details, and vehicle information.
             </p>
           </div>
@@ -125,33 +125,33 @@ export default function ProfileTab() {
           <button
             type="button"
             onClick={handleEditClick}
-            className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-500"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-500"
           >
             {editing ? "Save Profile" : "Edit Contact Info"}
           </button>
         </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <DetailTile label="Username">
+        <div className="mt-3 grid grid-cols-2 gap-2.5 md:grid-cols-3">
+          <DetailTile label="Username" density="compact">
             <p className="font-semibold text-main">
               {user?.username || "Driver"}
             </p>
           </DetailTile>
 
-          <DetailTile label="Role">
+          <DetailTile label="Role" density="compact">
             <p className="font-semibold capitalize text-main">
               {user?.role || "driver"}
             </p>
           </DetailTile>
 
-          <DetailTile label="Vehicle Type">
+          <DetailTile label="Vehicle Type" density="compact">
             <p className="font-semibold capitalize text-main">
               {user?.car_type?.replace("_", " ") || "Not set"}
             </p>
           </DetailTile>
 
-          <DetailTile label="Driver ID">
-            <p className="font-mono text-sm text-muted">
+          <DetailTile label="Driver ID" density="compact">
+            <p className="font-mono text-xs text-muted sm:text-sm">
               {user?.driver_id || "Unknown"}
             </p>
           </DetailTile>
@@ -196,7 +196,7 @@ export default function ProfileTab() {
       <button
         type="button"
         onClick={handleLogout}
-        className="rounded-xl bg-red-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-red-500"
+        className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-500"
       >
         Sign Out
       </button>
