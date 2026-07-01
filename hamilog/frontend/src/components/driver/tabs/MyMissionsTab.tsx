@@ -12,6 +12,20 @@ type MyMissionsTabProps = {
   onCancelMission: (id: string, reason: string) => void;
 };
 
+function isPresentOrFutureMission(mission: Mission) {
+  return mission.status === "assigned" || mission.status === "in_transit";
+}
+
+function sortPresentAndFutureMissions(a: Mission, b: Mission) {
+  if (a.status === "in_transit" && b.status !== "in_transit") return -1;
+  if (a.status !== "in_transit" && b.status === "in_transit") return 1;
+
+  const aTime = new Date(a.ideal_delivery_time || a.created_at).getTime();
+  const bTime = new Date(b.ideal_delivery_time || b.created_at).getTime();
+
+  return aTime - bTime;
+}
+
 // Renders the my missions tab component.
 export default function MyMissionsTab({
   missions,
@@ -19,12 +33,11 @@ export default function MyMissionsTab({
   onUpdateStatus,
   onCancelMission,
 }: MyMissionsTabProps) {
-  const activeMission = useMemo(
+  const presentAndFutureMissions = useMemo(
     () =>
-      missions.find(
-        (mission) =>
-          mission.status === "assigned" || mission.status === "in_transit"
-      ),
+      missions
+        .filter(isPresentOrFutureMission)
+        .sort(sortPresentAndFutureMissions),
     [missions],
   );
 
@@ -33,10 +46,10 @@ export default function MyMissionsTab({
     [missions],
   );
 
-  if (!activeMission && completedMissions.length === 0) {
+  if (presentAndFutureMissions.length === 0 && completedMissions.length === 0) {
     return (
       <section className="rounded-2xl border border-app bg-card p-8 text-center shadow-xl">
-        <h2 className="text-xl font-black text-main">No Active Missions</h2>
+        <h2 className="text-xl font-black text-main">No Assigned Missions</h2>
         <p className="mt-2 text-sm text-muted">
           Check Open Tasks to find available missions that match your vehicle.
         </p>
@@ -46,13 +59,18 @@ export default function MyMissionsTab({
 
   return (
     <section className="space-y-5">
-      {activeMission && (
-        <ActiveMissionCard
-          mission={activeMission}
-          onMarkDelivered={onMarkDelivered}
-          onUpdateStatus={onUpdateStatus}
-          onCancelMission={onCancelMission}
-        />
+      {presentAndFutureMissions.length > 0 && (
+        <div className="space-y-4">
+          {presentAndFutureMissions.map((mission) => (
+            <ActiveMissionCard
+              key={mission.id}
+              mission={mission}
+              onMarkDelivered={onMarkDelivered}
+              onUpdateStatus={onUpdateStatus}
+              onCancelMission={onCancelMission}
+            />
+          ))}
+        </div>
       )}
 
       {completedMissions.length > 0 && (

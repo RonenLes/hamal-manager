@@ -500,10 +500,25 @@ export async function analyzeCargo(
   });
 }
 
+export type ChatbotHistoryMessage = {
+  role: 'user' | 'bot';
+  text: string;
+};
+
 // Handles the send chatbot message logic.
-export async function sendChatbotMessage(message: string): Promise<{ reply: string }> {
+export async function sendChatbotMessage(
+  message: string,
+  context?: {
+    pagePath?: string;
+    history?: ChatbotHistoryMessage[];
+  },
+): Promise<{ reply: string }> {
   return apiFetch<{ reply: string }>("/api/chatbot", {
     method: "POST",
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({
+      message,
+      page_path: context?.pagePath,
+      history: context?.history ?? [],
+    }),
   });
 }

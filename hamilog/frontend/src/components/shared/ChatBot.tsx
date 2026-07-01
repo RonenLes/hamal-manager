@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { sendChatbotMessage } from "@/lib/api-client";
 
 type ChatMessage = {
@@ -10,6 +11,7 @@ type ChatMessage = {
 
 // Renders the chat bot component.
 export default function ChatBot() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -30,7 +32,14 @@ export default function ChatBot() {
     setLoading(true);
 
     try {
-      const data = await sendChatbotMessage(userMessage);
+      const nextMessages: ChatMessage[] = [
+        ...messages,
+        { role: "user", text: userMessage },
+      ];
+      const data = await sendChatbotMessage(userMessage, {
+        pagePath: pathname,
+        history: nextMessages.slice(-8),
+      });
       setMessages((prev) => [...prev, { role: "bot", text: data.reply }]);
     } catch {
       setMessages((prev) => [

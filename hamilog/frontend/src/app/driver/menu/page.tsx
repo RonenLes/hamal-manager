@@ -28,7 +28,7 @@ const menuItems = [
   {
     title: "Dispatcher Requests",
     description: "Accept or decline suggested deliveries.",
-    icon: "?",
+    icon: "👨‍💼",
     href: "/driver/requests",
   },
   {
@@ -52,7 +52,7 @@ const menuItems = [
   {
     title: "Help",
     description: "Driver guide and support tickets.",
-    icon: "?",
+    icon: "❓",
     href: "/driver/help",
   },
 ];

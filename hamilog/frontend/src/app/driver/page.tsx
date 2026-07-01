@@ -24,7 +24,21 @@ import ActiveMissionCard from "@/components/driver/missions/ActiveMissionCard";
 import DispatcherRequestCard from "@/components/driver/requests/DispatcherRequestCard";
 import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 import { getMissionDistanceLabel } from "@/lib/mission-distance";
-import { toDateInputValue } from "@/components/shared/Calendar";
+import { formatIdealDeliveryTime } from "@/lib/mission-time";
+
+function isPresentOrFutureMission(mission: Mission) {
+  return mission.status === "assigned" || mission.status === "in_transit";
+}
+
+function sortPresentAndFutureMissions(a: Mission, b: Mission) {
+  if (a.status === "in_transit" && b.status !== "in_transit") return -1;
+  if (a.status !== "in_transit" && b.status === "in_transit") return 1;
+
+  const aTime = new Date(a.ideal_delivery_time || a.created_at).getTime();
+  const bTime = new Date(b.ideal_delivery_time || b.created_at).getTime();
+
+  return aTime - bTime;
+}
 
 // Renders the driver dashboard page component.
 export default function DriverDashboardPage() {
@@ -171,9 +185,16 @@ export default function DriverDashboardPage() {
     }
   }
 
-  const activeMission = missions.find(
-    (mission) => mission.status === "assigned" || mission.status === "in_transit"
-  );
+  const presentAndFutureMissions = missions
+    .filter(isPresentOrFutureMission)
+    .sort(sortPresentAndFutureMissions);
+  const activeMission =
+    presentAndFutureMissions.find(
+      (mission) => mission.status === "in_transit"
+    ) || presentAndFutureMissions[0];
+  const activeCount = presentAndFutureMissions.filter(
+    (mission) => mission.status === "in_transit"
+  ).length;
   const completedCount = missions.filter(
     (mission) => mission.status === "delivered"
   ).length;
@@ -208,7 +229,7 @@ export default function DriverDashboardPage() {
         <DispatcherStatsWindow>
           <StatCard
             title="Active Mission"
-            value={activeMission ? "1" : "0"}
+            value={`${activeCount}`}
             subtitle={activeMission ? activeMission.status.replace("_", " ") : "No active route"}
             icon="🚚"
             color="blue"
@@ -352,18 +373,18 @@ export default function DriverDashboardPage() {
                   Assigned Missions
                 </h2>
                 <p className="mt-1 text-sm text-muted">
-                  All missions currently linked to your driver account.
+                  Present and future missions linked to your driver account.
                 </p>
               </div>
 
               <div className="divide-y divide-[var(--border-app)]">
-                {missions.length === 0 && (
+                {presentAndFutureMissions.length === 0 && (
                   <p className="p-5 text-sm text-muted">
-                    No assigned missions yet.
+                    No present or future assigned missions yet.
                   </p>
                 )}
 
-                {missions.map((mission) => (
+                {presentAndFutureMissions.map((mission) => (
                   <div
                     key={mission.id}
                     className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
@@ -374,7 +395,7 @@ export default function DriverDashboardPage() {
                       </p>
                       <p className="text-sm text-muted">
                         {mission.status.replace("_", " ")} -{" "}
-                        {toDateInputValue(new Date(mission.created_at))}
+                        {formatIdealDeliveryTime(mission.ideal_delivery_time)}
                       </p>
                     </div>
                     <Link
