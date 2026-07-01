@@ -502,8 +502,7 @@ function LoginForm() {
               required
             />
 
-            <input
-              type="text"
+            <select
               value={driverRequest.city}
               onChange={(event) =>
                 setDriverRequest((current) => ({
@@ -513,21 +512,21 @@ function LoginForm() {
                   street_number: "",
                 }))
               }
-              onInput={() => setLocationStreets([])}
               className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500 disabled:opacity-50"
               disabled={locationsLoading}
-              list="driver-registration-cities"
-              placeholder={locationsLoading ? "Loading cities..." : "City"}
               required
-            />
-            <datalist id="driver-registration-cities">
+            >
+              <option value="">
+                {locationsLoading ? "Loading cities..." : "Select city"}
+              </option>
               {locationCities.map((city) => (
-                <option key={city} value={city} />
+                <option key={city} value={city}>
+                  {city}
+                </option>
               ))}
-            </datalist>
+            </select>
 
-            <input
-              type="text"
+            <select
               value={driverRequest.address}
               onChange={(event) =>
                 setDriverRequest((current) => ({
@@ -537,17 +536,17 @@ function LoginForm() {
               }
               className="w-full rounded-lg border border-app bg-input px-4 py-3 text-sm text-main outline-none focus:border-blue-500 disabled:opacity-50"
               disabled={!driverRequest.city}
-              list="driver-registration-streets"
-              placeholder={
-                driverRequest.city ? "Street" : "Choose city first"
-              }
               required
-            />
-            <datalist id="driver-registration-streets">
+            >
+              <option value="">
+                {driverRequest.city ? "Select street" : "Choose city first"}
+              </option>
               {locationStreets.map((street) => (
-                <option key={street} value={street} />
+                <option key={street} value={street}>
+                  {street}
+                </option>
               ))}
-            </datalist>
+            </select>
 
             <input
               type="text"
