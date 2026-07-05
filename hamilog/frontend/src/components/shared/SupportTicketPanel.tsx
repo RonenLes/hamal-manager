@@ -8,6 +8,7 @@ import {
   type TicketMainSubject,
   type TicketSubSubject,
 } from "@/lib/api-client";
+import { FREE_TEXT_WORD_LIMIT, countWords, limitWords } from "@/lib/text-limit";
 
 type SupportTicketPanelProps = {
   onClose?: () => void;
@@ -66,6 +67,7 @@ export default function SupportTicketPanel({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const descriptionWordCount = countWords(description);
 
   const subSubjectOptions = useMemo(
     () =>
@@ -184,7 +186,7 @@ export default function SupportTicketPanel({
           <span className="text-sm font-bold text-main">Title</span>
           <input
             value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            onChange={(event) => setTitle(limitWords(event.target.value))}
             maxLength={120}
             className="mt-2 w-full rounded-xl border border-app bg-card-soft px-4 py-3 text-sm text-main outline-none transition placeholder:text-muted focus:border-blue-400"
             placeholder="Short summary"
@@ -192,10 +194,15 @@ export default function SupportTicketPanel({
         </label>
 
         <label className="block">
-          <span className="text-sm font-bold text-main">Description</span>
+          <span className="flex items-center justify-between gap-3 text-sm font-bold text-main">
+            Description
+            <span className="text-xs font-semibold text-muted">
+              {descriptionWordCount}/{FREE_TEXT_WORD_LIMIT} words
+            </span>
+          </span>
           <textarea
             value={description}
-            onChange={(event) => setDescription(event.target.value)}
+            onChange={(event) => setDescription(limitWords(event.target.value))}
             maxLength={2000}
             rows={6}
             className="mt-2 w-full resize-none rounded-xl border border-app bg-card-soft px-4 py-3 text-sm text-main outline-none transition placeholder:text-muted focus:border-blue-400"

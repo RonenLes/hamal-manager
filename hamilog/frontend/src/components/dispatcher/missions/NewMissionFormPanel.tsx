@@ -1,4 +1,5 @@
 import type { MissionPriority } from "@/lib/api-client";
+import { FREE_TEXT_WORD_LIMIT, countWords, limitWords } from "@/lib/text-limit";
 
 export type NewMissionForm = {
   title: string;
@@ -64,6 +65,8 @@ export default function NewMissionFormPanel({
   onSubmit,
   onCancel,
 }: NewMissionFormPanelProps) {
+  const cargoDescriptionWordCount = countWords(form.cargoDescription);
+
   return (
     <div className="mt-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-5">
       <div className="mb-5">
@@ -96,7 +99,7 @@ export default function NewMissionFormPanel({
           </label>
           <input
             value={form.title}
-            onChange={(event) => onUpdate("title", event.target.value)}
+            onChange={(event) => onUpdate("title", limitWords(event.target.value))}
             placeholder="Example: Medical supplies delivery"
             className="w-full rounded-xl border border-app bg-app px-3 py-2.5 sm:px-4 sm:py-3 text-main outline-none focus:border-emerald-500"
           />
@@ -319,13 +322,16 @@ export default function NewMissionFormPanel({
         </div>
 
         <div className="md:col-span-2">
-          <label className="mb-2 block text-sm font-semibold text-muted">
-            Cargo description
+          <label className="mb-2 flex items-center justify-between gap-3 text-sm font-semibold text-muted">
+            <span>Cargo description</span>
+            <span className="text-xs">
+              {cargoDescriptionWordCount}/{FREE_TEXT_WORD_LIMIT} words
+            </span>
           </label>
           <textarea
             value={form.cargoDescription}
             onChange={(event) =>
-              onUpdate("cargoDescription", event.target.value)
+              onUpdate("cargoDescription", limitWords(event.target.value))
             }
             placeholder="Describe what should be delivered..."
             rows={4}

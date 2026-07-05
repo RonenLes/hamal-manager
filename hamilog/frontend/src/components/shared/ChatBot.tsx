@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { sendChatbotMessage } from "@/lib/api-client";
+import { limitWords } from "@/lib/text-limit";
 
 type ChatMessage = {
   role: "user" | "bot";
@@ -90,7 +91,7 @@ export default function ChatBot() {
           <div className="flex gap-2">
             <input
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={(e) => setMessage(limitWords(e.target.value))}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSend();
               }}

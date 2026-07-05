@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import type { SuggestedDriver } from "@/lib/api-client";
 import { CAR_SPECS } from "@/lib/car-specs";
+import { FREE_TEXT_WORD_LIMIT, countWords, limitWords } from "@/lib/text-limit";
 
 import DetailTile from "../shared/DetailTile";
 
@@ -39,6 +40,7 @@ export default function SuggestedDriverEntry({
   const matchScore = Math.round(suggestion.match_score * 100);
   const spec = CAR_SPECS[driver.car_type];
   const location = driver.current_location?.address || "No current location";
+  const noteWordCount = countWords(note);
 
   return (
     <article
@@ -133,12 +135,15 @@ export default function SuggestedDriverEntry({
           </div>
 
           <div className="mt-5 border-t border-app pt-5">
-            <label className="mb-2 block text-sm font-semibold text-muted">
-              Personal note to driver
+            <label className="mb-2 flex items-center justify-between gap-3 text-sm font-semibold text-muted">
+              <span>Personal note to driver</span>
+              <span className="text-xs">
+                {noteWordCount}/{FREE_TEXT_WORD_LIMIT} words
+              </span>
             </label>
             <textarea
               value={note}
-              onChange={(event) => setNote(event.target.value)}
+              onChange={(event) => setNote(limitWords(event.target.value))}
               rows={3}
               placeholder="Add why this driver is a good fit or special delivery instructions..."
               className="w-full resize-none rounded-xl border border-app bg-app px-4 py-3 text-main outline-none focus:border-orange-500"

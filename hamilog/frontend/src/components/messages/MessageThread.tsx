@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 
 import type { Message, StoredUser } from "@/lib/api-client";
+import { limitWords } from "@/lib/text-limit";
 import type { MessageRecipient } from "./types";
 
 type MessageThreadProps = {
@@ -101,7 +102,7 @@ export default function MessageThread({
         <div className="flex gap-3">
           <input
             value={draft}
-            onChange={(event) => onDraftChange(event.target.value)}
+            onChange={(event) => onDraftChange(limitWords(event.target.value))}
             placeholder="Type a message"
             className="min-w-0 flex-1 rounded-xl border border-app bg-card-soft px-4 py-3 text-main outline-none transition focus:border-blue-500"
           />

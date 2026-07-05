@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { analyzeCargo } from "@/lib/api-client";
+import { FREE_TEXT_WORD_LIMIT, countWords, limitWords } from "@/lib/text-limit";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
 
@@ -22,6 +23,7 @@ export default function CargoAnalysisPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CargoResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const descriptionWordCount = countWords(description);
 
   // Handles the analyze action.
   async function handleAnalyze() {
@@ -61,14 +63,17 @@ export default function CargoAnalysisPage() {
         <section className="rounded-2xl border border-app bg-card p-6 shadow-xl">
           <label
             htmlFor="cargo-description"
-            className="mb-2 block text-sm font-bold text-main"
+            className="mb-2 flex items-center justify-between gap-3 text-sm font-bold text-main"
           >
-            Cargo Description
+            <span>Cargo Description</span>
+            <span className="text-xs font-semibold text-muted">
+              {descriptionWordCount}/{FREE_TEXT_WORD_LIMIT} words
+            </span>
           </label>
           <textarea
             id="cargo-description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => setDescription(limitWords(e.target.value))}
             rows={4}
             placeholder="e.g. 50 kg of frozen vaccines in insulated boxes, about 30 liters total"
             className="w-full resize-none rounded-xl border border-app bg-input px-4 py-3 text-sm text-main placeholder:text-soft outline-none focus:border-blue-500 transition"
