@@ -74,6 +74,19 @@ def _active_mission_for_driver(driver: dict) -> dict | None:
     return serialize_single(mission) if mission else None
 
 
+def _created_at_sort_value(message: dict) -> float:
+    created_at = message.get("created_at")
+    if isinstance(created_at, datetime):
+        return created_at.timestamp()
+    if isinstance(created_at, str):
+        try:
+            return datetime.fromisoformat(created_at).timestamp()
+        except ValueError:
+            return 0
+
+    return 0
+
+
 async def _notify_message(message: dict) -> None:
     payload = {
         "type": "message_created",
@@ -145,14 +158,15 @@ async def list_conversations(
         )
         key = f"{other_role}:{other_id}"
         current = conversations.get(key)
-        created_at = message.get("created_at")
+        created_at_sort_value = _created_at_sort_value(message)
 
-        if current is None or created_at > current["last_message"]["created_at"]:
+        if current is None or created_at_sort_value > current["last_message_sort"]:
             conversations[key] = {
                 "participant_id": other_id,
                 "participant_role": other_role,
                 "participant_name": other_name,
                 "last_message": serialize_single(message),
+                "last_message_sort": created_at_sort_value,
                 "unread_count": 0,
             }
 
@@ -163,11 +177,16 @@ async def list_conversations(
         ):
             conversations[key]["unread_count"] += 1
 
-    return sorted(
+    sorted_conversations = sorted(
         conversations.values(),
-        key=lambda item: item["last_message"]["created_at"],
+        key=lambda item: item["last_message_sort"],
         reverse=True,
     )
+
+    for conversation in sorted_conversations:
+        conversation.pop("last_message_sort", None)
+
+    return sorted_conversations
 
 
 @router.get("/messages/participants")

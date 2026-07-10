@@ -115,16 +115,24 @@ export default function MessagesPage({ role, fallbackHref }: MessagesPageProps) 
 
       setParticipants(participantData);
       setConversations(conversationData);
+    } catch {
+      setParticipants({ drivers: [], dispatchers: [] });
+      setConversations([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchDirectory();
+    const initialLoad = window.setTimeout(() => {
+      void fetchDirectory();
+    }, 0);
 
     const interval = setInterval(fetchDirectory, 10000);
-    return () => clearInterval(interval);
+    return () => {
+      window.clearTimeout(initialLoad);
+      clearInterval(interval);
+    };
   }, [fetchDirectory]);
 
   const visibleParticipants = useMemo(() => {

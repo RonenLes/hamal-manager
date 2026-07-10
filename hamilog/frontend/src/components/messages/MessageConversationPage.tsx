@@ -92,6 +92,9 @@ export default function MessageConversationPage({
       });
       setMessages(thread);
       await markMessagesRead(normalizedRole, participantId);
+    } catch {
+      setParticipant(null);
+      setMessages([]);
     } finally {
       setLoading(false);
     }

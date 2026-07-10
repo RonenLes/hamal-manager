@@ -241,13 +241,9 @@ export default function MissionsPage() {
 
   const [missions, setMissions] = useState<Mission[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
-  const [expandedMissionId, setExpandedMissionId] = useState<string | null>(
-    null
-  );
+  const [expandedMissionId, setExpandedMissionId] = useState<string | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [filters, setFilters] = useState<MissionStatusFilter>(
-    getInitialFiltersFromQuery,
-  );
+  const [filters, setFilters] = useState<MissionStatusFilter>(getInitialFiltersFromQuery,);
   const [form, setForm] = useState<NewMissionForm>(initialForm);
   const [locationCities, setLocationCities] = useState<string[]>([]);
   const [pickupStreets, setPickupStreets] = useState<string[]>([]);
@@ -276,6 +272,8 @@ export default function MissionsPage() {
       ]);
       setMissions(missionsData);
       setDrivers(driversData);
+    } catch{
+      alert("Could not load missions or drivers.");
     } finally {
       setLoading(false);
     }
