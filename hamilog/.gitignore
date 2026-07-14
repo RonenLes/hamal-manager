@@ -99,6 +99,7 @@ next-env.d.ts
 # ========================
 # IDE / Editor
 # ========================
+.agents/
 .claude/
 .vscode/
 .idea/
