@@ -22,6 +22,8 @@ import AlertEntry, {
 import AlertPopup, { type PopupAlert } from "@/components/dispatcher/alerts/AlertPopup";
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
 import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
+import FilterPanel from "@/components/shared/FilterPanel";
+import FilterChip from "@/components/shared/FilterChip";
 import {
   getSeenAlertPopupIds,
   saveSeenAlertPopupIds,
@@ -62,6 +64,17 @@ const relatedAlertFilters: { id: RelatedAlertFilter; label: string }[] = [
   { id: "cargo", label: "Cargo" },
   { id: "system", label: "System" },
 ];
+
+const levelTone: Record<
+  AlertLevelFilter,
+  "blue" | "red" | "orange" | "emerald" | "slate"
+> = {
+  all: "slate",
+  critical: "red",
+  warning: "orange",
+  info: "blue",
+  success: "emerald",
+};
 
 // Returns the related alert filter.
 function getRelatedAlertFilter(alert: DispatcherAlert): RelatedAlertFilter {
@@ -419,57 +432,65 @@ export default function AlertsPage() {
           />
         </DispatcherStatsWindow>
 
-        <section className="rounded-xl border border-app bg-card shadow-sm">
-          <div className="border-b border-app px-5 py-4">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <h2 className="text-xl font-bold">Alert Entries</h2>
-                <p className="mt-1 text-sm text-muted">
-                  Click an alert to expand full details.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <label className="block">
-                  <span className="text-xs font-bold uppercase tracking-wider text-muted">
-                    Severity
-                  </span>
-                  <select
-                    value={levelFilter}
-                    onChange={(event) =>
-                      setLevelFilter(event.target.value as AlertLevelFilter)
-                    }
-                    className="mt-1 w-full rounded-xl border border-app bg-input px-3 py-2 text-sm text-main outline-none focus:border-blue-500"
-                  >
-                    {alertLevelFilters.map((filter) => (
-                      <option key={filter.id} value={filter.id}>
-                        {filter.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="block">
-                  <span className="text-xs font-bold uppercase tracking-wider text-muted">
-                    Related to
-                  </span>
-                  <select
-                    value={relatedFilter}
-                    onChange={(event) =>
-                      setRelatedFilter(event.target.value as RelatedAlertFilter)
-                    }
-                    className="mt-1 w-full rounded-xl border border-app bg-input px-3 py-2 text-sm text-main outline-none focus:border-blue-500"
-                  >
-                    {relatedAlertFilters.map((filter) => (
-                      <option key={filter.id} value={filter.id}>
-                        {filter.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+        <FilterPanel
+          title="Filters"
+          activeCount={
+            (levelFilter !== "all" ? 1 : 0) + (relatedFilter !== "all" ? 1 : 0)
+          }
+          summary={[
+            levelFilter !== "all"
+              ? alertLevelFilters.find((filter) => filter.id === levelFilter)?.label
+              : null,
+            relatedFilter !== "all"
+              ? relatedAlertFilters.find((filter) => filter.id === relatedFilter)
+                  ?.label
+              : null,
+          ]
+            .filter(Boolean)
+            .join(", ")}
+          onClear={() => {
+            setLevelFilter("all");
+            setRelatedFilter("all");
+          }}
+        >
+          <div className="space-y-4">
+            <div>
+              <p className="mb-2 text-xs font-semibold text-soft">Severity</p>
+              <div className="flex flex-wrap gap-2">
+                {alertLevelFilters.map((filter) => (
+                  <FilterChip
+                    key={filter.id}
+                    label={filter.label}
+                    active={levelFilter === filter.id}
+                    onClick={() => setLevelFilter(filter.id)}
+                    tone={levelTone[filter.id]}
+                  />
+                ))}
               </div>
             </div>
 
+            <div>
+              <p className="mb-2 text-xs font-semibold text-soft">Related to</p>
+              <div className="flex flex-wrap gap-2">
+                {relatedAlertFilters.map((filter) => (
+                  <FilterChip
+                    key={filter.id}
+                    label={filter.label}
+                    active={relatedFilter === filter.id}
+                    onClick={() => setRelatedFilter(filter.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </FilterPanel>
+
+        <section className="rounded-xl border border-app bg-card shadow-sm">
+          <div className="border-b border-app px-5 py-4">
+            <h2 className="text-xl font-bold">Alert Entries</h2>
+            <p className="mt-1 text-sm text-muted">
+              Click an alert to expand full details.
+            </p>
             <p className="mt-3 text-sm text-muted">
               Showing {alerts.length} of {activeAlerts.length} active alerts.
             </p>

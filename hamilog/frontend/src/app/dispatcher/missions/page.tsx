@@ -311,6 +311,12 @@ export default function MissionsPage() {
           </div>
         </section>
 
+        <MissionFilters
+          filters={filters}
+          onToggle={updateFilter}
+          onReset={() => setFilters(initialFilters)}
+        />
+
         <section>
           <div className="rounded-xl border border-app bg-card shadow-sm">
             <div className="border-b border-app px-4 py-3 sm:px-5 sm:py-4">
@@ -319,12 +325,6 @@ export default function MissionsPage() {
                 Click a mission to expand its full delivery details.
               </p>
             </div>
-
-            <MissionFilters
-              filters={filters}
-              onToggle={updateFilter}
-              onReset={() => setFilters(initialFilters)}
-            />
 
             <div className="divide-y divide-white/10">
               {filteredMissions.length === 0 && (

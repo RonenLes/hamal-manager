@@ -1,3 +1,8 @@
+"use client";
+
+import FilterPanel from "@/components/shared/FilterPanel";
+import FilterChip from "@/components/shared/FilterChip";
+
 export type MissionStatusFilter = {
   unassigned: boolean;
   assigned: boolean;
@@ -16,36 +21,23 @@ type MissionFiltersProps = {
   onReset: () => void;
 };
 
-// Renders the filter checkbox component.
-function FilterCheckbox({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onChange}
-      className="flex w-full items-center justify-between rounded-xl border border-app bg-app px-3 py-2.5 text-left text-xs transition hover:bg-card-soft sm:px-4 sm:py-3 sm:text-sm"
-    >
-      <span className="text-muted">{label}</span>
+const STATUS_FILTERS: { key: keyof MissionStatusFilter; label: string }[] = [
+  { key: "unassigned", label: "Unassigned" },
+  { key: "assigned", label: "Assigned" },
+  { key: "active", label: "Active" },
+  { key: "cooling", label: "Cooling" },
+];
 
-      <span
-        className={`flex h-6 w-6 items-center justify-center rounded-md border text-sm font-semibold ${
-          checked
-            ? "border-emerald-500 bg-emerald-500 text-main"
-            : "border-app bg-card-soft text-transparent"
-        }`}
-      >
-        x
-      </span>
-    </button>
-  );
-}
+const URGENCY_FILTERS: {
+  key: keyof MissionStatusFilter;
+  label: string;
+  tone: "slate" | "blue" | "orange" | "red";
+}[] = [
+  { key: "urgencyLow", label: "Low", tone: "slate" },
+  { key: "urgencyMedium", label: "Medium", tone: "blue" },
+  { key: "urgencyHigh", label: "High", tone: "orange" },
+  { key: "urgencyCritical", label: "Critical", tone: "red" },
+];
 
 // Renders the mission filters component.
 export default function MissionFilters({
@@ -53,76 +45,58 @@ export default function MissionFilters({
   onToggle,
   onReset,
 }: MissionFiltersProps) {
+  const activeFilters = [...STATUS_FILTERS, ...URGENCY_FILTERS].filter(
+    (filter) => filters[filter.key]
+  );
+  const summary = activeFilters.map((filter) => filter.label).join(", ");
+
   return (
-    <div className="border-b border-app p-4 sm:p-5">
-      <div className="mb-4">
-        <h2 className="text-lg font-bold text-main sm:text-xl">Filters</h2>
-        <p className="mt-1 text-sm text-muted">
-          Tick filters with x to control the mission list.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-        <FilterCheckbox
-          label="Unassigned"
-          checked={filters.unassigned}
-          onChange={() => onToggle("unassigned")}
-        />
-        <FilterCheckbox
-          label="Assigned"
-          checked={filters.assigned}
-          onChange={() => onToggle("assigned")}
-        />
-        <FilterCheckbox
-          label="Active"
-          checked={filters.active}
-          onChange={() => onToggle("active")}
-        />
-        <FilterCheckbox
-          label="Cooling"
-          checked={filters.cooling}
-          onChange={() => onToggle("cooling")}
-        />
-        <FilterCheckbox
-          label="Order by delivery date"
-          checked={filters.orderByDeliveryDate}
-          onChange={() => onToggle("orderByDeliveryDate")}
-        />
-
-        <div className="col-span-2 sm:col-span-3 lg:col-span-5">
-          <p className="mb-2 text-sm font-bold text-muted">Urgency</p>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <FilterCheckbox
-              label="Urgency: Low"
-              checked={filters.urgencyLow}
-              onChange={() => onToggle("urgencyLow")}
-            />
-            <FilterCheckbox
-              label="Urgency: Medium"
-              checked={filters.urgencyMedium}
-              onChange={() => onToggle("urgencyMedium")}
-            />
-            <FilterCheckbox
-              label="Urgency: High"
-              checked={filters.urgencyHigh}
-              onChange={() => onToggle("urgencyHigh")}
-            />
-            <FilterCheckbox
-              label="Urgency: Critical"
-              checked={filters.urgencyCritical}
-              onChange={() => onToggle("urgencyCritical")}
-            />
+    <FilterPanel
+      title="Filters"
+      activeCount={activeFilters.length}
+      summary={summary}
+      onClear={onReset}
+    >
+      <div className="space-y-4">
+        <div>
+          <p className="mb-2 text-xs font-semibold text-soft">Status</p>
+          <div className="flex flex-wrap gap-2">
+            {STATUS_FILTERS.map((filter) => (
+              <FilterChip
+                key={filter.key}
+                label={filter.label}
+                active={filters[filter.key]}
+                onClick={() => onToggle(filter.key)}
+              />
+            ))}
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={onReset}
-          className="w-full rounded-xl border border-app bg-card-soft px-3 py-2.5 text-xs font-bold text-main transition hover:bg-card-soft sm:px-4 sm:py-3 sm:text-sm"
-        >
-          Reset Filters
-        </button>
+        <div>
+          <p className="mb-2 text-xs font-semibold text-soft">Urgency</p>
+          <div className="flex flex-wrap gap-2">
+            {URGENCY_FILTERS.map((filter) => (
+              <FilterChip
+                key={filter.key}
+                label={filter.label}
+                active={filters[filter.key]}
+                onClick={() => onToggle(filter.key)}
+                tone={filter.tone}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-app pt-3">
+          <p className="mb-2 text-xs font-semibold text-soft">Sort</p>
+          <FilterChip
+            label="Order by delivery date"
+            active={filters.orderByDeliveryDate}
+            onClick={() => onToggle("orderByDeliveryDate")}
+            tone="emerald"
+          />
+        </div>
       </div>
-    </div>
+    </FilterPanel>
   );
 }

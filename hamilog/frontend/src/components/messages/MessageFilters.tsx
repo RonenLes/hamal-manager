@@ -1,3 +1,4 @@
+import FilterChip from "@/components/shared/FilterChip";
 import type { ParticipantTab, PresenceFilter } from "./types";
 
 const tabs: { id: ParticipantTab; label: string }[] = [
@@ -27,51 +28,36 @@ export default function MessageFilters({
   onFilterChange,
 }: MessageFiltersProps) {
   return (
-    <section className="rounded-xl border border-app bg-card p-5 shadow-sm">
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+    <section className="rounded-xl border border-app bg-card p-4 shadow-sm sm:p-5">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div>
-        <p className="text-xs font-bold uppercase tracking-wider text-soft">
-          People
-        </p>
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => onTabChange(tab.id)}
-              className={`rounded-xl px-3 py-2 text-sm font-bold transition ${
-                activeTab === tab.id
-                  ? "bg-blue-600 text-white"
-                  : "border border-app bg-card-soft text-main hover:bg-[var(--bg-card-soft)]"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          <p className="text-xs font-semibold text-soft">People</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {tabs.map((tab) => (
+              <FilterChip
+                key={tab.id}
+                label={tab.label}
+                active={activeTab === tab.id}
+                onClick={() => onTabChange(tab.id)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
 
         <div>
-        <p className="text-xs font-bold uppercase tracking-wider text-soft">
-          Status
-        </p>
-        <div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">
-          {filters.map((filter) => (
-            <button
-              key={filter.id}
-              type="button"
-              onClick={() => onFilterChange(filter.id)}
-              className={`rounded-xl px-3 py-2 text-sm font-bold transition ${
-                activeFilter === filter.id
-                  ? "bg-emerald-600 text-white"
-                  : "border border-app bg-card-soft text-main hover:bg-[var(--bg-card-soft)]"
-              }`}
-            >
-              {filter.label}
-            </button>
-          ))}
+          <p className="text-xs font-semibold text-soft">Status</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {filters.map((filter) => (
+              <FilterChip
+                key={filter.id}
+                label={filter.label}
+                active={activeFilter === filter.id}
+                onClick={() => onFilterChange(filter.id)}
+                tone="emerald"
+              />
+            ))}
+          </div>
         </div>
-      </div>
       </div>
     </section>
   );
