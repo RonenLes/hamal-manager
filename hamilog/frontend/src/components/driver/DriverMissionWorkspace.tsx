@@ -212,7 +212,9 @@ export default function DriverMissionWorkspace({
           />
         )}
 
-        {initialTab === "profile" && <ProfileTab />}
+        {initialTab === "profile" && (
+          <ProfileTab missions={myMissions} openMissions={openMissions} />
+        )}
       </div>
     </main>
   );

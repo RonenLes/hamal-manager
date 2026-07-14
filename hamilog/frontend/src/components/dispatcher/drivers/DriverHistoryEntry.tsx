@@ -4,6 +4,7 @@ import { formatIdealDeliveryTime, getMissionDeliveredAt } from "@/lib/mission-ti
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
+import CollapseDetailsButton from "@/components/shared/CollapseDetailsButton";
 
 export type DriverHistoryState =
   | "active"
@@ -140,7 +141,8 @@ export default function DriverHistoryEntry({
 
       {isExpanded && (
         <div className="border-t border-blue-500/40 bg-card-soft px-5 py-5">
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <CollapseDetailsButton onCollapse={onToggle} />
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             <DetailTile label="Delivery Status">
               <p
                 className={`inline-flex rounded-full border px-3 py-1 text-sm font-bold ${getStateClasses(

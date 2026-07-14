@@ -61,7 +61,10 @@ export default function DriverAvailabilityPage() {
     fetchData();
   }, [router]);
 
-  const availabilityDates = driver?.availability_dates ?? [];
+  const availabilityDates = useMemo(
+    () => driver?.availability_dates ?? [],
+    [driver?.availability_dates],
+  );
   const calendarMarkers = useMemo(
     () => [
       ...availabilityDates.map((date) => ({
@@ -183,7 +186,7 @@ export default function DriverAvailabilityPage() {
           </p>
         </header>
 
-        <section className="mb-5 rounded-2xl border border-app bg-card p-5 shadow-xl">
+        <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h2 className="text-xl font-black text-main">
@@ -264,19 +267,22 @@ export default function DriverAvailabilityPage() {
               )}
             </div>
           </div>
-        </section>
 
-        <Calendar
-          selectedDate={selectedDate}
-          onSelectDate={handleCalendarSelect}
-          markers={calendarMarkers}
-          selectedDates={
-            selectionMode === "remove"
-              ? availabilityDates
-              : [...new Set([...availabilityDates, ...selectedDates])]
-          }
-          removalDates={selectionMode === "remove" ? selectedDates : []}
-        />
+          <div className="mt-5 border-t border-app pt-5">
+            <Calendar
+              embedded
+              selectedDate={selectedDate}
+              onSelectDate={handleCalendarSelect}
+              markers={calendarMarkers}
+              selectedDates={
+                selectionMode === "remove"
+                  ? availabilityDates
+                  : [...new Set([...availabilityDates, ...selectedDates])]
+              }
+              removalDates={selectionMode === "remove" ? selectedDates : []}
+            />
+          </div>
+        </section>
       </div>
     </main>
   );

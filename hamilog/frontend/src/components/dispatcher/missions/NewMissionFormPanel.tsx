@@ -189,7 +189,7 @@ export default function NewMissionFormPanel({
           </select>
         </div>
 
-        <div className="grid grid-cols-[1fr_1.2fr_100px] gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1.2fr_100px]">
           <div>
             <label className="mb-2 block text-sm font-semibold text-muted">
               Pickup city
@@ -255,7 +255,7 @@ export default function NewMissionFormPanel({
           </div>
         </div>
 
-        <div className="grid grid-cols-[1fr_1.2fr_100px] gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1.2fr_100px]">
           <div>
             <label className="mb-2 block text-sm font-semibold text-muted">
               Dropoff city

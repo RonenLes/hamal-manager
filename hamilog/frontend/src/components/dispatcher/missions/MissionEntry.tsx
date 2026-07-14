@@ -6,13 +6,13 @@ import { formatIdealDeliveryTime, getMissionDeliveredAt } from "@/lib/mission-ti
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
+import CollapseDetailsButton from "@/components/shared/CollapseDetailsButton";
 
 type MissionEntryProps = {
   mission: Mission;
   state: string;
   isExpanded: boolean;
   onToggle: () => void;
-  onEdit: (mission: Mission) => void;
   onCancel: (mission: Mission) => void;
   assignedDriverName?: string;
   getStateClasses: (state: string) => string;
@@ -29,7 +29,6 @@ export default function MissionEntry({
   state,
   isExpanded,
   onToggle,
-  onEdit,
   onCancel,
   assignedDriverName,
   getStateClasses,
@@ -84,17 +83,14 @@ export default function MissionEntry({
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
-          {canEdit && onEdit && (
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                onEdit(mission);
-              }}
+          {canEdit && (
+            <Link
+              href={`/dispatcher/missions/${mission.id}/edit`}
+              onClick={(event) => event.stopPropagation()}
               className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-500"
             >
               Edit
-            </button>
+            </Link>
           )}
 
           {canSuggest && (
@@ -126,7 +122,8 @@ export default function MissionEntry({
 
       {isExpanded && (
         <div className="border-t border-blue-500/40 bg-app/60 px-3 py-3 sm:px-5 sm:py-5">
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <CollapseDetailsButton onCollapse={onToggle} />
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             <DetailTile label="Status">
               <p
                 className={`inline-flex rounded-full border px-3 py-1 text-sm font-bold capitalize ${getStateClasses(

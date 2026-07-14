@@ -10,6 +10,7 @@ import PriorityBadge from "@/components/dispatcher/shared/PriorityBadge";
 import MatchScoreBar from "../shared/MatchScoreBar";
 
 import TextToSpeechButton from "@/components/shared/TextToSpeechButton";
+import CollapseDetailsButton from "@/components/shared/CollapseDetailsButton";
 
 
 type OpenTaskCardProps = {
@@ -52,7 +53,7 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "No cooling needed.
 
   return (
     <article
-      className={`w-full overflow-hidden rounded-2xl border border-app bg-card p-4 shadow-xl transition hover:bg-card-soft sm:p-5 ${
+      className={`w-full overflow-hidden rounded-2xl border border-app bg-card p-3 shadow-xl transition hover:bg-card-soft sm:p-5 ${
         isExpanded
           ? "relative z-10 outline outline-2 outline-blue-500/70 shadow-[0_0_0_4px_rgba(59,130,246,0.12)]"
           : ""
@@ -114,16 +115,17 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "No cooling needed.
       </div>
 
       {isExpanded && (
-        <div className="mt-5 border-t border-blue-500/40 pt-5">
+        <div className="mt-4 min-h-64 max-h-[75vh] resize-y overflow-auto border-t border-blue-500/40 pt-4 sm:mt-5 sm:pt-5">
+          <CollapseDetailsButton onCollapse={handleToggle} />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-            <DetailTile label="Description" className="md:col-span-2">
+            <DetailTile label="Description" className="sm:col-span-2">
               <p className="text-sm leading-6 text-muted">
                 {mission.description || "No description provided."}
               </p>
             </DetailTile>
 
             {mission.match_score != null && (
-              <DetailTile label="Match" className="md:col-span-2">
+              <DetailTile label="Match" className="sm:col-span-2">
                 <MatchScoreBar score={mission.match_score} />
               </DetailTile>
             )}

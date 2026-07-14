@@ -6,6 +6,7 @@ import { CAR_SPECS } from "@/lib/car-specs";
 import { FREE_TEXT_WORD_LIMIT, countWords, limitWords } from "@/lib/text-limit";
 
 import DetailTile from "../shared/DetailTile";
+import CollapseDetailsButton from "@/components/shared/CollapseDetailsButton";
 
 type SuggestedDriverEntryProps = {
   suggestion: SuggestedDriver;
@@ -84,7 +85,8 @@ export default function SuggestedDriverEntry({
 
       {isExpanded && (
         <div className="border-t border-blue-500/40 bg-app/60 px-5 py-5">
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <CollapseDetailsButton onCollapse={onToggle} />
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             <DetailTile label="Match Score">
               <p className={`text-3xl font-black ${getScoreClasses(matchScore)}`}>
                 {matchScore}%

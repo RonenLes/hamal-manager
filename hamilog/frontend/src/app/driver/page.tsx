@@ -19,11 +19,8 @@ import {
   getToken,
   updateMissionStatus,
 } from "@/lib/api-client";
-import StatCard from "@/components/dispatcher/dashboard/StatCard";
 import ActiveMissionCard from "@/components/driver/missions/ActiveMissionCard";
 import DispatcherRequestCard from "@/components/driver/requests/DispatcherRequestCard";
-import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
-import { getMissionDistanceLabel } from "@/lib/mission-distance";
 import { formatIdealDeliveryTime } from "@/lib/mission-time";
 
 function isPresentOrFutureMission(mission: Mission) {
@@ -46,7 +43,6 @@ export default function DriverDashboardPage() {
 
   const [user, setUser] = useState<StoredUser | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
-  const [openMissions, setOpenMissions] = useState<Mission[]>([]);
   const [dispatcherRequests, setDispatcherRequests] = useState<
     MissionDeliveryRequest[]
   >([]);
@@ -72,9 +68,8 @@ export default function DriverDashboardPage() {
     // Fetches the latest page data.
     async function fetchData() {
       try {
-        const [myData, openData, participantData, requestData] = await Promise.all([
+        const [myData, participantData, requestData] = await Promise.all([
           getMissions({ driverUid: driverId }),
-          getMissions({ status: "available" }),
           getMessageParticipants(),
           getMissionRequests({ status: "pending" }),
         ]);
@@ -83,9 +78,6 @@ export default function DriverDashboardPage() {
           myData.filter(
             (mission) => mission.assigned_driver_id === driverId
           )
-        );
-        setOpenMissions(
-          openData.filter((mission) => mission.status === "available")
         );
         setDispatchers(participantData.dispatchers);
         setDispatcherRequests(
@@ -108,9 +100,8 @@ export default function DriverDashboardPage() {
   async function refreshDashboard() {
     if (!user?.driver_id) return;
 
-    const [myData, openData, participantData, requestData] = await Promise.all([
+    const [myData, participantData, requestData] = await Promise.all([
       getMissions({ driverUid: user.driver_id }),
-      getMissions({ status: "available" }),
       getMessageParticipants(),
       getMissionRequests({ status: "pending" }),
     ]);
@@ -118,7 +109,6 @@ export default function DriverDashboardPage() {
     setMissions(
       myData.filter((mission) => mission.assigned_driver_id === user.driver_id)
     );
-    setOpenMissions(openData.filter((mission) => mission.status === "available"));
     setDispatchers(participantData.dispatchers);
     setDispatcherRequests(
       requestData.filter(
@@ -192,15 +182,6 @@ export default function DriverDashboardPage() {
     presentAndFutureMissions.find(
       (mission) => mission.status === "in_transit"
     ) || presentAndFutureMissions[0];
-  const activeCount = presentAndFutureMissions.filter(
-    (mission) => mission.status === "in_transit"
-  ).length;
-  const completedCount = missions.filter(
-    (mission) => mission.status === "delivered"
-  ).length;
-  const deliveredMissions = missions.filter(
-    (mission) => mission.status === "delivered"
-  );
   const onlineDispatchers = dispatchers.filter(
     (dispatcher) => dispatcher.is_online
   );
@@ -226,90 +207,79 @@ export default function DriverDashboardPage() {
 
         </header>
 
-        <DispatcherStatsWindow>
-          <StatCard
-            title="Active Mission"
-            value={`${activeCount}`}
-            subtitle={activeMission ? activeMission.status.replace("_", " ") : "No active route"}
-            icon="🚚"
-            color="blue"
-          />
-
-          <StatCard
-            title="Open Tasks"
-            value={`${openMissions.length}`}
-            subtitle="Available missions"
-            icon="📦"
-            color="orange"
-          />
-
-          <StatCard
-            title="Completed"
-            value={`${completedCount}`}
-            subtitle="Delivered missions"
-            icon="✓"
-            color="green"
-          />
-
-          <StatCard
-            title="Total Km"
-            value={getMissionDistanceLabel(deliveredMissions)}
-            subtitle="Delivered routes"
-            icon="km"
-            color="blue"
-          />
-        </DispatcherStatsWindow>
-
-        <section className="mb-5 rounded-2xl border border-app bg-card p-5 shadow-xl">
-          <h2 className="text-xl font-black text-main">Driver Status</h2>
-          <div className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
-            <div className="flex justify-between gap-4 rounded-xl border border-app bg-card-soft p-4">
-              <span className="text-muted">Account</span>
-              <span className="font-bold text-main">
-                {user?.username || "Driver"}
-              </span>
+        <section className="mb-5">
+          {activeMission ? (
+            <ActiveMissionCard
+              mission={activeMission}
+              onMarkDelivered={handleMarkDelivered}
+              onUpdateStatus={handleStartTransit}
+              onCancelMission={handleCancelMission}
+            />
+          ) : (
+            <div className="rounded-2xl border border-app bg-card p-8 text-center shadow-xl">
+              <h2 className="text-xl font-black text-main">
+                No Active Mission
+              </h2>
+              <p className="mt-2 text-sm text-muted">
+                Open Tasks has missions available for your vehicle profile.
+              </p>
+              <Link
+                href="/driver/open-tasks"
+                className="mt-5 inline-flex rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
+              >
+                View Open Tasks
+              </Link>
             </div>
-            <div className="flex justify-between gap-4 rounded-xl border border-app bg-card-soft p-4">
-              <span className="text-muted">Vehicle</span>
-              <span className="font-bold capitalize text-main">
-                {user?.car_type?.replace("_", " ") || "Not set"}
-              </span>
+          )}
+        </section>
+
+        <section className="mb-5 min-h-32 max-h-80 resize-y overflow-auto rounded-2xl border border-app bg-card p-4 shadow-xl">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-black text-main">Online Dispatchers</h2>
+              <p className="mt-1 text-xs text-muted">
+                Message operations support directly.
+              </p>
             </div>
-            <div className="flex justify-between gap-4 rounded-xl border border-app bg-card-soft p-4">
-              <span className="text-muted">Online</span>
-              <span className="font-bold text-emerald-300">Ready</span>
-            </div>
+            <span className="rounded-lg bg-emerald-500/15 px-2.5 py-1.5 text-sm font-black text-emerald-300">
+              {onlineDispatchers.length}
+            </span>
+          </div>
+
+          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {onlineDispatchers.length === 0 && (
+              <p className="rounded-xl border border-app bg-card-soft p-3 text-sm text-muted sm:col-span-2 lg:col-span-3">
+                No dispatcher is marked online right now.
+              </p>
+            )}
+
+            {onlineDispatchers.map((dispatcher) => (
+              <div
+                key={dispatcher.id}
+                className="flex items-center justify-between gap-3 rounded-xl border border-app bg-card-soft px-3 py-2.5"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-main">
+                    {dispatcher.name}
+                  </p>
+                  <p className="text-xs text-emerald-300">Online</p>
+                </div>
+                <Link
+                  href={`/driver/messages/dispatcher/${dispatcher.id}`}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-500/40 bg-blue-500/10 text-sm font-black text-blue-200 transition hover:bg-blue-500/20"
+                  aria-label={`Message ${dispatcher.name}`}
+                >
+                  💬
+                </Link>
+              </div>
+            ))}
           </div>
         </section>
 
         <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5">
           <div className="xl:col-span-2">
-            {activeMission ? (
-              <ActiveMissionCard
-                mission={activeMission}
-                onMarkDelivered={handleMarkDelivered}
-                onUpdateStatus={handleStartTransit}
-                onCancelMission={handleCancelMission}
-              />
-            ) : (
-              <div className="rounded-2xl border border-app bg-card p-8 text-center shadow-xl">
-                <h2 className="text-xl font-black text-main">
-                  No Active Mission
-                </h2>
-                <p className="mt-2 text-sm text-muted">
-                  Open Tasks has missions available for your vehicle profile.
-                </p>
-                <Link
-                  href="/driver/open-tasks"
-                  className="mt-5 inline-flex rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
-                >
-                  View Open Tasks
-                </Link>
-              </div>
-            )}
-
             <section
-              className={`mt-5 overflow-auto rounded-2xl border border-app bg-card shadow-xl ${
+              className={`overflow-auto rounded-2xl border border-app bg-card shadow-xl ${
                 isRequestsPanelOpen ? "resize-y" : ""
               }`}
               style={{
@@ -411,51 +381,6 @@ export default function DriverDashboardPage() {
           </div>
 
           <div className="space-y-5">
-            <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-xl font-black text-main">
-                    Online Dispatchers
-                  </h2>
-                  <p className="mt-1 text-sm text-muted">
-                    Message operations support directly.
-                  </p>
-                </div>
-                <span className="rounded-xl bg-emerald-500/15 px-3 py-2 text-sm font-black text-emerald-300">
-                  {onlineDispatchers.length}
-                </span>
-              </div>
-
-              <div className="mt-4 space-y-3">
-                {onlineDispatchers.length === 0 && (
-                  <p className="rounded-xl border border-app bg-card-soft p-4 text-sm text-muted">
-                    No dispatcher is marked online right now.
-                  </p>
-                )}
-
-                {onlineDispatchers.map((dispatcher) => (
-                  <div
-                    key={dispatcher.id}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-app bg-card-soft p-4"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate font-bold text-main">
-                        {dispatcher.name}
-                      </p>
-                      <p className="text-sm text-emerald-300">Online</p>
-                    </div>
-                    <Link
-                      href={`/driver/messages/dispatcher/${dispatcher.id}`}
-                      className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-3 py-2 text-sm font-black text-blue-200 transition hover:bg-blue-500/20"
-                      aria-label={`Message ${dispatcher.name}`}
-                    >
-                      @
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </section>
-
             <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
               <h2 className="text-xl font-black text-main">Quick Actions</h2>
               <div className="mt-4 grid gap-3">

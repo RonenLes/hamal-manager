@@ -2,11 +2,15 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
+  type Mission,
   type StoredUser,
   clearToken,
   getStoredUser,
 } from "@/lib/api-client";
 import DetailTile from "@/components/dispatcher/shared/DetailTile";
+import StatCard from "@/components/dispatcher/dashboard/StatCard";
+import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
+import { getMissionDistanceLabel } from "@/lib/mission-distance";
 
 type DriverProfileDetails = {
   email: string;
@@ -83,13 +87,25 @@ function EditableField({
 }
 
 // Renders the profile tab component.
-export default function ProfileTab() {
+export default function ProfileTab({
+  missions,
+  openMissions,
+}: {
+  missions: Mission[];
+  openMissions: Mission[];
+}) {
   const router = useRouter();
   const [user] = useState<StoredUser | null>(() => getStoredUser());
   const [profile, setProfile] = useState<DriverProfileDetails>(() =>
     getSavedProfile(getStoredUser())
   );
   const [editing, setEditing] = useState(false);
+  const activeCount = missions.filter(
+    (mission) => mission.status === "in_transit"
+  ).length;
+  const completedMissions = missions.filter(
+    (mission) => mission.status === "delivered"
+  );
 
   const handleLogout = useCallback(() => {
     clearToken();
@@ -113,6 +129,63 @@ export default function ProfileTab() {
 
   return (
     <section className="space-y-3 sm:space-y-5">
+      <DispatcherStatsWindow className="min-h-28 max-h-64 resize-y overflow-auto">
+        <StatCard
+          title="Active Mission"
+          value={`${activeCount}`}
+          subtitle={activeCount > 0 ? "In transit" : "No active route"}
+          icon="🚚"
+          color="blue"
+          compact
+        />
+        <StatCard
+          title="Open Tasks"
+          value={`${openMissions.length}`}
+          subtitle="Available missions"
+          icon="📦"
+          color="orange"
+          compact
+        />
+        <StatCard
+          title="Completed"
+          value={`${completedMissions.length}`}
+          subtitle="Delivered missions"
+          icon="✓"
+          color="green"
+          compact
+        />
+        <StatCard
+          title="Total Km"
+          value={getMissionDistanceLabel(completedMissions)}
+          subtitle="Delivered routes"
+          icon="km"
+          color="blue"
+          compact
+        />
+      </DispatcherStatsWindow>
+
+      <div className="rounded-xl border border-app bg-card p-3 shadow-lg sm:p-4">
+        <h2 className="text-lg font-black text-main sm:text-xl">Driver Status</h2>
+        <div className="mt-3 grid gap-2.5 text-sm sm:grid-cols-3">
+          <div className="flex justify-between gap-4 rounded-xl border border-app bg-card-soft p-3">
+            <span className="text-muted">Account</span>
+            <span className="font-bold text-main">
+              {user?.username || "Driver"}
+            </span>
+          </div>
+          <div className="flex justify-between gap-4 rounded-xl border border-app bg-card-soft p-3">
+            <span className="text-muted">Vehicle</span>
+            <span className="font-bold capitalize text-main">
+              {user?.car_type?.replace("_", " ") || "Not set"}
+            </span>
+          </div>
+          <div className="flex justify-between gap-4 rounded-xl border border-app bg-card-soft p-3">
+            <span className="text-muted">Online</span>
+            <span className="font-bold text-emerald-300">Ready</span>
+          </div>
+        </div>
+      </div>
+
       <div className="rounded-xl border border-app bg-card p-3 shadow-lg sm:p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>

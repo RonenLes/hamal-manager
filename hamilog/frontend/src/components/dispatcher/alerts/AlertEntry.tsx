@@ -8,6 +8,7 @@ import {
 
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
+import CollapseDetailsButton from "@/components/shared/CollapseDetailsButton";
 
 export type AlertLevel = "critical" | "warning" | "info" | "success";
 
@@ -153,7 +154,8 @@ export default function AlertEntry({
 
       {isExpanded && (
         <div className="border-t border-blue-500/40 bg-app/60 px-5 py-5">
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <CollapseDetailsButton onCollapse={onToggle} />
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             <DetailTile label="Alert Type">
               <p className="font-semibold text-main">{alert.type}</p>
             </DetailTile>

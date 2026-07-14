@@ -4,6 +4,7 @@ import type { Driver } from "@/lib/api-client";
 import { CAR_SPECS } from "@/lib/car-specs";
 
 import DetailTile from "../shared/DetailTile";
+import CollapseDetailsButton from "@/components/shared/CollapseDetailsButton";
 
 export type RequestStatus = "pending" | "approved" | "declined";
 
@@ -70,11 +71,11 @@ export default function PendingRequestDriverEntry({
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-card-soft"
+        className="flex w-full flex-col items-stretch justify-between gap-3 px-3 py-4 text-left transition hover:bg-card-soft sm:flex-row sm:items-center sm:px-5"
       >
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h4 className="truncate font-bold text-main">{driver.name}</h4>
+            <h4 className="break-words font-bold text-main">{driver.name}</h4>
             <span
               className={`rounded-full border px-3 py-1 text-xs font-bold capitalize ${getStatusClasses(
                 driver.status
@@ -83,12 +84,12 @@ export default function PendingRequestDriverEntry({
               {driver.status.replace("_", " ")}
             </span>
           </div>
-          <p className="mt-1 truncate text-sm text-muted">
+          <p className="mt-1 break-words text-sm text-muted">
             {spec?.label || driver.car_type} - {location}
           </p>
         </div>
 
-        <div className="flex shrink-0 items-center gap-4">
+        <div className="flex shrink-0 items-center justify-between gap-4 sm:justify-end">
           <div className="text-right">
             <p className="text-xs font-bold uppercase text-soft">Match</p>
             <p className={`text-sm font-black ${getScoreClasses(request.matchScore)}`}>
@@ -100,8 +101,9 @@ export default function PendingRequestDriverEntry({
       </button>
 
       {isExpanded && (
-        <div className="border-t border-blue-500/40 bg-app/60 px-5 py-5">
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="min-h-64 max-h-[75vh] resize-y overflow-auto border-t border-blue-500/40 bg-app/60 px-3 py-4 sm:px-5 sm:py-5">
+          <CollapseDetailsButton onCollapse={onToggle} />
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             <DetailTile label="Driver Score">
               <p className={`text-3xl font-black ${getScoreClasses(driverScore)}`}>
                 {driverScore}%
@@ -155,7 +157,7 @@ export default function PendingRequestDriverEntry({
             </DetailTile>
 
             <DetailTile label="Driver ID">
-              <p className="font-mono text-sm text-muted">{driver.id}</p>
+              <p className="break-all font-mono text-sm text-muted">{driver.id}</p>
             </DetailTile>
 
             <DetailTile label="Current Mission">

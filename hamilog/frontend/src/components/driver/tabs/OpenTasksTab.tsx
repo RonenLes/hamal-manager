@@ -42,13 +42,6 @@ export default function OpenTasksTab({
 
   return (
     <section className="space-y-3">
-      <div className="rounded-2xl border border-app bg-card p-4 shadow-xl">
-        <h2 className="text-xl font-black text-main">Open Tasks</h2>
-        <p className="mt-1 text-sm text-muted">
-          These missions are currently available for your driver profile.
-        </p>
-      </div>
-
       {missions.map((mission) => (
         <OpenTaskCard
           key={mission.id}

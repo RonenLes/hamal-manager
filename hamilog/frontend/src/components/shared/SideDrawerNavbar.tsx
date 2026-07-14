@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import ThemeToggleButton from "@/components/shared/ThemeToggleButton";
 import { clearToken, getMessageConversations, getToken } from "@/lib/api-client";
@@ -15,6 +15,8 @@ export default function SideDrawerNavbar({ homeHref }: SideDrawerNavbarProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const lastScrollY = useRef(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const links = [
     { label: "Dashboard", href: homeHref },
@@ -88,6 +90,32 @@ export default function SideDrawerNavbar({ homeHref }: SideDrawerNavbarProps) {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    function updateNavbarVisibility() {
+      const currentScrollY = window.scrollY;
+      const isScrollable = document.documentElement.scrollHeight > window.innerHeight + 1;
+
+      if (!isScrollable || currentScrollY <= 0 || isOpen) {
+        setIsNavbarVisible(true);
+      } else if (currentScrollY > lastScrollY.current) {
+        setIsNavbarVisible(false);
+      } else if (currentScrollY < lastScrollY.current) {
+        setIsNavbarVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    }
+
+    updateNavbarVisibility();
+    window.addEventListener("scroll", updateNavbarVisibility, { passive: true });
+    window.addEventListener("resize", updateNavbarVisibility);
+
+    return () => {
+      window.removeEventListener("scroll", updateNavbarVisibility);
+      window.removeEventListener("resize", updateNavbarVisibility);
+    };
+  }, [isOpen]);
+
   function handleLogout() {
     setIsOpen(false);
     clearToken();
@@ -96,7 +124,11 @@ export default function SideDrawerNavbar({ homeHref }: SideDrawerNavbarProps) {
 
   return (
     <>
-      <nav className="relative flex items-center border-b border-app bg-app/90 px-3 py-3 backdrop-blur sm:px-6">
+      <nav
+        className={`sticky top-0 z-30 flex items-center border-b border-app bg-app/90 px-3 py-3 backdrop-blur transition-transform duration-300 sm:px-6 ${
+          isNavbarVisible ? "translate-y-0" : "-translate-y-full"
+        }`}
+      >
         <button
           type="button"
           aria-label="Open navigation menu"

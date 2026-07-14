@@ -3,6 +3,7 @@ import { CAR_SPECS } from "@/lib/car-specs";
 import { formatDateTime24 } from "@/lib/date-format";
 
 import DetailTile from "../shared/DetailTile";
+import CollapseDetailsButton from "@/components/shared/CollapseDetailsButton";
 
 type NewDriverRequestEntryProps = {
   driverRequest: DriverRequest;
@@ -101,7 +102,8 @@ export default function NewDriverRequestEntry({
 
       {isExpanded && (
         <div className="border-t border-blue-500/40 bg-card-soft px-5 py-5">
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <CollapseDetailsButton onCollapse={onToggle} />
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             <DetailTile label="Full Name">
               <p className="font-semibold text-main">{driverRequest.name}</p>
             </DetailTile>

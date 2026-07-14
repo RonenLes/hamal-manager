@@ -9,6 +9,7 @@ import { formatIdealDeliveryTime } from "@/lib/mission-time";
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
 import DriverScoreGraph from "./DriverScoreGraph";
+import CollapseDetailsButton from "@/components/shared/CollapseDetailsButton";
 
 export type ExtendedDriver = Driver & {
   phone?: string;
@@ -171,15 +172,19 @@ export default function DriverEntry({
       </div>
 
       {isGraphExpanded && (
-        <DriverScoreGraph
-          datePoints={dateScorePoints}
-          missionPoints={missionScorePoints}
-        />
+        <div className="border-t border-blue-500/40 p-3 sm:p-5">
+          <CollapseDetailsButton onCollapse={onToggleGraph} label="Close graph" />
+          <DriverScoreGraph
+            datePoints={dateScorePoints}
+            missionPoints={missionScorePoints}
+          />
+        </div>
       )}
 
       {isExpanded && (
         <div className="border-t border-blue-500/40 bg-card-soft px-3 py-3 sm:px-5 sm:py-5">
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <CollapseDetailsButton onCollapse={onToggle} />
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             <DetailTile label="Full Name">
               <p className="break-words text-sm font-semibold text-main sm:text-base">{driver.name}</p>
             </DetailTile>

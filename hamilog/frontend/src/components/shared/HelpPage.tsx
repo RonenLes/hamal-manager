@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 import SupportTicketPanel from "@/components/shared/SupportTicketPanel";
+import CollapseDetailsButton from "@/components/shared/CollapseDetailsButton";
 
 export type HelpPageItem = {
   title: string;
@@ -54,14 +55,17 @@ function HelpPageCard({ title, href, description, features }: HelpPageItem) {
       </div>
 
       {isExpanded && (
-        <ul className="mt-4 space-y-2 border-t border-blue-500/40 pt-4">
-          {features.map((feature) => (
-            <li key={feature} className="flex gap-2 text-sm text-muted">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
-              <span>{feature}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-4 border-t border-blue-500/40 pt-4">
+          <CollapseDetailsButton onCollapse={() => setIsExpanded(false)} />
+          <ul className="space-y-2">
+            {features.map((feature) => (
+              <li key={feature} className="flex gap-2 text-sm text-muted">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </article>
   );

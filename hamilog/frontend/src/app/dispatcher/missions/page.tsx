@@ -1,23 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
 import {
-  type CreateMissionPayload,
   type Driver,
   type Mission,
   type MissionPriority,
-  createMission as createMissionApi,
   cancelMission,
-  getLocationCities,
-  getLocationStreets,
   getDrivers,
   getMissions,
   getToken,
   getStoredUser,
-  updateMission,
 } from "@/lib/api-client";
 
 import DispatcherStatBox from "@/components/dispatcher/shared/DispatcherStatBox";
@@ -26,9 +22,6 @@ import MissionEntry from "@/components/dispatcher/missions/MissionEntry";
 import MissionFilters, {
   type MissionStatusFilter,
 } from "@/components/dispatcher/missions/MissionFilters";
-import NewMissionFormPanel, {
-  type NewMissionForm,
-} from "@/components/dispatcher/missions/NewMissionFormPanel";
 
 const initialFilters: MissionStatusFilter = {
   unassigned: true,
@@ -63,22 +56,6 @@ function getInitialFiltersFromQuery(): MissionStatusFilter {
     urgencyCritical: priority === "critical",
   };
 }
-
-const initialForm: NewMissionForm = {
-  title: "",
-  cargoDescription: "",
-  fromCity: "",
-  from: "",
-  fromStreetNumber: "",
-  toCity: "",
-  to: "",
-  toStreetNumber: "",
-  urgency: "medium",
-  idealDeliveryDate: "",
-  idealDeliveryTime: "",
-  cooling: "no",
-  heavyLoad: "no",
-};
 
 // Returns the mission state.
 function getMissionState(mission: Mission) {
@@ -132,109 +109,6 @@ function getPriorityRank(priority: MissionPriority) {
   }
 }
 
-// Returns the ideal delivery iso.
-function getIdealDeliveryIso(body: NewMissionForm) {
-  if (!body.idealDeliveryDate || !body.idealDeliveryTime) return null;
-
-  return new Date(
-    `${body.idealDeliveryDate}T${body.idealDeliveryTime}:00`
-  ).toISOString();
-}
-
-// Combines the selected street/address with a manually entered street number.
-function buildAddress(address: string, streetNumber: string, city: string) {
-  const cleanAddress = address.trim();
-  const cleanNumber = streetNumber.trim();
-  const cleanCity = city.trim();
-
-  const streetAddress = cleanNumber
-    ? `${cleanAddress} ${cleanNumber}`
-    : cleanAddress;
-
-  return cleanCity ? `${streetAddress}, ${cleanCity}` : streetAddress;
-}
-
-// Builds the mission payload.
-function buildMissionPayload(body: NewMissionForm): CreateMissionPayload {
-  const isHeavyLoad = body.heavyLoad === "yes";
-  const requiresCooling = body.cooling === "yes";
-  const missionTitle =
-    body.title.trim() ||
-    body.cargoDescription.trim().slice(0, 40) ||
-    "New Delivery Mission";
-
-  return {
-    title: missionTitle,
-    description: body.cargoDescription,
-    priority: body.urgency,
-    ideal_delivery_time: getIdealDeliveryIso(body),
-    cargo: {
-      weight_kg: isHeavyLoad ? 120 : 20,
-      volume_liters: isHeavyLoad ? 250 : 60,
-      requires_cooling: requiresCooling,
-    },
-    pickup: {
-      lat: 0,
-      lng: 0,
-      address: buildAddress(body.from, body.fromStreetNumber, body.fromCity),
-    },
-    dropoff: {
-      lat: 0,
-      lng: 0,
-      address: buildAddress(body.to, body.toStreetNumber, body.toCity),
-    },
-  };
-}
-
-// Converts the value to a date input value.
-function toDateInputValue(dateValue?: string | null) {
-  if (!dateValue) return "";
-
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return "";
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
-
-// Converts the value to a time input value.
-function toTimeInputValue(dateValue?: string | null) {
-  if (!dateValue) return "";
-
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return "";
-
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  return `${hours}:${minutes}`;
-}
-
-// Handles the mission to form logic.
-function missionToForm(mission: Mission): NewMissionForm {
-  const isHeavyLoad =
-    mission.cargo.weight_kg >= 80 || mission.cargo.volume_liters >= 150;
-
-  return {
-    title: mission.title,
-    cargoDescription: mission.description,
-    fromCity: "",
-    from: mission.pickup.address,
-    fromStreetNumber: "",
-    toCity: "",
-    to: mission.dropoff.address,
-    toStreetNumber: "",
-    urgency: mission.priority,
-    idealDeliveryDate: toDateInputValue(mission.ideal_delivery_time),
-    idealDeliveryTime: toTimeInputValue(mission.ideal_delivery_time),
-    cooling: mission.cargo.requires_cooling ? "yes" : "no",
-    heavyLoad: isHeavyLoad ? "yes" : "no",
-  };
-}
-
 // Renders the missions page component.
 export default function MissionsPage() {
   const router = useRouter();
@@ -242,17 +116,8 @@ export default function MissionsPage() {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [expandedMissionId, setExpandedMissionId] = useState<string | null>(null);
-  const [isAddOpen, setIsAddOpen] = useState(false);
   const [filters, setFilters] = useState<MissionStatusFilter>(getInitialFiltersFromQuery,);
-  const [form, setForm] = useState<NewMissionForm>(initialForm);
-  const [locationCities, setLocationCities] = useState<string[]>([]);
-  const [pickupStreets, setPickupStreets] = useState<string[]>([]);
-  const [dropoffStreets, setDropoffStreets] = useState<string[]>([]);
-  const [locationsLoading, setLocationsLoading] = useState(true);
-  const [locationsError, setLocationsError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [posting, setPosting] = useState(false);
-  const [editingMissionId, setEditingMissionId] = useState<string | null>(null);
 
   useEffect(() => {
     const token = getToken();
@@ -280,63 +145,11 @@ export default function MissionsPage() {
   }
 
   useEffect(() => {
-    fetchData();
+    void Promise.resolve().then(fetchData);
 
     const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
   }, []);
-
-  const fetchLocationCities = useCallback(async () => {
-    setLocationsLoading(true);
-    try {
-      const cities = await getLocationCities();
-      setLocationCities(cities);
-      setLocationsError(null);
-    } catch {
-      setLocationCities([]);
-      setLocationsError("Could not load cities. Make sure the backend is running.");
-    } finally {
-      setLocationsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchLocationCities();
-  }, [fetchLocationCities]);
-
-  useEffect(() => {
-    if (!form.fromCity) {
-      setPickupStreets([]);
-      return;
-    }
-
-    async function fetchPickupStreets() {
-      try {
-        setPickupStreets(await getLocationStreets(form.fromCity));
-      } catch {
-        setPickupStreets([]);
-      }
-    }
-
-    fetchPickupStreets();
-  }, [form.fromCity]);
-
-  useEffect(() => {
-    if (!form.toCity) {
-      setDropoffStreets([]);
-      return;
-    }
-
-    async function fetchDropoffStreets() {
-      try {
-        setDropoffStreets(await getLocationStreets(form.toCity));
-      } catch {
-        setDropoffStreets([]);
-      }
-    }
-
-    fetchDropoffStreets();
-  }, [form.toCity]);
 
   const stats = useMemo(() => {
     return {
@@ -410,31 +223,6 @@ export default function MissionsPage() {
     }));
   }
 
-  // Updates the form.
-  function updateForm<K extends keyof NewMissionForm>(
-    key: K,
-    value: NewMissionForm[K]
-  ) {
-    setForm((current) => ({
-      ...current,
-      [key]: value,
-    }));
-  }
-
-  // Handles the reset mission form logic.
-  function resetMissionForm() {
-    setForm(initialForm);
-    setEditingMissionId(null);
-  }
-
-  // Handles the edit mission action.
-  function handleEditMission(mission: Mission) {
-    setForm(missionToForm(mission));
-    setEditingMissionId(mission.id);
-    setExpandedMissionId(mission.id);
-    setIsAddOpen(true);
-  }
-
   // Handles dispatcher mission cancellation.
   async function handleCancelMission(mission: Mission) {
     const reason = window.prompt("Why cancel this mission?");
@@ -452,52 +240,6 @@ export default function MissionsPage() {
           : null;
 
       alert(detail || "Could not cancel mission.");
-    }
-  }
-
-  // Handles the submit mission action.
-  async function handleSubmitMission() {
-    if (
-      !form.cargoDescription.trim() ||
-      !form.fromCity.trim() ||
-      !form.from.trim() ||
-      !form.fromStreetNumber.trim() ||
-      !form.toCity.trim() ||
-      !form.to.trim() ||
-      !form.toStreetNumber.trim()
-    ) {
-      alert("Please fill cargo description, pickup/dropoff address, and street numbers.");
-      return;
-    }
-
-    setPosting(true);
-
-    try {
-      const payload = buildMissionPayload(form);
-
-      if (editingMissionId) {
-        await updateMission(editingMissionId, payload);
-      } else {
-        await createMissionApi(payload);
-      }
-
-      resetMissionForm();
-      setIsAddOpen(false);
-      await fetchData();
-    } catch (error: unknown) {
-      const detail =
-        error && typeof error === "object" && "detail" in error
-          ? String((error as { detail: unknown }).detail)
-          : null;
-
-      alert(
-        detail ||
-          (editingMissionId
-            ? "Could not update mission. Make sure it is still unassigned."
-            : "Could not post mission. Make sure the backend is running.")
-      );
-    } finally {
-      setPosting(false);
     }
   }
 
@@ -559,52 +301,15 @@ export default function MissionsPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg font-black text-main">Mission actions</h2>
-              <p className="mt-1 text-sm text-muted">Create or edit a mission in this window.</p>
+              <p className="mt-1 text-sm text-muted">Open a dedicated form to create a mission.</p>
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (isAddOpen) {
-                  setIsAddOpen(false);
-                  resetMissionForm();
-                } else {
-                  if (locationCities.length === 0) {
-                    void fetchLocationCities();
-                  }
-                  setIsAddOpen(true);
-                }
-              }}
+            <Link
+              href="/dispatcher/missions/new"
               className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-main transition hover:bg-emerald-500"
             >
-              {isAddOpen ? "Close Mission Form" : "+ Add New Mission"}
-            </button>
+              + Add New Mission
+            </Link>
           </div>
-          {isAddOpen && (
-          <NewMissionFormPanel
-            form={form}
-            posting={posting}
-            cities={locationCities}
-            pickupStreets={pickupStreets}
-            dropoffStreets={dropoffStreets}
-            locationsLoading={locationsLoading}
-            locationsError={locationsError}
-            onRetryLocations={fetchLocationCities}
-            onUpdate={updateForm}
-            onSubmit={handleSubmitMission}
-            onCancel={() => {
-              resetMissionForm();
-              setIsAddOpen(false);
-            }}
-            title={editingMissionId ? "Edit Mission" : "Add New Mission"}
-            description={
-              editingMissionId
-                ? "Update the unassigned mission details before a driver is attached."
-                : "Fill the delivery information and post it to the mission pool."
-            }
-            submitLabel={editingMissionId ? "Update Mission" : "Post Mission"}
-            submittingLabel={editingMissionId ? "Updating..." : "Posting..."}
-          />
-        )}
         </section>
 
         <section>
@@ -642,7 +347,6 @@ export default function MissionsPage() {
                     onToggle={() =>
                       setExpandedMissionId(isExpanded ? null : mission.id)
                     }
-                    onEdit={handleEditMission}
                     onCancel={handleCancelMission}
                     assignedDriverName={
                       mission.assigned_driver_id

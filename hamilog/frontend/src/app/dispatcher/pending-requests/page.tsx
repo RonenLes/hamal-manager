@@ -150,7 +150,7 @@ export default function PendingRequestsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-app p-6 text-main">
+    <main className="min-h-screen bg-app px-3 py-4 text-main sm:p-6">
       <div className="mx-auto max-w-7xl">
         <header className="mb-6">
           <div className="mb-4">
@@ -159,7 +159,7 @@ export default function PendingRequestsPage() {
           <p className="text-sm font-semibold uppercase tracking-wider text-orange-400">
             Delivery Pool Requests
           </p>
-          <h1 className="mt-1 text-3xl font-black">Pending Requests</h1>
+          <h1 className="mt-1 text-2xl font-black sm:text-3xl">Pending Requests</h1>
           <p className="mt-2 text-muted">
             Unassigned missions with drivers waiting for dispatcher approval.
           </p>
@@ -189,7 +189,7 @@ export default function PendingRequestsPage() {
         </DispatcherStatsWindow>
 
         <section className="rounded-2xl border border-app bg-card shadow-xl">
-          <div className="border-b border-app px-5 py-4">
+          <div className="border-b border-app px-3 py-4 sm:px-5">
             <h2 className="text-xl font-bold">Missions With Driver Requests</h2>
             <p className="mt-1 text-sm text-muted">
               Open a mission to review its details and compare requesting drivers.

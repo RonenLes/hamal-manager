@@ -7,6 +7,7 @@ import { formatIdealDeliveryTime, getMissionDeliveredAt } from "@/lib/mission-ti
 import DetailTile from "../shared/DetailTile";
 import PriorityBadge from "../shared/PriorityBadge";
 import type { DriverMissionRequest } from "./PendingRequestDriverEntry";
+import CollapseDetailsButton from "@/components/shared/CollapseDetailsButton";
 
 export type MissionRequestGroup = {
   mission: Mission;
@@ -52,11 +53,11 @@ export default function PendingMissionRequestEntry({
       <button
         type="button"
         onClick={onToggleMission}
-        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-card-soft"
+        className="flex w-full flex-col items-stretch justify-between gap-3 px-3 py-4 text-left transition hover:bg-card-soft sm:flex-row sm:items-center sm:px-5"
       >
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="truncate font-bold text-main">{mission.title}</h3>
+            <h3 className="break-words font-bold text-main">{mission.title}</h3>
             <PriorityBadge priority={mission.priority} />
             <span
               className={`rounded-full border px-3 py-1 text-xs font-bold capitalize ${getStateClasses(
@@ -69,13 +70,13 @@ export default function PendingMissionRequestEntry({
               {requests.length} driver{requests.length === 1 ? "" : "s"}
             </span>
           </div>
-          <p className="mt-1 truncate text-sm text-muted">
+          <p className="mt-1 break-words text-sm text-muted">
             {mission.pickup?.address || "Pickup TBD"} -&gt;{" "}
             {mission.dropoff?.address || "Dropoff TBD"}
           </p>
         </div>
 
-        <div className="flex shrink-0 items-center gap-4">
+        <div className="flex shrink-0 items-center justify-between gap-4 sm:justify-end">
           <span className="flex h-8 min-w-8 items-center justify-center rounded-full bg-red-600 px-2 text-sm font-black text-white">
             {requests.length}
           </span>
@@ -84,9 +85,10 @@ export default function PendingMissionRequestEntry({
       </button>
 
       {isExpanded && (
-        <div className="border-t border-blue-500/40 bg-app/60">
-          <div className="px-5 py-5">
-            <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="min-h-64 max-h-[75vh] resize-y overflow-auto border-t border-blue-500/40 bg-app/60">
+          <div className="px-3 py-4 sm:px-5 sm:py-5">
+            <CollapseDetailsButton onCollapse={onToggleMission} />
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
               <DetailTile label="Mission Status">
                 <p
                   className={`inline-flex rounded-full border px-3 py-1 text-sm font-bold capitalize ${getStateClasses(
@@ -149,14 +151,14 @@ export default function PendingMissionRequestEntry({
               </DetailTile>
 
               <DetailTile label="Mission ID">
-                <p className="font-mono text-sm text-muted">{mission.id}</p>
+                <p className="break-all font-mono text-sm text-muted">{mission.id}</p>
               </DetailTile>
             </div>
 
             <div className="mt-5 flex justify-end border-t border-app pt-5">
               <Link
                 href={`/dispatcher/pending-requests/${mission.id}`}
-                className="rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-orange-500"
+                className="w-full rounded-xl bg-orange-600 px-5 py-2.5 text-center text-sm font-bold text-white transition hover:bg-orange-500 sm:w-auto"
               >
                 View all {requests.length} request
                 {requests.length === 1 ? "" : "s"}
