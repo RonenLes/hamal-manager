@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 
 import DispatcherRequestCard from "@/components/driver/requests/DispatcherRequestCard";
@@ -104,9 +105,7 @@ export default function DriverRequestsPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading dispatcher requests...
-      </main>
+      <LoadingScreen label="Loading dispatcher requests..." />
     );
   }
 
@@ -120,7 +119,7 @@ export default function DriverRequestsPage() {
           <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
             Dispatcher Requests
           </p>
-          <h1 className="mt-1 text-2xl font-black sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">
             Requests From Dispatcher
           </h1>
           <p className="mt-2 text-muted">
@@ -129,19 +128,19 @@ export default function DriverRequestsPage() {
         </header>
 
         <section className="mb-5 grid grid-cols-2 gap-3 sm:gap-5">
-          <div className="rounded-xl border border-app bg-card p-4 shadow-xl">
+          <div className="rounded-xl border border-app bg-card p-4 shadow-sm">
             <p className="text-sm font-bold text-muted">Pending</p>
-            <p className="mt-1 text-3xl font-black text-main">{stats.total}</p>
+            <p className="mt-1 text-3xl font-semibold text-main">{stats.total}</p>
           </div>
-          <div className="rounded-xl border border-app bg-card p-4 shadow-xl">
+          <div className="rounded-xl border border-app bg-card p-4 shadow-sm">
             <p className="text-sm font-bold text-muted">Urgent</p>
-            <p className="mt-1 text-3xl font-black text-main">{stats.urgent}</p>
+            <p className="mt-1 text-3xl font-semibold text-main">{stats.urgent}</p>
           </div>
         </section>
 
         <section className="grid gap-4">
           {requests.length === 0 && (
-            <div className="rounded-2xl border border-app bg-card p-8 text-center text-muted shadow-xl">
+            <div className="rounded-xl border border-app bg-card p-8 text-center text-muted shadow-sm">
               No dispatcher requests are waiting for you.
             </div>
           )}

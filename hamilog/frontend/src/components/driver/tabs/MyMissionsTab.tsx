@@ -48,8 +48,8 @@ export default function MyMissionsTab({
 
   if (presentAndFutureMissions.length === 0 && completedMissions.length === 0) {
     return (
-      <section className="rounded-2xl border border-app bg-card p-8 text-center shadow-xl">
-        <h2 className="text-xl font-black text-main">No Assigned Missions</h2>
+      <section className="rounded-xl border border-app bg-card p-8 text-center shadow-sm">
+        <h2 className="text-xl font-semibold text-main">No Assigned Missions</h2>
         <p className="mt-2 text-sm text-muted">
           Check Open Tasks to find available missions that match your vehicle.
         </p>
@@ -74,9 +74,9 @@ export default function MyMissionsTab({
       )}
 
       {completedMissions.length > 0 && (
-        <div className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+        <div className="rounded-xl border border-app bg-card p-5 shadow-sm">
           <div className="mb-4">
-            <h2 className="text-xl font-black text-main">Completed</h2>
+            <h2 className="text-xl font-semibold text-main">Completed</h2>
             <p className="mt-1 text-sm text-muted">
               {completedMissions.length} delivered mission
               {completedMissions.length === 1 ? "" : "s"}

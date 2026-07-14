@@ -14,10 +14,10 @@ export default function MessageDirectory({
   conversationHrefFor,
 }: MessageDirectoryProps) {
   return (
-    <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+    <section className="rounded-xl border border-app bg-card p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-black text-main">People</h2>
+          <h2 className="text-xl font-semibold text-main">People</h2>
           <p className="text-sm text-muted">Use the message icon to open a thread.</p>
         </div>
         <span className="rounded-full bg-card-soft px-3 py-1 text-xs font-bold text-muted">

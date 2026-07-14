@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 import Calendar from "@/components/shared/Calendar";
@@ -180,9 +181,7 @@ export default function TodaysSchedulePage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading schedule...
-      </main>
+      <LoadingScreen label="Loading schedule..." />
     );
   }
 
@@ -197,7 +196,7 @@ export default function TodaysSchedulePage() {
             <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
               Date Schedule
             </p>
-            <h1 className="mt-1 text-2xl font-black sm:text-3xl">
+            <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">
               {formatReadableDate(selectedDate)} Schedule
             </h1>
             <p className="mt-2 text-muted">
@@ -236,7 +235,7 @@ export default function TodaysSchedulePage() {
           />
         </DispatcherStatsWindow>
 
-        <section className="mb-6 rounded-2xl border border-app bg-card p-3 shadow-xl sm:p-4">
+        <section className="mb-6 rounded-xl border border-app bg-card p-3 shadow-sm sm:p-4">
           <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
             <label className="block">
               <span className="mb-2 block text-sm font-semibold text-muted">Change date</span>
@@ -253,7 +252,7 @@ export default function TodaysSchedulePage() {
             <button
               type="button"
               onClick={() => setShowCalendar((current) => !current)}
-              className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-4 py-2 text-sm font-bold text-blue-200 transition hover:bg-blue-500/20"
+              className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-4 py-2 text-sm font-bold text-blue-700 dark:text-blue-200 transition hover:bg-blue-500/20"
             >
               {showCalendar ? "Hide calendar" : "View in calendar"}
             </button>
@@ -272,7 +271,7 @@ export default function TodaysSchedulePage() {
           )}
         </section>
 
-        <section className="rounded-2xl border border-app bg-card shadow-xl">
+        <section className="rounded-xl border border-app bg-card shadow-sm">
           <div className="border-b border-app px-4 py-3 sm:px-5 sm:py-4">
             <h2 className="text-xl font-bold">Delivery Entries</h2>
             <p className="mt-1 text-sm text-muted">

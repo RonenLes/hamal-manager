@@ -122,14 +122,14 @@ export default function SupportTicketPanel({
 
   return (
     <section
-      className={`rounded-2xl border border-app bg-card p-5 shadow-xl ${className}`}
+      className={`rounded-xl border border-app bg-card p-5 shadow-sm ${className}`}
     >
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
             Support
           </p>
-          <h2 className="mt-1 text-2xl font-black text-main">
+          <h2 className="mt-1 text-2xl font-semibold text-main">
             Open Support Ticket
           </h2>
         </div>
@@ -138,7 +138,7 @@ export default function SupportTicketPanel({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-app bg-card-soft px-4 py-2 text-sm font-bold text-main transition hover:border-blue-400 hover:text-blue-300"
+            className="rounded-xl border border-app bg-card-soft px-4 py-2 text-sm font-bold text-main transition hover:border-blue-400 hover:text-blue-700 dark:text-blue-300"
           >
             Back
           </button>
@@ -211,13 +211,13 @@ export default function SupportTicketPanel({
         </label>
 
         {error ? (
-          <p className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-300">
+          <p className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-700 dark:text-red-300">
             {error}
           </p>
         ) : null}
 
         {success ? (
-          <p className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-300">
+          <p className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
             {success}
           </p>
         ) : null}

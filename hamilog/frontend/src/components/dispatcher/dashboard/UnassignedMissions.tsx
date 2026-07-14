@@ -42,7 +42,7 @@ export default function UnassignedMissions({
             className="border-b border-app pb-4 last:border-b-0"
           >
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-lg font-black text-main">
+              <p className="text-lg font-semibold text-main">
                 {formatTime(mission.created_at)}
               </p>
 

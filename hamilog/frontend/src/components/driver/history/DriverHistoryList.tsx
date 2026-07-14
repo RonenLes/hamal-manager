@@ -13,7 +13,7 @@ export default function DriverHistoryList({ missions, loading }: DriverHistoryLi
     return (
       <section className="w-full space-y-3">
         {["history-loading-1", "history-loading-2", "history-loading-3"].map((item) => (
-          <div key={item} className="h-28 rounded-2xl border border-app bg-card p-5 shadow-xl">
+          <div key={item} className="h-28 rounded-xl border border-app bg-card p-5 shadow-sm">
             <div className="skeleton h-5 w-1/3" />
             <div className="skeleton mt-4 h-4 w-2/3" />
           </div>
@@ -24,8 +24,8 @@ export default function DriverHistoryList({ missions, loading }: DriverHistoryLi
 
   if (missions.length === 0) {
     return (
-      <section className="rounded-2xl border border-app bg-card p-8 text-center shadow-xl">
-        <h2 className="text-xl font-black text-main">No Finished Missions</h2>
+      <section className="rounded-xl border border-app bg-card p-8 text-center shadow-sm">
+        <h2 className="text-xl font-semibold text-main">No Finished Missions</h2>
         <p className="mt-2 text-sm text-muted">Completed missions will appear here after you mark them delivered.</p>
       </section>
     );

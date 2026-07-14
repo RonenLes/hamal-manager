@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 
 import {
@@ -110,9 +111,7 @@ export default function BlacklistedDriversPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading blacklisted drivers...
-      </main>
+      <LoadingScreen label="Loading blacklisted drivers..." />
     );
   }
 
@@ -123,10 +122,10 @@ export default function BlacklistedDriversPage() {
           <div>
             <BackToMenuButton href="/dispatcher/drivers" />
 
-            <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-red-300">
+            <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-red-700 dark:text-red-300">
               Driver Management
             </p>
-            <h1 className="mt-1 text-3xl font-black">Blacklisted Drivers</h1>
+            <h1 className="mt-1 text-3xl font-semibold">Blacklisted Drivers</h1>
             <p className="mt-2 text-muted">
               Review blacklisted drivers, delivery history, score movement, and
               contact details.
@@ -152,7 +151,7 @@ export default function BlacklistedDriversPage() {
           />
         </DispatcherStatsWindow>
 
-        <section className="rounded-2xl border border-app bg-card shadow-xl">
+        <section className="rounded-xl border border-app bg-card shadow-sm">
           <div className="border-b border-app px-5 py-4">
             <h2 className="text-xl font-bold text-main">
               Blacklisted Driver Entries

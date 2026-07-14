@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
@@ -82,9 +83,7 @@ export default function LiveMapDeliveryDetailsPage({
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading delivery details...
-      </main>
+      <LoadingScreen label="Loading delivery details..." />
     );
   }
 
@@ -111,7 +110,7 @@ export default function LiveMapDeliveryDetailsPage({
           <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-blue-400">
             Live Map Details
           </p>
-          <h1 className="mt-1 text-2xl font-black sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">
             {mission.title}
           </h1>
 
@@ -127,7 +126,7 @@ export default function LiveMapDeliveryDetailsPage({
           </div>
         </header>
 
-        <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+        <section className="rounded-xl border border-app bg-card p-4 shadow-sm sm:p-5">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <DetailTile label="Driver">
               <p className="font-semibold text-main">

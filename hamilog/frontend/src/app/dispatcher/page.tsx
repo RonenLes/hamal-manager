@@ -25,6 +25,7 @@ import DriverStatusPanel from "@/components/dispatcher/dashboard/DriverStatusPan
 import RecentActivity from "@/components/dispatcher/dashboard/RecentActivity";
 import StatCard from "@/components/dispatcher/dashboard/StatCard";
 import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
+import { DashboardSkeleton } from "@/components/shared/Skeleton";
 
 // Returns the display name.
 function getDisplayName(user: StoredUser | null) {
@@ -90,21 +91,17 @@ export default function DispatcherPage() {
   }, []);
 
   if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading dispatcher dashboard...
-      </main>
-    );
+    return <DashboardSkeleton panels={6} />;
   }
 
   return (
       <main className="min-h-screen bg-app px-3 py-4 text-main sm:p-6">
     <header className="mb-4 sm:mb-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
+        <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
           Hello, {getDisplayName(user)}
         </p>
-        <h1 className="text-2xl font-black sm:text-3xl">Dispatcher Dashboard</h1>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Dispatcher Dashboard</h1>
         <p className="text-sm text-muted">
           Real-time delivery operations
         </p>
@@ -118,7 +115,7 @@ export default function DispatcherPage() {
           missions.filter((mission) => mission.status === "delivered").length
         } / ${missions.length}`}
         subtitle="Completed deliveries"
-        icon="✓"
+        icon="check"
         color="green"
       />
 
@@ -128,7 +125,7 @@ export default function DispatcherPage() {
           drivers.filter((driver) => driver.status !== "offline").length
         } / ${drivers.length}`}
         subtitle="Drivers currently online"
-        icon="👥"
+        icon="users"
         color="orange"
       />
     </DispatcherStatsWindow>

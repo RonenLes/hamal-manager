@@ -24,12 +24,12 @@ export default function DriverHistoryMissionCard({ mission, isExpanded, onToggle
   const deliveredAt = getMissionDeliveredAt(mission);
 
   return (
-    <article className={`w-full overflow-hidden rounded-xl border border-app bg-card shadow-lg ${isExpanded ? "outline outline-2 outline-blue-500/70" : ""}`}>
+    <article className={`w-full overflow-hidden rounded-xl border border-app bg-card shadow-sm ${isExpanded ? "outline outline-2 outline-blue-500/70" : ""}`}>
       <button type="button" onClick={onToggle} aria-expanded={isExpanded} className="flex w-full flex-col gap-2.5 p-3 text-left transition hover:bg-card-soft sm:p-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="break-words text-base font-black text-main sm:text-lg">{mission.title}</h2>
-            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">Delivered</span>
+            <h2 className="break-words text-base font-semibold text-main sm:text-lg">{mission.title}</h2>
+            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">Delivered</span>
           </div>
           <p className="mt-1.5 break-words text-xs text-muted sm:text-sm">{mission.pickup?.address ?? "Unknown pickup"} → {mission.dropoff?.address ?? "Unknown dropoff"}</p>
         </div>

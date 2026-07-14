@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 
 import {
@@ -143,9 +144,7 @@ export default function PendingRequestsPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading pending requests...
-      </main>
+      <LoadingScreen label="Loading pending requests..." />
     );
   }
 
@@ -159,7 +158,7 @@ export default function PendingRequestsPage() {
           <p className="text-sm font-semibold uppercase tracking-wider text-orange-400">
             Delivery Pool Requests
           </p>
-          <h1 className="mt-1 text-2xl font-black sm:text-3xl">Pending Requests</h1>
+          <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">Pending Requests</h1>
           <p className="mt-2 text-muted">
             Unassigned missions with drivers waiting for dispatcher approval.
           </p>
@@ -188,7 +187,7 @@ export default function PendingRequestsPage() {
           />
         </DispatcherStatsWindow>
 
-        <section className="rounded-2xl border border-app bg-card shadow-xl">
+        <section className="rounded-xl border border-app bg-card shadow-sm">
           <div className="border-b border-app px-3 py-4 sm:px-5">
             <h2 className="text-xl font-bold">Missions With Driver Requests</h2>
             <p className="mt-1 text-sm text-muted">

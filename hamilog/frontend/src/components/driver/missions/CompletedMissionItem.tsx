@@ -27,7 +27,7 @@ export default function CompletedMissionItem({
         )}
       </div>
 
-      <span className="w-fit rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300">
+      <span className="w-fit rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">
         Delivered
       </span>
     </article>

@@ -16,7 +16,7 @@ export default function DriverHeader({
         <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
           Driver Workspace
         </p>
-        <h1 className="mt-1 text-3xl font-black text-main">{title}</h1>
+        <h1 className="mt-1 text-3xl font-semibold text-main">{title}</h1>
         <p className="mt-2 max-w-3xl text-muted">{description}</p>
       </div>
 
@@ -26,7 +26,7 @@ export default function DriverHeader({
             online ? "bg-emerald-400" : "bg-slate-500"
           }`}
         />
-        <span className={online ? "text-emerald-300" : "text-muted"}>
+        <span className={online ? "text-emerald-700 dark:text-emerald-300" : "text-muted"}>
           {online ? "Online" : "Offline"}
         </span>
       </div>

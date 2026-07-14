@@ -1,5 +1,7 @@
 "use client";
 
+import Icon from "@/components/shared/Icon";
+
 type TextToSpeechButtonProps = {
   text: string;
 };
@@ -22,10 +24,11 @@ export default function TextToSpeechButton({ text }: TextToSpeechButtonProps) {
     <button
       type="button"
       onClick={speak}
-      className="rounded-xl border border-app px-3 py-2 text-sm font-semibold text-main transition hover:bg-card-soft"
+      className="inline-flex items-center justify-center rounded-xl border border-app px-3 py-2 text-main transition hover:bg-card-soft"
       title="Read aloud"
+      aria-label="Read aloud"
     >
-      🔊
+      <Icon name="sound" className="h-4 w-4" />
     </button>
   );
 }

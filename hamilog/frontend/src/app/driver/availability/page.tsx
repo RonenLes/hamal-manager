@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
@@ -166,9 +167,7 @@ export default function DriverAvailabilityPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading availability...
-      </main>
+      <LoadingScreen label="Loading availability..." />
     );
   }
 
@@ -180,16 +179,16 @@ export default function DriverAvailabilityPage() {
           <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-emerald-400">
             Driver Availability
           </p>
-          <h1 className="mt-1 text-3xl font-black">Availability Calendar</h1>
+          <h1 className="mt-1 text-3xl font-semibold">Availability Calendar</h1>
           <p className="mt-2 text-muted">
             Select dates you can drive and save them for dispatcher planning.
           </p>
         </header>
 
-        <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+        <section className="rounded-xl border border-app bg-card p-4 shadow-sm sm:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h2 className="text-xl font-black text-main">
+              <h2 className="text-xl font-semibold text-main">
                 Availability Window
               </h2>
               <p className="mt-1 text-sm text-muted">
@@ -204,7 +203,7 @@ export default function DriverAvailabilityPage() {
                     } saved`}
               </p>
               {error && (
-                <p className="mt-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-300">
+                <p className="mt-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-700 dark:text-red-300">
                   {error}
                 </p>
               )}
@@ -229,7 +228,7 @@ export default function DriverAvailabilityPage() {
                 <button
                   type="button"
                   onClick={startRemoveSelection}
-                  className="rounded-xl border border-red-500/40 bg-red-500/10 px-5 py-3 text-sm font-bold text-red-200 transition hover:bg-red-500/15"
+                  className="rounded-xl border border-red-500/40 bg-red-500/10 px-5 py-3 text-sm font-bold text-red-700 dark:text-red-200 transition hover:bg-red-500/15"
                 >
                   Select dates to remove
                 </button>

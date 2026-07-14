@@ -12,6 +12,7 @@ import {
   getToken,
 } from "@/lib/api-client";
 import { CAR_SPECS } from "@/lib/car-specs";
+import Spinner from "@/components/shared/Spinner";
 
 type ThemeMode = "dark" | "light";
 
@@ -270,8 +271,8 @@ function LoginForm() {
 
   return (
     <div
-     className={`w-full max-w-md p-8 rounded-2xl border border-app bg-card text-main shadow-xl ${shaking ? "animate-shake" : ""}`}
-      style={{ animation: "fade-up 0.6s ease-out forwards" }}
+     className={`w-full max-w-md p-8 rounded-xl border border-app bg-card text-main shadow-sm ${shaking ? "animate-shake" : ""}`}
+      style={{ animation: "fade-up 0.4s ease-out forwards" }}
     >
       <div className="mb-6 flex justify-end">
         <button
@@ -296,20 +297,14 @@ function LoginForm() {
       </div>
 
       {/* Header */}
-      <div className="text-center mb-8">
+      <div className="mb-8">
         <h1
-          className="font-[family-name:var(--font-outfit)] text-3xl font-bold tracking-tight mb-1"
-          style={{
-            background: "var(--gradient-blue)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
+          className="font-[family-name:var(--font-outfit)] text-3xl font-semibold tracking-tight text-main mb-1"
           id="login-title"
         >
-          LOGIN
+          Hamalog
         </h1>
-        <p className="text-sm text-muted"  >
+        <p className="text-sm text-muted">
           Sign in to continue
         </p>
       </div>
@@ -370,10 +365,7 @@ function LoginForm() {
         >
           {loading ? (
             <>
-              <span
-                className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-                style={{ animation: "spin-slow 0.7s linear infinite" }}
-              />
+              <Spinner className="h-4 w-4" />
               Signing in...
             </>
           ) : (
@@ -435,13 +427,13 @@ function LoginForm() {
             setError(null);
             setRegisterMessage("");
           }}
-          className="w-full rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-bold text-emerald-300 transition hover:bg-emerald-500/20"
+          className="w-full rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-bold text-emerald-700 dark:text-emerald-300 transition hover:bg-emerald-500/20"
         >
           Register as Driver
         </button>
 
         {registerMessage && (
-          <div className="mt-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          <div className="mt-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">
             {registerMessage}
           </div>
         )}
@@ -449,10 +441,10 @@ function LoginForm() {
         {showDriverRegistration && (
           <form
             onSubmit={handleDriverRequestSubmit}
-            className="mt-4 grid gap-3 rounded-2xl border border-app bg-card-soft p-4"
+            className="mt-4 grid gap-3 rounded-xl border border-app bg-card-soft p-4"
           >
             <div>
-              <h2 className="text-lg font-black text-main">
+              <h2 className="text-lg font-semibold text-main">
                 Driver Registration
               </h2>
               <p className="mt-1 text-sm text-muted">
@@ -564,7 +556,7 @@ function LoginForm() {
             />
 
             {locationsError && (
-              <p className="rounded-lg border border-orange-500/30 bg-orange-500/10 px-3 py-2 text-xs font-semibold text-orange-300">
+              <p className="rounded-lg border border-orange-500/30 bg-orange-500/10 px-3 py-2 text-xs font-semibold text-orange-700 dark:text-orange-300">
                 {locationsError}
               </p>
             )}
@@ -650,11 +642,8 @@ export default function LoginPage() {
 
       <Suspense
         fallback={
-          <div className="glass-card w-full max-w-md p-8 flex items-center justify-center">
-            <span
-              className="inline-block w-6 h-6 border-2 border-white/20 border-t-white rounded-full"
-              style={{ animation: "spin-slow 0.7s linear infinite" }}
-            />
+          <div className="w-full max-w-md rounded-xl border border-app bg-card p-8 flex items-center justify-center">
+            <Spinner className="h-6 w-6 text-blue-500" />
           </div>
         }
       >

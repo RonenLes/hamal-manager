@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 
 import CargoReport from "@/components/dispatcher/reports/cargo/CargoReport";
@@ -221,7 +222,7 @@ export default function DispatcherReportsPage() {
     return Object.entries(counts).map(([label, value]) => ({
       label: labelize(label),
       value,
-      color: label === "refrigerated_van" ? "bg-cyan-500" : "bg-violet-500",
+      color: label === "refrigerated_van" ? "bg-cyan-500" : "bg-blue-500",
     }));
   }, [drivers]);
 
@@ -597,9 +598,7 @@ export default function DispatcherReportsPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading reports...
-      </main>
+      <LoadingScreen label="Loading reports..." />
     );
   }
 
@@ -614,7 +613,7 @@ export default function DispatcherReportsPage() {
             <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
               Dispatcher Analytics
             </p>
-            <h1 className="mt-1 text-2xl font-black sm:text-3xl">Statistics & Reports</h1>
+            <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">Statistics & Reports</h1>
             <p className="mt-2 max-w-2xl text-muted">
               Review mission flow, driver availability, and cargo patterns for the selected time range.
             </p>
@@ -686,9 +685,9 @@ export default function DispatcherReportsPage() {
             />
           </section>
 
-          <section className="rounded-2xl border border-app bg-card p-2 shadow-xl">
+          <section className="rounded-xl border border-app bg-card p-2 shadow-sm">
             <div className="flex items-center gap-2">
-              <button type="button" onClick={() => scrollReportTabs("left")} className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-black text-muted transition hover:text-main sm:hidden" aria-label="Scroll report tabs left">{"<"}</button>
+              <button type="button" onClick={() => scrollReportTabs("left")} className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-semibold text-muted transition hover:text-main sm:hidden" aria-label="Scroll report tabs left">{"<"}</button>
               <div ref={reportTabsRef} className="min-w-0 flex-1 overflow-x-auto">
                 <div className="flex min-w-max gap-2 md:w-full md:min-w-0">
                   {reportViews.map((view) => {
@@ -711,7 +710,7 @@ export default function DispatcherReportsPage() {
                   })}
                 </div>
               </div>
-              <button type="button" onClick={() => scrollReportTabs("right")} className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-black text-muted transition hover:text-main sm:hidden" aria-label="Scroll report tabs right">{">"}</button>
+              <button type="button" onClick={() => scrollReportTabs("right")} className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-semibold text-muted transition hover:text-main sm:hidden" aria-label="Scroll report tabs right">{">"}</button>
             </div>
           </section>
 

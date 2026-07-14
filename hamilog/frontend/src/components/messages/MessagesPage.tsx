@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 
 import {
@@ -175,9 +176,7 @@ export default function MessagesPage({ role, fallbackHref }: MessagesPageProps) 
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading messages...
-      </main>
+      <LoadingScreen label="Loading messages..." />
     );
   }
 
@@ -189,7 +188,7 @@ export default function MessagesPage({ role, fallbackHref }: MessagesPageProps) 
           <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-blue-400">
             Team Communication
           </p>
-          <h1 className="mt-1 text-3xl font-black">Messages</h1>
+          <h1 className="mt-1 text-3xl font-semibold">Messages</h1>
           <p className="mt-2 text-muted">
             Message drivers and dispatchers from one shared inbox.
           </p>

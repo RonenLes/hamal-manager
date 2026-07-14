@@ -11,8 +11,8 @@ export default function BarList({ title, rows, emptyText }: BarListProps) {
   const max = Math.max(...rows.map((row) => row.value), 1);
 
   return (
-    <div className="rounded-2xl border border-app bg-card p-5 shadow-xl">
-      <h2 className="text-lg font-black text-main">{title}</h2>
+    <div className="rounded-xl border border-app bg-card p-5 shadow-sm">
+      <h2 className="text-lg font-semibold text-main">{title}</h2>
       <div className="mt-5 space-y-4">
         {rows.length === 0 && <p className="text-sm text-muted">{emptyText}</p>}
         {rows.map((row) => (

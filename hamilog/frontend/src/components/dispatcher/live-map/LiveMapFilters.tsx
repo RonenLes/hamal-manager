@@ -47,7 +47,7 @@ export default function LiveMapFiltersPanel({
   return (
     <div className="mb-3 rounded-xl border border-app bg-card-soft px-3 py-2">
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
-        <h2 className="shrink-0 text-sm font-black text-main">Map Filters</h2>
+        <h2 className="shrink-0 text-sm font-semibold text-main">Map Filters</h2>
 
         <div className="flex min-w-0 flex-wrap gap-2 lg:flex-1 lg:flex-nowrap">
           {filterOptions.map((option) => (

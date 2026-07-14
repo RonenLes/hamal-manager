@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Icon from "@/components/shared/Icon";
 
 type ThemeMode = "dark" | "light";
 
@@ -32,10 +33,11 @@ export default function ThemeToggleButton() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="rounded-xl border border-app px-4 py-2 text-sm font-semibold text-main transition hover:bg-card-soft"
+      className="inline-flex items-center gap-2 rounded-xl border border-app px-4 py-2 text-sm font-semibold text-main transition hover:bg-card-soft"
       title="Toggle light / dark mode"
     >
-      {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
+      <Icon name={theme === "dark" ? "sun" : "moon"} className="h-4 w-4" />
+      {theme === "dark" ? "Light" : "Dark"}
     </button>
   );
 }

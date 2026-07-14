@@ -76,7 +76,7 @@ function OptionButton({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-2xl border p-5 text-left transition ${
+      className={`rounded-xl border p-5 text-left transition ${
         active
           ? "border-blue-500 bg-blue-500/10"
           : "border-app bg-card hover:bg-card-soft"
@@ -84,12 +84,12 @@ function OptionButton({
     >
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-black text-main">{label}</h3>
+          <h3 className="text-lg font-semibold text-main">{label}</h3>
           <p className="mt-1 text-sm text-muted">{description}</p>
         </div>
 
         <span
-          className={`flex h-7 w-7 items-center justify-center rounded-full border text-xs font-black ${
+          className={`flex h-7 w-7 items-center justify-center rounded-full border text-xs font-semibold ${
             active
               ? "border-blue-500 bg-blue-500 text-white"
               : "border-app bg-card-soft text-transparent"
@@ -105,7 +105,7 @@ function OptionButton({
 // Renders the tab button component.
 function ScrollTabsButton({ direction }: { direction: "left" | "right" }) {
   return (
-    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-black text-muted sm:hidden">
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-semibold text-muted sm:hidden">
       {direction === "left" ? "<" : ">"}
     </span>
   );
@@ -124,9 +124,9 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 rounded-xl px-4 py-3 text-sm font-black transition ${
+      className={`shrink-0 rounded-xl px-4 py-3 text-sm font-semibold transition ${
         active
-          ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20"
+          ? "bg-blue-500 text-white shadow-sm shadow-blue-500/20"
           : "text-muted hover:bg-card-soft hover:text-main"
       }`}
     >
@@ -198,9 +198,9 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
 
   const accessibilityPanel = (
     <section className="space-y-6">
-      <div className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+      <div className="rounded-xl border border-app bg-card p-5 shadow-sm">
         <div className="mb-5">
-          <h2 className="text-xl font-black text-main">Theme Mode</h2>
+          <h2 className="text-xl font-semibold text-main">Theme Mode</h2>
           <p className="mt-1 text-sm text-muted">
             Choose between dark mode and light mode.
           </p>
@@ -223,9 +223,9 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+      <div className="rounded-xl border border-app bg-card p-5 shadow-sm">
         <div className="mb-5">
-          <h2 className="text-xl font-black text-main">Font Size</h2>
+          <h2 className="text-xl font-semibold text-main">Font Size</h2>
           <p className="mt-1 text-sm text-muted">
             Choose the text size that is most comfortable for you.
           </p>
@@ -258,17 +258,17 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
   );
 
   const soundPanel = (
-    <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+    <section className="rounded-xl border border-app bg-card p-5 shadow-sm">
       <div className="mb-5">
-        <h2 className="text-xl font-black text-main">Sound</h2>
+        <h2 className="text-xl font-semibold text-main">Sound</h2>
         <p className="mt-1 text-sm text-muted">
           Control alert and notification sounds for the dispatcher dashboard.
         </p>
       </div>
 
-      <div className="flex flex-col gap-4 rounded-2xl border border-app bg-card-soft p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-xl border border-app bg-card-soft p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-lg font-black text-main">Mute Sound</h3>
+          <h3 className="text-lg font-semibold text-main">Mute Sound</h3>
           <p className="mt-1 text-sm text-muted">
             Turn off dashboard sounds while keeping visual updates visible.
           </p>
@@ -296,17 +296,17 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
   );
 
   const notificationsPanel = (
-    <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+    <section className="rounded-xl border border-app bg-card p-5 shadow-sm">
       <div className="mb-5">
-        <h2 className="text-xl font-black text-main">Notifications</h2>
+        <h2 className="text-xl font-semibold text-main">Notifications</h2>
         <p className="mt-1 text-sm text-muted">
           Control alert popups and notification prompts.
         </p>
       </div>
 
-      <div className="flex flex-col gap-4 rounded-2xl border border-app bg-card-soft p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-xl border border-app bg-card-soft p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-lg font-black text-main">Turn Off Notifications</h3>
+          <h3 className="text-lg font-semibold text-main">Turn Off Notifications</h3>
           <p className="mt-1 text-sm text-muted">
             Hide alert popups while keeping dashboard data visible.
           </p>
@@ -342,7 +342,7 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
           Settings
         </p>
 
-        <h1 className="mt-1 text-3xl font-black">Settings</h1>
+        <h1 className="mt-1 text-3xl font-semibold">Settings</h1>
 
         <p className="mt-2 text-muted">
           {audience === "dispatcher"
@@ -352,12 +352,12 @@ export default function SettingsPanel({ audience }: SettingsPanelProps) {
       </header>
 
       {savedMessage && (
-        <div className="mb-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-4 text-emerald-300">
+        <div className="mb-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-4 text-emerald-700 dark:text-emerald-300">
           {savedMessage}
         </div>
       )}
 
-      <div className="mb-6 flex items-center gap-2 rounded-2xl border border-app bg-card p-2 shadow-xl">
+      <div className="mb-6 flex items-center gap-2 rounded-xl border border-app bg-card p-2 shadow-sm">
         <ScrollTabsButton direction="left" />
         <nav className="flex min-w-0 flex-1 gap-2 overflow-x-auto">
         <TabButton

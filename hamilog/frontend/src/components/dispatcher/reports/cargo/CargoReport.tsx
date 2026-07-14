@@ -79,7 +79,7 @@ export default function CargoReport({
         emptyText="No cargo data for this range."
       />
 
-      <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+      <section className="rounded-xl border border-app bg-card p-4 shadow-sm sm:p-5">
         <div className="space-y-4">
           <div>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

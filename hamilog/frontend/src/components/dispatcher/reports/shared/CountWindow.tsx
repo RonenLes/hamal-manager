@@ -11,17 +11,17 @@ function CountLinkCard({
   color = "blue",
 }: CountRow) {
   const colorClasses = {
-    blue: "border-blue-500/30 bg-blue-500/10 text-blue-300",
-    emerald: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
-    orange: "border-orange-500/30 bg-orange-500/10 text-orange-300",
-    red: "border-red-500/30 bg-red-500/10 text-red-300",
-    slate: "border-slate-500/30 bg-slate-500/10 text-slate-300",
+    blue: "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300",
+    emerald: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+    orange: "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300",
+    red: "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300",
+    slate: "border-slate-500/30 bg-slate-500/10 text-slate-600 dark:text-slate-300",
   };
 
   const content = (
     <>
       <p className="text-xs font-bold leading-tight sm:text-sm">{title}</p>
-      <p className="mt-2 text-2xl font-black leading-none text-main sm:mt-3 sm:text-3xl">{value}</p>
+      <p className="mt-2 text-2xl font-semibold leading-none text-main sm:mt-3 sm:text-3xl">{value}</p>
       <p className="mt-2 text-xs leading-snug text-muted sm:text-sm">{note}</p>
     </>
   );
@@ -52,8 +52,8 @@ type CountWindowProps = {
 // Renders the count window component.
 export default function CountWindow({ title, rows }: CountWindowProps) {
   return (
-    <section className="rounded-2xl border border-app bg-card p-3 shadow-xl sm:p-4">
-      <h2 className="text-base font-black text-main sm:text-lg">{title}</h2>
+    <section className="rounded-xl border border-app bg-card p-3 shadow-sm sm:p-4">
+      <h2 className="text-base font-semibold text-main sm:text-lg">{title}</h2>
       <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
         {rows.map((row) => (
           <CountLinkCard key={row.title} {...row} />

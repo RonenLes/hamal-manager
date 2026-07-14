@@ -21,14 +21,14 @@ function formatDateTime(dateValue?: string) {
 // Returns the request status classes.
 function getRequestStatusClasses(status: DriverRequest["status"]) {
   if (status === "pending") {
-    return "border-orange-500/30 bg-orange-500/10 text-orange-300";
+    return "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300";
   }
 
   if (status === "approved") {
-    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
+    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
   }
 
-  return "border-red-500/30 bg-red-500/10 text-red-300";
+  return "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300";
 }
 
 // Returns the request status dot classes.

@@ -36,7 +36,7 @@ export default function DriverHistoryStats({
           <p className="text-sm font-semibold uppercase tracking-wider text-muted">
             {stat.label}
           </p>
-          <p className="mt-2 text-2xl font-black text-main">{stat.value}</p>
+          <p className="mt-2 text-2xl font-semibold text-main">{stat.value}</p>
         </div>
       ))}
     </DispatcherStatsWindow>

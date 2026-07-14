@@ -21,6 +21,8 @@ import {
 } from "@/lib/api-client";
 import ActiveMissionCard from "@/components/driver/missions/ActiveMissionCard";
 import DispatcherRequestCard from "@/components/driver/requests/DispatcherRequestCard";
+import Icon from "@/components/shared/Icon";
+import { DashboardSkeleton } from "@/components/shared/Skeleton";
 import { formatIdealDeliveryTime } from "@/lib/mission-time";
 
 function isPresentOrFutureMission(mission: Mission) {
@@ -187,11 +189,7 @@ export default function DriverDashboardPage() {
   );
 
   if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading driver dashboard...
-      </main>
-    );
+    return <DashboardSkeleton panels={3} />;
   }
 
   return (
@@ -199,7 +197,7 @@ export default function DriverDashboardPage() {
       <div className="mx-auto max-w-7xl">
         <header className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-3xl font-black">Driver Dashboard</h1>
+            <h1 className="text-3xl font-semibold">Driver Dashboard</h1>
             <p className="mt-1 text-sm text-muted">
               Today&apos;s delivery status, available tasks, and driver tools.
             </p>
@@ -216,8 +214,8 @@ export default function DriverDashboardPage() {
               onCancelMission={handleCancelMission}
             />
           ) : (
-            <div className="rounded-2xl border border-app bg-card p-8 text-center shadow-xl">
-              <h2 className="text-xl font-black text-main">
+            <div className="rounded-xl border border-app bg-card p-8 text-center shadow-sm">
+              <h2 className="text-xl font-semibold text-main">
                 No Active Mission
               </h2>
               <p className="mt-2 text-sm text-muted">
@@ -233,15 +231,15 @@ export default function DriverDashboardPage() {
           )}
         </section>
 
-        <section className="mb-5 min-h-32 max-h-80 resize-y overflow-auto rounded-2xl border border-app bg-card p-4 shadow-xl">
+        <section className="mb-5 min-h-32 max-h-80 resize-y overflow-auto rounded-xl border border-app bg-card p-4 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-black text-main">Online Dispatchers</h2>
+              <h2 className="text-lg font-semibold text-main">Online Dispatchers</h2>
               <p className="mt-1 text-xs text-muted">
                 Message operations support directly.
               </p>
             </div>
-            <span className="rounded-lg bg-emerald-500/15 px-2.5 py-1.5 text-sm font-black text-emerald-300">
+            <span className="rounded-lg bg-emerald-500/15 px-2.5 py-1.5 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
               {onlineDispatchers.length}
             </span>
           </div>
@@ -262,14 +260,14 @@ export default function DriverDashboardPage() {
                   <p className="truncate text-sm font-bold text-main">
                     {dispatcher.name}
                   </p>
-                  <p className="text-xs text-emerald-300">Online</p>
+                  <p className="text-xs text-emerald-700 dark:text-emerald-300">Online</p>
                 </div>
                 <Link
                   href={`/driver/messages/dispatcher/${dispatcher.id}`}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-500/40 bg-blue-500/10 text-sm font-black text-blue-200 transition hover:bg-blue-500/20"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-500/40 bg-blue-500/10 text-blue-600 transition hover:bg-blue-500/20 dark:text-blue-300"
                   aria-label={`Message ${dispatcher.name}`}
                 >
-                  💬
+                  <Icon name="chat" className="h-4 w-4" />
                 </Link>
               </div>
             ))}
@@ -279,7 +277,7 @@ export default function DriverDashboardPage() {
         <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5">
           <div className="xl:col-span-2">
             <section
-              className={`overflow-auto rounded-2xl border border-app bg-card shadow-xl ${
+              className={`overflow-auto rounded-xl border border-app bg-card shadow-sm ${
                 isRequestsPanelOpen ? "resize-y" : ""
               }`}
               style={{
@@ -293,7 +291,7 @@ export default function DriverDashboardPage() {
                 className="flex w-full items-center justify-between gap-3 border-b border-app px-5 py-4 text-left transition hover:bg-card-soft"
               >
                 <div>
-                  <h2 className="text-xl font-black text-main">
+                  <h2 className="text-xl font-semibold text-main">
                     Dispatcher Requests
                   </h2>
                   <p className="mt-1 text-sm text-muted">
@@ -301,7 +299,7 @@ export default function DriverDashboardPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="rounded-xl bg-blue-500/15 px-3 py-2 text-sm font-black text-blue-300">
+                  <span className="rounded-xl bg-blue-500/15 px-3 py-2 text-sm font-semibold text-blue-700 dark:text-blue-300">
                     {dispatcherRequests.length}
                   </span>
                   <span className="text-xl text-muted">
@@ -337,9 +335,9 @@ export default function DriverDashboardPage() {
               )}
             </section>
 
-            <section className="mt-5 rounded-2xl border border-app bg-card shadow-xl">
+            <section className="mt-5 rounded-xl border border-app bg-card shadow-sm">
               <div className="border-b border-app px-5 py-4">
-                <h2 className="text-xl font-black text-main">
+                <h2 className="text-xl font-semibold text-main">
                   Assigned Missions
                 </h2>
                 <p className="mt-1 text-sm text-muted">
@@ -381,8 +379,8 @@ export default function DriverDashboardPage() {
           </div>
 
           <div className="space-y-5">
-            <section className="rounded-2xl border border-app bg-card p-5 shadow-xl">
-              <h2 className="text-xl font-black text-main">Quick Actions</h2>
+            <section className="rounded-xl border border-app bg-card p-5 shadow-sm">
+              <h2 className="text-xl font-semibold text-main">Quick Actions</h2>
               <div className="mt-4 grid gap-3">
                 <Link
                   href="/driver/my-missions"

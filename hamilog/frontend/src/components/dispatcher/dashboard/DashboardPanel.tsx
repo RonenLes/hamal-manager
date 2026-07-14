@@ -30,7 +30,7 @@ export default function DashboardPanel({
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-app bg-card shadow-xl">
+    <section className="overflow-hidden rounded-xl border border-app bg-card shadow-sm">
       <header
         className={`flex items-center justify-between bg-gradient-to-r ${accentClasses[accent]} px-4 py-3 sm:px-5 sm:py-4`}
       >

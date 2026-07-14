@@ -48,19 +48,19 @@ export default function MessageThread({
 
   if (!recipient) {
     return (
-      <section className="flex min-h-[520px] items-center justify-center rounded-2xl border border-app bg-card p-8 text-center text-muted shadow-xl">
+      <section className="flex min-h-[520px] items-center justify-center rounded-xl border border-app bg-card p-8 text-center text-muted shadow-sm">
         Select a person to open messages.
       </section>
     );
   }
 
   return (
-    <section className="flex min-h-[520px] flex-col rounded-2xl border border-app bg-card shadow-xl">
+    <section className="flex min-h-[520px] flex-col rounded-xl border border-app bg-card shadow-sm">
       <header className="border-b border-app px-5 py-4">
         <p className="text-xs font-bold uppercase tracking-wider text-blue-400">
           Conversation
         </p>
-        <h2 className="mt-1 text-xl font-black text-main">{recipient.name}</h2>
+        <h2 className="mt-1 text-xl font-semibold text-main">{recipient.name}</h2>
         <p className="text-sm capitalize text-muted">{recipient.role}</p>
       </header>
 
@@ -82,7 +82,7 @@ export default function MessageThread({
               className={`flex ${isMine ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[78%] rounded-2xl px-4 py-3 ${
+                className={`max-w-[78%] rounded-xl px-4 py-3 ${
                   isMine
                     ? "bg-blue-600 text-white"
                     : "border border-app bg-app/80 text-main"

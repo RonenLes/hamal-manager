@@ -80,7 +80,7 @@ export default function DriverHistoryPage() {
         />
 
         {error && (
-          <div className="mb-5 rounded-2xl border alert-danger px-5 py-4">
+          <div className="mb-5 rounded-xl border alert-danger px-5 py-4">
             {error}
           </div>
         )}

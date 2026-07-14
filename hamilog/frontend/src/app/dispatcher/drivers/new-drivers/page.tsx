@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 
 import {
@@ -70,9 +71,7 @@ export default function NewDriversPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading new driver requests...
-      </main>
+      <LoadingScreen label="Loading new driver requests..." />
     );
   }
 
@@ -86,14 +85,14 @@ export default function NewDriversPage() {
             New Driver Requests
           </p>
 
-          <h1 className="mt-1 text-3xl font-black">Pending Drivers</h1>
+          <h1 className="mt-1 text-3xl font-semibold">Pending Drivers</h1>
 
           <p className="mt-2 text-muted">
             Review new volunteer driver requests and approve or decline them.
           </p>
         </header>
 
-        <section className="rounded-2xl border border-app bg-card shadow-xl">
+        <section className="rounded-xl border border-app bg-card shadow-sm">
           <div className="border-b border-app px-5 py-4">
             <h2 className="text-xl font-bold text-main">Pending Requests</h2>
 

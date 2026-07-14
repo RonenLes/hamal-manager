@@ -17,16 +17,16 @@ type SuggestedDriverEntryProps = {
 };
 
 function getScoreClasses(score: number) {
-  if (score >= 85) return "text-emerald-300";
-  if (score >= 65) return "text-orange-300";
-  return "text-red-300";
+  if (score >= 85) return "text-emerald-700 dark:text-emerald-300";
+  if (score >= 65) return "text-orange-700 dark:text-orange-300";
+  return "text-red-700 dark:text-red-300";
 }
 
 function getStatusClasses(status: string) {
-  if (status === "available") return "border-blue-500/30 bg-blue-500/10 text-blue-300";
+  if (status === "available") return "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300";
   if (status === "offline") return "border-slate-500/30 bg-slate-500/10 text-muted";
-  if (status === "blacklisted") return "border-red-500/30 bg-red-500/10 text-red-300";
-  return "border-orange-500/30 bg-orange-500/10 text-orange-300";
+  if (status === "blacklisted") return "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300";
+  return "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300";
 }
 
 export default function SuggestedDriverEntry({
@@ -75,7 +75,7 @@ export default function SuggestedDriverEntry({
         <div className="flex shrink-0 items-center gap-4">
           <div className="text-right">
             <p className="text-xs font-bold uppercase text-soft">Match</p>
-            <p className={`text-sm font-black ${getScoreClasses(matchScore)}`}>
+            <p className={`text-sm font-semibold ${getScoreClasses(matchScore)}`}>
               {matchScore}%
             </p>
           </div>
@@ -88,13 +88,13 @@ export default function SuggestedDriverEntry({
           <CollapseDetailsButton onCollapse={onToggle} />
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             <DetailTile label="Match Score">
-              <p className={`text-3xl font-black ${getScoreClasses(matchScore)}`}>
+              <p className={`text-3xl font-semibold ${getScoreClasses(matchScore)}`}>
                 {matchScore}%
               </p>
             </DetailTile>
 
             <DetailTile label="Driver Score">
-              <p className={`text-3xl font-black ${getScoreClasses(driver.score ?? 0)}`}>
+              <p className={`text-3xl font-semibold ${getScoreClasses(driver.score ?? 0)}`}>
                 {driver.score ?? 0}%
               </p>
             </DetailTile>
@@ -154,7 +154,7 @@ export default function SuggestedDriverEntry({
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
               <Link
                 href={`/dispatcher/drivers/${driver.id}/history`}
-                className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-5 py-2.5 text-center text-sm font-bold text-blue-200 transition hover:bg-blue-500/20"
+                className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-5 py-2.5 text-center text-sm font-bold text-blue-700 dark:text-blue-200 transition hover:bg-blue-500/20"
               >
                 Driver History
               </Link>

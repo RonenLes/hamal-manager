@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import type { Driver } from "@/lib/api-client";
+import Icon from "@/components/shared/Icon";
 import DashboardPanel from "./DashboardPanel";
 
 type DriverStatusPanelProps = {
@@ -64,9 +65,9 @@ export default function DriverStatusPanel({ drivers }: DriverStatusPanelProps) {
                 href={`/dispatcher/messages/driver/${driver.id}`}
                 aria-label={`Message ${driver.name}`}
                 title={`Message ${driver.name}`}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white transition hover:bg-blue-500"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white transition hover:bg-blue-500"
               >
-                <span aria-hidden="true">✉</span>
+                <Icon name="mail" className="h-4 w-4" />
               </Link>
             </div>
           </div>

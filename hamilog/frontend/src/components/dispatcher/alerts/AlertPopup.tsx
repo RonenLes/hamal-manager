@@ -25,14 +25,14 @@ export default function AlertPopup({ alert, onOk }: AlertPopupProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
       <div
-        className={`w-full max-w-md rounded-2xl border bg-card p-6 text-main shadow-2xl ${getPopupClasses(
+        className={`w-full max-w-md rounded-xl border bg-card p-6 text-main shadow-2xl ${getPopupClasses(
           alert.level,
         )}`}
       >
         <p className="text-sm font-bold uppercase tracking-wider text-muted">
           {alert.type || "Alert"}
         </p>
-        <h2 className="mt-2 text-2xl font-black">{alert.title}</h2>
+        <h2 className="mt-2 text-2xl font-semibold">{alert.title}</h2>
         {alert.summaries && alert.summaries.length > 1 ? (
           <ul className="mt-4 max-h-80 space-y-3 overflow-y-auto pr-2">
             {alert.summaries.map((summary, index) => (

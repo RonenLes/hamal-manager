@@ -41,15 +41,15 @@ function getDeliveryStateLabel(state: DeliveryState) {
 function getStateBadgeClasses(state: DeliveryState) {
   switch (state) {
     case "active":
-      return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
+      return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
     case "assigned":
-      return "border-blue-500/30 bg-blue-500/10 text-blue-300";
+      return "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300";
     case "unassigned":
-      return "border-orange-500/30 bg-orange-500/10 text-orange-300";
+      return "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300";
     case "delivered":
       return "border-slate-500/30 bg-slate-500/10 text-muted";
     case "cancelled":
-      return "border-red-500/30 bg-red-500/10 text-red-300";
+      return "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300";
   }
 }
 
@@ -108,7 +108,7 @@ export default function ScheduleEntry({
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="truncate font-bold text-main">{mission.title}</h3>
               {state === "active" && (
-                <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-xs font-black text-main">
+                <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-xs font-semibold text-main">
                   On
                 </span>
               )}

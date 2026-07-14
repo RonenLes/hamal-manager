@@ -40,26 +40,26 @@ function formatDateTime(dateValue?: string) {
 
 // Returns the score classes.
 function getScoreClasses(score: number) {
-  if (score >= 85) return "text-emerald-300";
-  if (score >= 65) return "text-orange-300";
-  return "text-red-300";
+  if (score >= 85) return "text-emerald-700 dark:text-emerald-300";
+  if (score >= 65) return "text-orange-700 dark:text-orange-300";
+  return "text-red-700 dark:text-red-300";
 }
 
 // Returns the status classes.
 function getStatusClasses(isActive: boolean, status: string) {
   if (isActive) {
-    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
+    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
   }
 
   if (status === "available") {
-    return "border-blue-500/30 bg-blue-500/10 text-blue-300";
+    return "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300";
   }
 
   if (status === "offline") {
     return "border-slate-500/30 bg-slate-500/10 text-muted";
   }
 
-  return "border-orange-500/30 bg-orange-500/10 text-orange-300";
+  return "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300";
 }
 
 // Returns the status dot classes.
@@ -139,13 +139,13 @@ export default function DriverEntry({
         </button>
 
         <div className="flex w-full min-w-0 items-center gap-1.5 overflow-x-auto pb-1 sm:w-auto sm:shrink-0 sm:gap-2 sm:overflow-visible sm:pb-0">
-          <span className={`shrink-0 px-1 text-center text-sm font-black ${getScoreClasses(score)}`}>
+          <span className={`shrink-0 px-1 text-center text-sm font-semibold ${getScoreClasses(score)}`}>
             {score}%
           </span>
 
           <Link
             href={`/dispatcher/messages/driver/${driver.id}`}
-            className="shrink-0 rounded-lg border border-blue-500/40 bg-blue-500/10 px-2 py-1.5 text-center text-[11px] font-bold text-blue-200 transition hover:bg-blue-500/20 sm:px-3 sm:py-2 sm:text-xs"
+            className="shrink-0 rounded-lg border border-blue-500/40 bg-blue-500/10 px-2 py-1.5 text-center text-[11px] font-bold text-blue-700 dark:text-blue-200 transition hover:bg-blue-500/20 sm:px-3 sm:py-2 sm:text-xs"
           >
             Msg
           </Link>
@@ -160,7 +160,7 @@ export default function DriverEntry({
           <button
             type="button"
             onClick={onToggleGraph}
-            className="shrink-0 rounded-lg border border-blue-500/40 bg-blue-500/10 px-2 py-1.5 text-center text-[11px] font-bold text-blue-200 transition hover:bg-blue-500/20 sm:px-3 sm:py-2 sm:text-xs"
+            className="shrink-0 rounded-lg border border-blue-500/40 bg-blue-500/10 px-2 py-1.5 text-center text-[11px] font-bold text-blue-700 dark:text-blue-200 transition hover:bg-blue-500/20 sm:px-3 sm:py-2 sm:text-xs"
           >
             {isGraphExpanded ? "Hide" : "Graph"}
           </button>
@@ -194,7 +194,7 @@ export default function DriverEntry({
             </DetailTile>
 
             <DetailTile label="Driver Score">
-              <p className={`text-3xl font-black ${getScoreClasses(score)}`}>
+              <p className={`text-3xl font-semibold ${getScoreClasses(score)}`}>
                 {score}%
               </p>
             </DetailTile>
@@ -238,7 +238,7 @@ export default function DriverEntry({
             </DetailTile>
 
             <DetailTile label="Deliveries Made">
-              <p className="text-2xl font-black sm:text-3xl text-main">{deliveriesMade}</p>
+              <p className="text-2xl font-semibold sm:text-3xl text-main">{deliveriesMade}</p>
             </DetailTile>
 
             <DetailTile label="Vehicle">
@@ -257,18 +257,18 @@ export default function DriverEntry({
           </div>
 
           {isActive && activeMission && (
-            <div className="mt-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-3 sm:mt-5 sm:p-5">
+            <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 sm:mt-5 sm:p-5">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-wider text-emerald-300">
+                  <p className="text-sm font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
                     Active Delivery
                   </p>
-                  <h3 className="mt-1 text-xl font-black text-main">
+                  <h3 className="mt-1 text-xl font-semibold text-main">
                     {activeMission.title}
                   </h3>
                 </div>
 
-                <span className="rounded-full bg-emerald-500 px-3 py-1 text-xs font-black text-white">
+                <span className="rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
                   Active
                 </span>
               </div>
@@ -325,7 +325,7 @@ export default function DriverEntry({
           )}
 
           {!isActive && (
-            <div className="mt-4 rounded-2xl border border-app bg-card p-3 text-sm text-muted sm:mt-5 sm:p-5">
+            <div className="mt-4 rounded-xl border border-app bg-card p-3 text-sm text-muted sm:mt-5 sm:p-5">
               This driver is not currently assigned to an active delivery.
             </div>
           )}

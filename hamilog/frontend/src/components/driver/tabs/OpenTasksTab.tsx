@@ -31,8 +31,8 @@ export default function OpenTasksTab({
 
   if (missions.length === 0) {
     return (
-      <section className="rounded-2xl border border-app bg-card p-8 text-center shadow-xl">
-        <h2 className="text-xl font-black text-main">All Clear</h2>
+      <section className="rounded-xl border border-app bg-card p-8 text-center shadow-sm">
+        <h2 className="text-xl font-semibold text-main">All Clear</h2>
         <p className="mt-2 text-sm text-muted">
           No open missions right now. The list refreshes automatically.
         </p>

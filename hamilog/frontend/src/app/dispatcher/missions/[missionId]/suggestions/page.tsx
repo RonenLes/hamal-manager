@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useCallback, useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 
 import SuggestedDriverEntry from "@/components/dispatcher/missions/SuggestedDriverEntry";
@@ -104,9 +105,7 @@ export default function MissionSuggestionsPage({ params }: SuggestionsPageProps)
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading suggested drivers...
-      </main>
+      <LoadingScreen label="Loading suggested drivers..." />
     );
   }
 
@@ -115,7 +114,7 @@ export default function MissionSuggestionsPage({ params }: SuggestionsPageProps)
       <main className="min-h-screen bg-app p-6 text-main">
         <div className="mx-auto max-w-5xl">
           <BackToMenuButton href="/dispatcher/missions" />
-          <div className="mt-6 rounded-2xl border border-app bg-card p-8 text-center text-muted">
+          <div className="mt-6 rounded-xl border border-app bg-card p-8 text-center text-muted">
             Mission not found.
           </div>
         </div>
@@ -131,7 +130,7 @@ export default function MissionSuggestionsPage({ params }: SuggestionsPageProps)
           <p className="mt-4 text-sm font-semibold uppercase tracking-wider text-orange-400">
             Driver Suggestions
           </p>
-          <h1 className="mt-1 text-2xl font-black sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">
             Suggest {mission.title}
           </h1>
           <p className="mt-2 text-muted">
@@ -139,10 +138,10 @@ export default function MissionSuggestionsPage({ params }: SuggestionsPageProps)
           </p>
         </header>
 
-        <section className="mb-6 rounded-2xl border border-app bg-card p-5 shadow-xl">
+        <section className="mb-6 rounded-xl border border-app bg-card p-5 shadow-sm">
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <PriorityBadge priority={mission.priority} />
-            <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-300">
+            <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-700 dark:text-orange-300">
               {suggestions.length} suited driver
               {suggestions.length === 1 ? "" : "s"}
             </span>
@@ -171,7 +170,7 @@ export default function MissionSuggestionsPage({ params }: SuggestionsPageProps)
               </p>
             </DetailTile>
             <DetailTile label="Best Match">
-              <p className="text-3xl font-black text-main">{bestMatch}%</p>
+              <p className="text-3xl font-semibold text-main">{bestMatch}%</p>
             </DetailTile>
           </div>
 
@@ -213,7 +212,7 @@ export default function MissionSuggestionsPage({ params }: SuggestionsPageProps)
                           {request.driver?.email || "No email"}
                         </p>
                       </div>
-                      <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-300">
+                      <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-700 dark:text-orange-300">
                         Pending
                       </span>
                     </div>
@@ -227,7 +226,7 @@ export default function MissionSuggestionsPage({ params }: SuggestionsPageProps)
           </div>
         </section>
 
-        <section className="rounded-2xl border border-app bg-card shadow-xl">
+        <section className="rounded-xl border border-app bg-card shadow-sm">
           <div className="border-b border-app px-5 py-4">
             <h2 className="text-xl font-bold">Suitable Drivers</h2>
             <p className="mt-1 text-sm text-muted">

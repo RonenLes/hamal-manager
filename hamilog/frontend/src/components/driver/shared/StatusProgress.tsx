@@ -19,7 +19,7 @@ export default function StatusProgress({ status }: StatusProgressProps) {
             key={step}
             className={`rounded-xl border px-3 py-2 text-center text-xs font-bold capitalize ${
               isCompleted
-                ? "border-blue-500/30 bg-blue-500/10 text-blue-300"
+                ? "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300"
                 : "border-app bg-card-soft text-muted"
             } ${isCurrent ? "ring-1 ring-blue-400/40" : ""}`}
           >

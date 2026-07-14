@@ -56,11 +56,11 @@ function getMonthDays(viewDate: Date) {
 
 // Returns the marker classes.
 function getMarkerClasses(tone: CalendarMarker["tone"] = "blue") {
-  if (tone === "emerald") return "bg-emerald-500/15 text-emerald-300";
-  if (tone === "orange") return "bg-orange-500/15 text-orange-300";
-  if (tone === "red") return "bg-red-500/15 text-red-300";
+  if (tone === "emerald") return "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300";
+  if (tone === "orange") return "bg-orange-500/15 text-orange-700 dark:text-orange-300";
+  if (tone === "red") return "bg-red-500/15 text-red-700 dark:text-red-300";
   if (tone === "slate") return "bg-slate-500/15 text-muted";
-  return "bg-blue-500/15 text-blue-300";
+  return "bg-blue-500/15 text-blue-700 dark:text-blue-300";
 }
 
 // Renders the calendar component.
@@ -87,24 +87,24 @@ export default function Calendar({
   }).format(selected);
 
   return (
-    <section className={embedded ? "rounded-xl border border-app bg-app/40 p-3" : "rounded-2xl border border-app bg-card p-5 shadow-xl"}>
+    <section className={embedded ? "rounded-xl border border-app bg-app/40 p-3" : "rounded-xl border border-app bg-card p-5 shadow-sm"}>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => onSelectDate(toDateInputValue(addMonths(selected, -1)))}
-            className="rounded-xl border border-app bg-card-soft px-3 py-2 text-sm font-black text-main transition hover:bg-card-soft"
+            className="rounded-xl border border-app bg-card-soft px-3 py-2 text-sm font-semibold text-main transition hover:bg-card-soft"
             aria-label="Previous month"
           >
             {"<"}
           </button>
-          <h2 className="min-w-44 text-center text-xl font-black text-main">
+          <h2 className="min-w-44 text-center text-xl font-semibold text-main">
             {monthLabel}
           </h2>
           <button
             type="button"
             onClick={() => onSelectDate(toDateInputValue(addMonths(selected, 1)))}
-            className="rounded-xl border border-app bg-card-soft px-3 py-2 text-sm font-black text-main transition hover:bg-card-soft"
+            className="rounded-xl border border-app bg-card-soft px-3 py-2 text-sm font-semibold text-main transition hover:bg-card-soft"
             aria-label="Next month"
           >
             {">"}
@@ -152,7 +152,7 @@ export default function Calendar({
                   : "border-app bg-card-soft hover:border-blue-500/60"
               }`}
             >
-              <span className="text-sm font-black text-main">
+              <span className="text-sm font-semibold text-main">
                 {date.getDate()}
               </span>
               <div className="mt-2 space-y-1">

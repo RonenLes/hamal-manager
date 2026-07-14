@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useCallback, useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 
 import {
@@ -38,10 +39,10 @@ function toMatchPercentage(score: number) {
 
 // Returns the state classes.
 function getStateClasses(state: string) {
-  if (state === "available") return "border-blue-500/30 bg-blue-500/10 text-blue-300";
-  if (state === "assigned") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
-  if (state === "cancelled") return "border-red-500/30 bg-red-500/10 text-red-300";
-  return "border-orange-500/30 bg-orange-500/10 text-orange-300";
+  if (state === "available") return "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300";
+  if (state === "assigned") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
+  if (state === "cancelled") return "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300";
+  return "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300";
 }
 
 // Returns the mission requests for page.
@@ -151,9 +152,7 @@ export default function MissionRequestsPage({ params }: MissionRequestsPageProps
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading mission requests...
-      </main>
+      <LoadingScreen label="Loading mission requests..." />
     );
   }
 
@@ -162,7 +161,7 @@ export default function MissionRequestsPage({ params }: MissionRequestsPageProps
       <main className="min-h-screen bg-app p-6 text-main">
         <div className="mx-auto max-w-5xl">
           <BackToMenuButton href="/dispatcher/pending-requests" />
-          <div className="mt-6 rounded-2xl border border-app bg-card p-8 text-center text-muted">
+          <div className="mt-6 rounded-xl border border-app bg-card p-8 text-center text-muted">
             No pending requests were found for this mission.
           </div>
         </div>
@@ -178,13 +177,13 @@ export default function MissionRequestsPage({ params }: MissionRequestsPageProps
           <p className="mt-4 text-sm font-semibold uppercase tracking-wider text-orange-400">
             Mission Requests
           </p>
-          <h1 className="mt-1 text-3xl font-black">{mission.title}</h1>
+          <h1 className="mt-1 text-3xl font-semibold">{mission.title}</h1>
           <p className="mt-2 text-muted">
             Review drivers requesting this mission and choose who should take it.
           </p>
         </header>
 
-        <section className="mb-6 rounded-2xl border border-app bg-card p-5 shadow-xl">
+        <section className="mb-6 rounded-xl border border-app bg-card p-5 shadow-sm">
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <PriorityBadge priority={mission.priority} />
             <span
@@ -194,7 +193,7 @@ export default function MissionRequestsPage({ params }: MissionRequestsPageProps
             >
               {mission.status.replace("_", " ")}
             </span>
-            <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-300">
+            <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-700 dark:text-orange-300">
               {requests.length} request{requests.length === 1 ? "" : "s"}
             </span>
           </div>
@@ -227,12 +226,12 @@ export default function MissionRequestsPage({ params }: MissionRequestsPageProps
               </p>
             </DetailTile>
             <DetailTile label="Best Match">
-              <p className="text-3xl font-black text-main">{bestMatch}%</p>
+              <p className="text-3xl font-semibold text-main">{bestMatch}%</p>
             </DetailTile>
           </div>
         </section>
 
-        <section className="rounded-2xl border border-app bg-card shadow-xl">
+        <section className="rounded-xl border border-app bg-card shadow-sm">
           <div className="border-b border-app px-5 py-4">
             <h2 className="text-xl font-bold">Requesting Drivers</h2>
             <p className="mt-1 text-sm text-muted">

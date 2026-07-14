@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useCallback, useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 
 import {
@@ -128,9 +129,7 @@ export default function MessageConversationPage({
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading conversation...
-      </main>
+      <LoadingScreen label="Loading conversation..." />
     );
   }
 
@@ -139,7 +138,7 @@ export default function MessageConversationPage({
       <main className="min-h-screen bg-app p-6 text-main">
         <div className="mx-auto max-w-4xl">
           <BackToMenuButton href={fallbackHref} />
-          <div className="mt-6 rounded-2xl border border-app bg-card p-8 text-center text-muted">
+          <div className="mt-6 rounded-xl border border-app bg-card p-8 text-center text-muted">
             Conversation not found.
           </div>
         </div>
@@ -155,7 +154,7 @@ export default function MessageConversationPage({
           <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-blue-400">
             Conversation
           </p>
-          <h1 className="mt-1 text-3xl font-black">
+          <h1 className="mt-1 text-3xl font-semibold">
             {participant?.name || participantId}
           </h1>
         </header>

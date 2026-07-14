@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import type { ParticipantWithConversation } from "./types";
+import Icon from "@/components/shared/Icon";
 
 type MessageParticipantEntryProps = {
   participant: ParticipantWithConversation;
@@ -11,10 +12,10 @@ type MessageParticipantEntryProps = {
 // Returns the status classes.
 function getStatusClasses(status: string) {
   if (status === "on_mission") {
-    return "border-orange-500/30 bg-orange-500/10 text-orange-300";
+    return "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300";
   }
   if (status === "available" || status === "online") {
-    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
+    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
   }
   return "border-slate-500/30 bg-slate-500/10 text-muted";
 }
@@ -51,7 +52,7 @@ export default function MessageParticipantEntry({
 
         <div className="flex shrink-0 items-center gap-2">
           {participant.unread_count > 0 && (
-            <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-red-600 px-2 text-xs font-black text-white">
+            <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-red-600 px-2 text-xs font-semibold text-white">
               {participant.unread_count}
             </span>
           )}
@@ -60,9 +61,9 @@ export default function MessageParticipantEntry({
             href={conversationHref}
             aria-label={`Message ${participant.name}`}
             title={`Message ${participant.name}`}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-sm font-black text-white transition hover:bg-blue-500"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white transition hover:bg-blue-500"
           >
-            <span aria-hidden="true">✉</span>
+            <Icon name="mail" className="h-5 w-5" />
           </Link>
         </div>
       </div>
@@ -70,7 +71,7 @@ export default function MessageParticipantEntry({
       {mission && (
         <Link
           href={missionHref}
-          className="mt-3 block rounded-xl border border-orange-500/30 bg-orange-500/10 px-3 py-2 text-sm font-semibold text-orange-300 transition hover:bg-orange-500/20"
+          className="mt-3 block rounded-xl border border-orange-500/30 bg-orange-500/10 px-3 py-2 text-sm font-semibold text-orange-700 dark:text-orange-300 transition hover:bg-orange-500/20"
         >
           Mission: {mission.title}
         </Link>

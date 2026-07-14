@@ -3,19 +3,22 @@
 @custom-variant dark (&:where(.theme-dark, .theme-dark *));
 
 /* ==========================================================================
-   Hamilog Design System — Premium Dark Theme
+   Hamilog Design System — Clean & Flat
+   Single blue accent · neutral grays · solid surfaces (no glass/gradients)
    ========================================================================== */
 
 :root {
   /* Core backgrounds */
-  --bg-primary: #0a0e1a;
-  --bg-secondary: #111827;
-  --bg-card: rgba(17, 24, 39, 0.7);
-  --bg-glass: rgba(255, 255, 255, 0.05);
+  --bg-primary: #0f1115;
+  --bg-secondary: #181b20;
+  --bg-card: #181b20;
+  --bg-glass: #21252c;
 
-  /* Accent palette */
-  --accent-blue: #3b82f6;
-  --accent-cyan: #06b6d4;
+  /* Single brand accent (blue). Everything else below is status-only. */
+  --accent-blue: #2563eb;
+  --accent-blue-hover: #1d4ed8;
+
+  /* Status colors — used only to signal state, never for decoration */
   --accent-amber: #f59e0b;
   --accent-emerald: #10b981;
   --accent-rose: #f43f5e;
@@ -26,18 +29,7 @@
 
   /* Borders */
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(59, 130, 246, 0.3);
-
-  /* Gradients */
-  --gradient-blue: linear-gradient(135deg, #3b82f6, #06b6d4);
-  --gradient-warm: linear-gradient(135deg, #f59e0b, #f43f5e);
-  --gradient-cool: linear-gradient(135deg, #06b6d4, #10b981);
-  --gradient-hero: linear-gradient(
-    135deg,
-    #3b82f6 0%,
-    #06b6d4 50%,
-    #10b981 100%
-  );
+  --border-glow: rgba(37, 99, 235, 0.25);
 }
 
 /* ==========================================================================
@@ -58,6 +50,17 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
+}
+
+/* Consistent keyboard focus ring across all interactive elements.
+   :focus-visible only triggers for keyboard/AT users, not mouse clicks. */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 /* ==========================================================================
@@ -92,49 +95,39 @@ body {
    Glassmorphism Utilities
    ========================================================================== */
 
+/* Flat card surface (formerly glassmorphic — now a clean solid panel) */
 .glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.3),
-    0 2px 4px -2px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--border-app, var(--border-subtle));
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.4),
-    0 4px 6px -4px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-blue);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
 }
 
 .glass-panel {
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-subtle);
+  background: var(--bg-card-soft, var(--bg-glass));
+  border: 1px solid var(--border-app, var(--border-subtle));
   border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.18s ease;
 }
 
 .glass-input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-subtle);
+  background: var(--bg-input);
+  border: 1px solid var(--border-app, var(--border-subtle));
   border-radius: 10px;
-  color: var(--text-primary);
-  transition: all 0.25s ease;
+  color: var(--text-main, var(--text-primary));
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .glass-input:focus {
   outline: none;
   border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .glass-input::placeholder {
@@ -149,12 +142,10 @@ body {
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 4px rgba(59, 130, 246, 0.4);
     opacity: 1;
   }
   50% {
-    box-shadow: 0 0 16px rgba(59, 130, 246, 0.8);
-    opacity: 0.85;
+    opacity: 0.55;
   }
 }
 
@@ -368,25 +359,22 @@ body {
    ========================================================================== */
 
 .btn-primary {
-  background: var(--gradient-blue);
+  background: var(--accent-blue);
   color: white;
   font-weight: 600;
   padding: 10px 24px;
   border-radius: 10px;
   border: none;
   cursor: pointer;
-  transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
+  transition: background 0.18s ease, opacity 0.18s ease;
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 25px -5px rgba(59, 130, 246, 0.4);
+  background: var(--accent-blue-hover);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  opacity: 0.9;
 }
 
 .btn-primary:disabled {
@@ -476,29 +464,33 @@ body {
 }
 
 html.theme-dark {
-  --bg-app: #020617;
-  --bg-card: #0f172a;
-  --bg-card-soft: #111827;
-  --bg-input: #020617;
+  --bg-app: #0f1115;
+  --bg-card: #181b20;
+  --bg-card-soft: #21252c;
+  --bg-input: #14171c;
 
-  --text-main: #ffffff;
-  --text-muted: #94a3b8;
-  --text-soft: #64748b;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --text-soft: #6b7280;
 
-  --border-app: rgba(255, 255, 255, 0.1);
+  --border-app: rgba(255, 255, 255, 0.08);
+
+  /* Accent stays vivid against the dark neutral background */
+  --accent-blue: #3b82f6;
+  --accent-blue-hover: #2563eb;
 }
 
 html.theme-light {
-  --bg-app: #f8fafc;
+  --bg-app: #f5f6f8;
   --bg-card: #ffffff;
-  --bg-card-soft: #f1f5f9;
+  --bg-card-soft: #eef0f3;
   --bg-input: #ffffff;
 
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --text-soft: #64748b;
+  --text-main: #16191d;
+  --text-muted: #576070;
+  --text-soft: #8b93a1;
 
-  --border-app: rgba(15, 23, 42, 0.12);
+  --border-app: rgba(17, 24, 39, 0.10);
 }
 
 html.font-small {
@@ -632,9 +624,9 @@ html.theme-light .btn-danger {
 
 /* Glass / inputs */
 html.theme-light .glass-card {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--bg-card);
   border-color: var(--border-app);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 html.theme-light .glass-input {

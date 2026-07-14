@@ -22,13 +22,13 @@ export default function DispatcherStatsWindow({
 
   return (
     <section
-      className={`mb-4 rounded-2xl border border-app bg-card p-2 shadow-xl sm:mb-6 sm:p-3 ${className}`}
+      className={`mb-4 rounded-xl border border-app bg-card p-2 shadow-sm sm:mb-6 sm:p-3 ${className}`}
     >
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={() => scrollStats("left")}
-          className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-black text-muted transition hover:text-main sm:hidden"
+          className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-semibold text-muted transition hover:text-main sm:hidden"
           aria-label="Scroll stats left"
         >
           {"<"}
@@ -43,7 +43,7 @@ export default function DispatcherStatsWindow({
         <button
           type="button"
           onClick={() => scrollStats("right")}
-          className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-black text-muted transition hover:text-main sm:hidden"
+          className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-semibold text-muted transition hover:text-main sm:hidden"
           aria-label="Scroll stats right"
         >
           {">"}

@@ -9,7 +9,7 @@ export default function ExportButtons({ onPdf }: ExportButtonsProps) {
       <button
         type="button"
         onClick={onPdf}
-        className="rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-3 text-sm font-bold text-blue-300 transition hover:bg-blue-500/25"
+        className="rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-3 text-sm font-bold text-blue-700 dark:text-blue-300 transition hover:bg-blue-500/25"
       >
         Export PDF
       </button>

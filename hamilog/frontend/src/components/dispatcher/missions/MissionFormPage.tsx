@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -13,6 +14,7 @@ import {
   updateMission,
 } from "@/lib/api-client";
 import NewMissionFormPanel, { type NewMissionForm } from "./NewMissionFormPanel";
+import Icon from "@/components/shared/Icon";
 import {
   buildMissionPayload,
   initialMissionForm,
@@ -119,15 +121,15 @@ export default function MissionFormPage({ missionId }: { missionId?: string }) {
   }
 
   if (pageLoading) {
-    return <main className="flex min-h-screen items-center justify-center bg-app text-main">Loading mission...</main>;
+    return <LoadingScreen label="Loading mission..." />;
   }
 
   if (result?.type === "success") {
     return (
       <main className="flex min-h-screen items-center justify-center bg-app px-3 py-6 text-main">
-        <section className="w-full max-w-lg rounded-2xl border border-emerald-500/30 bg-card p-6 text-center shadow-xl">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 text-2xl text-emerald-300">✓</div>
-          <h1 className="mt-4 text-2xl font-black">Success</h1>
+        <section className="w-full max-w-lg rounded-xl border border-emerald-500/30 bg-card p-6 text-center shadow-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"><Icon name="check" className="h-7 w-7" /></div>
+          <h1 className="mt-4 text-2xl font-semibold">Success</h1>
           <p className="mt-2 text-muted">{result.message}</p>
           <Link href="/dispatcher/missions" className="mt-6 inline-flex rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-emerald-500">Back to Missions</Link>
         </section>
@@ -141,7 +143,7 @@ export default function MissionFormPage({ missionId }: { missionId?: string }) {
         <Link href="/dispatcher/missions" className="inline-flex rounded-xl border border-app bg-card px-4 py-2 text-sm font-bold text-main transition hover:bg-card-soft">← Back to Missions</Link>
         {result?.type === "error" && (
           <div className="mt-5 flex flex-col gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm font-semibold text-red-200">{result.message}</p>
+            <p className="text-sm font-semibold text-red-700 dark:text-red-200">{result.message}</p>
             <button type="button" onClick={() => void submitMission()} disabled={posting} className="rounded-lg bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-500 disabled:opacity-50">Retry</button>
           </div>
         )}

@@ -27,23 +27,23 @@ type PendingRequestDriverEntryProps = {
 
 // Returns the score classes.
 function getScoreClasses(score: number) {
-  if (score >= 85) return "text-emerald-300";
-  if (score >= 65) return "text-orange-300";
-  return "text-red-300";
+  if (score >= 85) return "text-emerald-700 dark:text-emerald-300";
+  if (score >= 65) return "text-orange-700 dark:text-orange-300";
+  return "text-red-700 dark:text-red-300";
 }
 
 // Returns the status classes.
 function getStatusClasses(status: string) {
   if (status === "available") {
-    return "border-blue-500/30 bg-blue-500/10 text-blue-300";
+    return "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300";
   }
   if (status === "offline") {
     return "border-slate-500/30 bg-slate-500/10 text-muted";
   }
   if (status === "blacklisted") {
-    return "border-red-500/30 bg-red-500/10 text-red-300";
+    return "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300";
   }
-  return "border-orange-500/30 bg-orange-500/10 text-orange-300";
+  return "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300";
 }
 
 // Renders the pending request driver entry component.
@@ -92,7 +92,7 @@ export default function PendingRequestDriverEntry({
         <div className="flex shrink-0 items-center justify-between gap-4 sm:justify-end">
           <div className="text-right">
             <p className="text-xs font-bold uppercase text-soft">Match</p>
-            <p className={`text-sm font-black ${getScoreClasses(request.matchScore)}`}>
+            <p className={`text-sm font-semibold ${getScoreClasses(request.matchScore)}`}>
               {request.matchScore}%
             </p>
           </div>
@@ -105,14 +105,14 @@ export default function PendingRequestDriverEntry({
           <CollapseDetailsButton onCollapse={onToggle} />
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             <DetailTile label="Driver Score">
-              <p className={`text-3xl font-black ${getScoreClasses(driverScore)}`}>
+              <p className={`text-3xl font-semibold ${getScoreClasses(driverScore)}`}>
                 {driverScore}%
               </p>
             </DetailTile>
 
             <DetailTile label="Match Score">
               <p
-                className={`text-3xl font-black ${getScoreClasses(
+                className={`text-3xl font-semibold ${getScoreClasses(
                   request.matchScore
                 )}`}
               >
@@ -170,7 +170,7 @@ export default function PendingRequestDriverEntry({
           <div className="mt-5 flex flex-col gap-3 border-t border-app pt-5 sm:flex-row sm:justify-end">
             <Link
               href={`/dispatcher/drivers/${driver.id}/history`}
-              className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-5 py-2.5 text-center text-sm font-bold text-blue-200 transition hover:bg-blue-500/20"
+              className="rounded-xl border border-blue-500/40 bg-blue-500/10 px-5 py-2.5 text-center text-sm font-bold text-blue-700 dark:text-blue-200 transition hover:bg-blue-500/20"
             >
               Driver History
             </Link>

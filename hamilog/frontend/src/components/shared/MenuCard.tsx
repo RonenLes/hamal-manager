@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Icon, { isIconName } from "@/components/shared/Icon";
 
 type MenuCardProps = {
   title: string;
@@ -17,12 +18,22 @@ export default function MenuCard({
   disabled = false,
 }: MenuCardProps) {
   const content = (
-    <div className="flex h-full min-h-32 flex-col items-center justify-center text-center sm:min-h-44">
-      <div className="mb-2 text-3xl sm:mb-4 sm:text-5xl">{icon}</div>
-      <h2 className="text-sm font-black leading-tight text-main sm:text-xl">{title}</h2>
-      <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted sm:mt-2 sm:text-sm">{description}</p>
+    <div className="flex h-full min-h-32 flex-col items-start justify-start text-left sm:min-h-40">
+      <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-card-soft text-blue-600 dark:text-blue-400 sm:mb-4 sm:h-12 sm:w-12">
+        {isIconName(icon) ? (
+          <Icon name={icon} className="h-6 w-6 sm:h-7 sm:w-7" />
+        ) : (
+          <span className="text-2xl sm:text-3xl">{icon}</span>
+        )}
+      </span>
+      <h2 className="text-sm font-semibold leading-tight text-main sm:text-base">
+        {title}
+      </h2>
+      <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted sm:mt-1.5 sm:text-sm">
+        {description}
+      </p>
       {disabled && (
-        <span className="mt-4 rounded-full bg-card-soft px-3 py-1 text-xs text-muted">
+        <span className="mt-3 rounded-full bg-card-soft px-3 py-1 text-xs text-muted">
           Coming soon
         </span>
       )}
@@ -31,7 +42,7 @@ export default function MenuCard({
 
   if (disabled) {
     return (
-      <div className="min-h-36 rounded-2xl border border-app bg-card p-3 opacity-50 sm:aspect-square sm:p-6">
+      <div className="min-h-36 rounded-xl border border-app bg-card p-4 opacity-50 sm:p-5">
         {content}
       </div>
     );
@@ -40,7 +51,7 @@ export default function MenuCard({
   return (
     <Link
       href={href}
-      className="min-h-36 rounded-2xl border border-app bg-card p-3 transition hover:-translate-y-1 hover:border-blue-500/50 hover:bg-card-soft hover:shadow-xl hover:shadow-blue-950/30 sm:aspect-square sm:p-6"
+      className="min-h-36 rounded-xl border border-app bg-card p-4 transition hover:border-blue-500/60 hover:bg-card-soft sm:p-5"
     >
       {content}
     </Link>

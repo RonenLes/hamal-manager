@@ -70,7 +70,7 @@ export default function MissionEntry({
             </span>
 
             {mission.cargo?.requires_cooling && (
-              <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-300">
+              <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-700 dark:text-cyan-300">
                 Cooling
               </span>
             )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
@@ -114,9 +115,7 @@ export default function LiveDeliveryMapPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading live map...
-      </main>
+      <LoadingScreen label="Loading live map..." />
     );
   }
 
@@ -131,7 +130,7 @@ export default function LiveDeliveryMapPage() {
             Live Operations
           </p>
 
-          <h1 className="mt-1 text-2xl font-black sm:text-3xl">Live Delivery Map</h1>
+          <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">Live Delivery Map</h1>
 
           <p className="mt-2 text-muted">
             View current deliveries on the map. Active deliveries are marked in
@@ -167,7 +166,7 @@ export default function LiveDeliveryMapPage() {
         </DispatcherStatsWindow>
 
         <section>
-          <div className="rounded-2xl border border-app bg-card p-3 shadow-xl sm:p-4">
+          <div className="rounded-xl border border-app bg-card p-3 shadow-sm sm:p-4">
             <LiveMapFiltersPanel filters={filters} onChange={setFilters} />
             <DeliveryDetailsPanel selectedPoint={selectedPoint} />
             <LiveMapCanvas

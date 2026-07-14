@@ -68,9 +68,9 @@ export default function NewMissionFormPanel({
   const cargoDescriptionWordCount = countWords(form.cargoDescription);
 
   return (
-    <div className="mt-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-5">
+    <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-5">
       <div className="mb-5">
-        <h2 className="text-xl font-black text-main">{title}</h2>
+        <h2 className="text-xl font-semibold text-main">{title}</h2>
         <p className="mt-1 text-sm text-muted">{description}</p>
         {(locationsLoading || locationsError || cities.length === 0) && (
           <div className="mt-3 flex flex-col gap-2 rounded-xl border border-app bg-app px-3 py-2 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">

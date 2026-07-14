@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
@@ -71,15 +72,15 @@ function getMissionState(mission: Mission) {
 // Returns the state classes.
 function getStateClasses(state: string) {
   if (state === "active") {
-    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
+    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
   }
 
   if (state === "assigned") {
-    return "border-blue-500/30 bg-blue-500/10 text-blue-300";
+    return "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300";
   }
 
   if (state === "unassigned") {
-    return "border-orange-500/30 bg-orange-500/10 text-orange-300";
+    return "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300";
   }
 
   if (state === "delivered") {
@@ -87,7 +88,7 @@ function getStateClasses(state: string) {
   }
 
   if (state === "cancelled") {
-    return "border-red-500/30 bg-red-500/10 text-red-300";
+    return "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300";
   }
 
   return "border-slate-500/30 bg-slate-500/10 text-muted";
@@ -245,9 +246,7 @@ export default function MissionsPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading missions...
-      </main>
+      <LoadingScreen label="Loading missions..." />
     );
   }
 
@@ -262,7 +261,7 @@ export default function MissionsPage() {
             <p className="text-sm font-semibold uppercase tracking-wider text-red-400">
               Mission Management
             </p>
-            <h1 className="mt-1 text-2xl font-black sm:text-3xl">Missions</h1>
+            <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">Missions</h1>
             <p className="mt-2 text-muted">
               Add missions, review delivery details, and filter the mission pool.
             </p>
@@ -297,10 +296,10 @@ export default function MissionsPage() {
           />
         </DispatcherStatsWindow>
 
-        <section className="mb-6 rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+        <section className="mb-6 rounded-xl border border-app bg-card p-4 shadow-sm sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-black text-main">Mission actions</h2>
+              <h2 className="text-lg font-semibold text-main">Mission actions</h2>
               <p className="mt-1 text-sm text-muted">Open a dedicated form to create a mission.</p>
             </div>
             <Link
@@ -313,7 +312,7 @@ export default function MissionsPage() {
         </section>
 
         <section>
-          <div className="rounded-2xl border border-app bg-card shadow-xl">
+          <div className="rounded-xl border border-app bg-card shadow-sm">
             <div className="border-b border-app px-4 py-3 sm:px-5 sm:py-4">
               <h2 className="text-xl font-bold">Mission Entries</h2>
               <p className="mt-1 text-sm text-muted">

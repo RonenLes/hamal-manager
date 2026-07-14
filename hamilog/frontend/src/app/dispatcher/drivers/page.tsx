@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
@@ -197,9 +198,7 @@ export default function DriversPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading drivers...
-      </main>
+      <LoadingScreen label="Loading drivers..." />
     );
   }
 
@@ -214,7 +213,7 @@ export default function DriversPage() {
             <p className="text-sm font-semibold uppercase tracking-wider text-emerald-400">
               Driver Management
             </p>
-            <h1 className="mt-1 text-3xl font-black">Drivers</h1>
+            <h1 className="mt-1 text-3xl font-semibold">Drivers</h1>
             <p className="mt-2 text-muted">
               View driver status, score, contact details, active delivery, and
               delivery history.
@@ -227,14 +226,14 @@ export default function DriversPage() {
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-500"
             >
               Pending new drivers
-              <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-black text-white">
+              <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white">
                 {pendingDriverRequestsCount}
               </span>
             </Link>
 
             <Link
               href="/dispatcher/drivers/blacklisted"
-              className="inline-flex items-center justify-center rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-2.5 text-sm font-bold text-red-200 transition hover:bg-red-500/20"
+              className="inline-flex items-center justify-center rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-2.5 text-sm font-bold text-red-700 dark:text-red-200 transition hover:bg-red-500/20"
             >
               Blacklisted drivers
             </Link>
@@ -269,7 +268,7 @@ export default function DriversPage() {
           />
         </DispatcherStatsWindow>
 
-        <section className="mb-6 rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+        <section className="mb-6 rounded-xl border border-app bg-card p-4 shadow-sm sm:p-5">
           <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <h2 className="text-xl font-bold text-main">
@@ -279,7 +278,7 @@ export default function DriversPage() {
                 Select a date to see which drivers marked themselves available.
               </p>
             </div>
-            <span className="rounded-xl bg-emerald-500/15 px-3 py-2 text-sm font-black text-emerald-300">
+            <span className="rounded-xl bg-emerald-500/15 px-3 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
               {selectedDateDrivers.length} available
             </span>
           </div>
@@ -294,7 +293,7 @@ export default function DriversPage() {
             />
 
             <aside className="rounded-xl border border-app bg-card-soft p-4">
-              <h3 className="text-base font-black text-main">
+              <h3 className="text-base font-semibold text-main">
                 Available Drivers
               </h3>
               <p className="mt-1 text-sm text-muted">
@@ -325,7 +324,7 @@ export default function DriversPage() {
                             {spec}
                           </p>
                         </div>
-                        <span className="shrink-0 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[11px] font-bold capitalize text-emerald-300">
+                        <span className="shrink-0 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[11px] font-bold capitalize text-emerald-700 dark:text-emerald-300">
                           {driver.status.replace("_", " ")}
                         </span>
                       </div>
@@ -337,7 +336,7 @@ export default function DriversPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-app bg-card shadow-xl">
+        <section className="rounded-xl border border-app bg-card shadow-sm">
           <div className="border-b border-app px-5 py-4">
             <h2 className="text-xl font-bold text-main">Driver Entries</h2>
             <p className="mt-1 text-sm text-muted">

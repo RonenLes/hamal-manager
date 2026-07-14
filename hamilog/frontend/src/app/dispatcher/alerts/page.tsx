@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useRouter } from "next/navigation";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 
@@ -352,9 +353,7 @@ export default function AlertsPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading alerts...
-      </main>
+      <LoadingScreen label="Loading alerts..." />
     );
   }
 
@@ -376,7 +375,7 @@ export default function AlertsPage() {
             <p className="text-sm font-semibold uppercase tracking-wider text-orange-400">
               Operations Monitoring
             </p>
-            <h1 className="mt-1 text-3xl font-black">Alerts</h1>
+            <h1 className="mt-1 text-3xl font-semibold">Alerts</h1>
             <p className="mt-2 text-muted">
               Review urgent mission, driver, cargo, and system alerts.
             </p>
@@ -386,7 +385,7 @@ export default function AlertsPage() {
             type="button"
             onClick={handleDismissAll}
             disabled={activeAlerts.length === 0}
-            className="rounded-xl border border-app bg-card-soft px-5 py-3 text-sm font-black text-main transition hover:bg-card-soft disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-xl border border-app bg-card-soft px-5 py-3 text-sm font-semibold text-main transition hover:bg-card-soft disabled:cursor-not-allowed disabled:opacity-40"
           >
             Dismiss All
           </button>
@@ -420,7 +419,7 @@ export default function AlertsPage() {
           />
         </DispatcherStatsWindow>
 
-        <section className="rounded-2xl border border-app bg-card shadow-xl">
+        <section className="rounded-xl border border-app bg-card shadow-sm">
           <div className="border-b border-app px-5 py-4">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>

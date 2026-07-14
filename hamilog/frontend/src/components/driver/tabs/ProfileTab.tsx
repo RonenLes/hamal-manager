@@ -134,7 +134,7 @@ export default function ProfileTab({
           title="Active Mission"
           value={`${activeCount}`}
           subtitle={activeCount > 0 ? "In transit" : "No active route"}
-          icon="🚚"
+          icon="truck"
           color="blue"
           compact
         />
@@ -142,7 +142,7 @@ export default function ProfileTab({
           title="Open Tasks"
           value={`${openMissions.length}`}
           subtitle="Available missions"
-          icon="📦"
+          icon="cargo"
           color="orange"
           compact
         />
@@ -150,7 +150,7 @@ export default function ProfileTab({
           title="Completed"
           value={`${completedMissions.length}`}
           subtitle="Delivered missions"
-          icon="✓"
+          icon="check"
           color="green"
           compact
         />
@@ -164,8 +164,8 @@ export default function ProfileTab({
         />
       </DispatcherStatsWindow>
 
-      <div className="rounded-xl border border-app bg-card p-3 shadow-lg sm:p-4">
-        <h2 className="text-lg font-black text-main sm:text-xl">Driver Status</h2>
+      <div className="rounded-xl border border-app bg-card p-3 shadow-sm sm:p-4">
+        <h2 className="text-lg font-semibold text-main sm:text-xl">Driver Status</h2>
         <div className="mt-3 grid gap-2.5 text-sm sm:grid-cols-3">
           <div className="flex justify-between gap-4 rounded-xl border border-app bg-card-soft p-3">
             <span className="text-muted">Account</span>
@@ -181,15 +181,15 @@ export default function ProfileTab({
           </div>
           <div className="flex justify-between gap-4 rounded-xl border border-app bg-card-soft p-3">
             <span className="text-muted">Online</span>
-            <span className="font-bold text-emerald-300">Ready</span>
+            <span className="font-bold text-emerald-700 dark:text-emerald-300">Ready</span>
           </div>
         </div>
       </div>
 
-      <div className="rounded-xl border border-app bg-card p-3 shadow-lg sm:p-4">
+      <div className="rounded-xl border border-app bg-card p-3 shadow-sm sm:p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-lg font-black text-main sm:text-xl">Profile</h2>
+            <h2 className="text-lg font-semibold text-main sm:text-xl">Profile</h2>
             <p className="mt-1 text-xs text-muted sm:text-sm">
               Driver account, contact details, and vehicle information.
             </p>

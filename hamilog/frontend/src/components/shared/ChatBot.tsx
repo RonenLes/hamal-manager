@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { sendChatbotMessage } from "@/lib/api-client";
 import { limitWords } from "@/lib/text-limit";
+import Icon from "@/components/shared/Icon";
 
 type ChatMessage = {
   role: "user" | "bot";
@@ -55,15 +56,16 @@ export default function ChatBot() {
   return (
     <div className="fixed bottom-5 right-5 z-50">
       {isOpen && (
-        <div className="mb-3 w-80 rounded-2xl border border-app bg-card p-4 shadow-xl">
+        <div className="mb-3 w-80 rounded-xl border border-app bg-card p-4 shadow-lg">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-black text-main">Hamilog Assistant</h2>
+            <h2 className="text-sm font-semibold text-main">Hamilog Assistant</h2>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="text-sm text-muted hover:text-main"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-muted transition hover:bg-card-soft hover:text-main"
+              aria-label="Close assistant"
             >
-              ✕
+              <Icon name="close" className="h-4 w-4" />
             </button>
           </div>
 
@@ -113,9 +115,10 @@ export default function ChatBot() {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="rounded-full bg-blue-600 px-5 py-4 text-xl text-white shadow-xl hover:bg-blue-500"
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-md transition hover:bg-blue-500"
+        aria-label={isOpen ? "Close assistant" : "Open assistant"}
       >
-        💬
+        <Icon name={isOpen ? "close" : "chat"} className="h-6 w-6" />
       </button>
     </div>
   );

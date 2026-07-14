@@ -114,10 +114,10 @@ export default function MissionsReport({
         />
       </section>
 
-      <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+      <section className="rounded-xl border border-app bg-card p-4 shadow-sm sm:p-5">
         <div className="flex flex-col gap-5">
           <div>
-            <h2 className="text-lg font-black text-main">Mission Detail PDF Report</h2>
+            <h2 className="text-lg font-semibold text-main">Mission Detail PDF Report</h2>
             <p className="mt-1 text-sm text-muted">
               Choose filters for mission details and generate a printable PDF report.
             </p>
@@ -202,7 +202,7 @@ export default function MissionsReport({
             <button
               type="button"
               onClick={onExportMissionDetailsPdf}
-              className="rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-3 text-sm font-bold text-blue-300 transition hover:bg-blue-500/25"
+              className="rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-3 text-sm font-bold text-blue-700 dark:text-blue-300 transition hover:bg-blue-500/25"
             >
               Generate Mission PDF
             </button>
@@ -210,7 +210,7 @@ export default function MissionsReport({
         </div>
       </section>
 
-      <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+      <section className="rounded-xl border border-app bg-card p-4 shadow-sm sm:p-5">
         <div className="space-y-4">
           <div>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

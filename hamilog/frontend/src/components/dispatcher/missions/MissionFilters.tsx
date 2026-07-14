@@ -35,7 +35,7 @@ function FilterCheckbox({
       <span className="text-muted">{label}</span>
 
       <span
-        className={`flex h-6 w-6 items-center justify-center rounded-md border text-sm font-black ${
+        className={`flex h-6 w-6 items-center justify-center rounded-md border text-sm font-semibold ${
           checked
             ? "border-emerald-500 bg-emerald-500 text-main"
             : "border-app bg-card-soft text-transparent"

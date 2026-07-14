@@ -53,10 +53,10 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "Cooling is not req
   }
 
   return (
-    <article className="rounded-2xl border border-app bg-card p-5 shadow-xl">
+    <article className="rounded-xl border border-app bg-card p-5 shadow-sm">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-xl font-black text-main">{mission.title}</h2>
+          <h2 className="text-xl font-semibold text-main">{mission.title}</h2>
           <p className="mt-1 text-sm text-muted">{mission.description}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -132,7 +132,7 @@ ${mission.cargo?.requires_cooling ? "Cooling is required." : "Cooling is not req
           <button
             type="button"
             onClick={() => setIsCancelOpen(true)}
-            className="rounded-xl border border-red-500/40 bg-red-500/10 px-5 py-2.5 text-sm font-bold text-red-200 transition hover:bg-red-500/20"
+            className="rounded-xl border border-red-500/40 bg-red-500/10 px-5 py-2.5 text-sm font-bold text-red-700 dark:text-red-200 transition hover:bg-red-500/20"
           >
             Cancel Mission
           </button>

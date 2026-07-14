@@ -5,6 +5,8 @@ import { analyzeCargo } from "@/lib/api-client";
 import { FREE_TEXT_WORD_LIMIT, countWords, limitWords } from "@/lib/text-limit";
 import BackToMenuButton from "@/components/shared/BackToMenuButton";
 import DispatcherStatsWindow from "@/components/dispatcher/shared/DispatcherStatsWindow";
+import Icon from "@/components/shared/Icon";
+import Spinner from "@/components/shared/Spinner";
 
 type CargoResult = {
   source: string;
@@ -49,10 +51,10 @@ export default function CargoAnalysisPage() {
         <BackToMenuButton href="/dispatcher/menu" />
 
         <header className="mb-8">
-          <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">
+          <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
             AI-Powered Tool
           </p>
-          <h1 className="mt-1 text-3xl font-black">AI Cargo Analysis</h1>
+          <h1 className="mt-1 text-3xl font-semibold">AI Cargo Analysis</h1>
           <p className="mt-2 text-muted">
             Describe the cargo in natural language and the AI will estimate
             volume, weight, and cooling requirements.
@@ -60,7 +62,7 @@ export default function CargoAnalysisPage() {
         </header>
 
         {/* Input */}
-        <section className="rounded-2xl border border-app bg-card p-6 shadow-xl">
+        <section className="rounded-xl border border-app bg-card p-6 shadow-sm">
           <label
             htmlFor="cargo-description"
             className="mb-2 flex items-center justify-between gap-3 text-sm font-bold text-main"
@@ -88,14 +90,14 @@ export default function CargoAnalysisPage() {
           >
             {loading ? (
               <>
-                <span
-                  className="inline-block h-4 w-4 border-2 border-white/30 border-t-white rounded-full"
-                  style={{ animation: "spin-slow 0.7s linear infinite" }}
-                />
+                <Spinner className="h-4 w-4" />
                 Analyzing…
               </>
             ) : (
-              "🤖 Analyze Cargo"
+              <>
+                <Icon name="sparkles" className="h-4 w-4" />
+                Analyze Cargo
+              </>
             )}
           </button>
         </section>
@@ -103,7 +105,7 @@ export default function CargoAnalysisPage() {
         {/* Error */}
         {error && (
           <div
-            className="mt-5 rounded-2xl border px-5 py-4 text-sm"
+            className="mt-5 rounded-xl border px-5 py-4 text-sm"
             style={{
               background: "rgba(244,63,94,0.1)",
               borderColor: "rgba(244,63,94,0.25)",
@@ -117,28 +119,28 @@ export default function CargoAnalysisPage() {
         {/* Result */}
         {result && (
           <section className="mt-6 space-y-5 animate-fade-up">
-            <div className="rounded-2xl border border-app bg-card p-6 shadow-xl">
-              <h2 className="mb-4 text-xl font-black text-main">
+            <div className="rounded-xl border border-app bg-card p-6 shadow-sm">
+              <h2 className="mb-4 text-xl font-semibold text-main">
                 Analysis Result
               </h2>
 
               <DispatcherStatsWindow className="mb-0">
                 {/* Weight */}
                 <div className="min-h-24 w-36 shrink-0 rounded-xl border border-app bg-card-soft p-3 text-center sm:w-44 sm:p-4 lg:flex-1">
-                  <div className="text-xl font-black sm:text-2xl text-blue-400">
+                  <div className="text-xl font-semibold sm:text-2xl text-blue-600 dark:text-blue-400">
                     {result.cargo.weight_kg}
                   </div>
-                  <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-muted">
+                  <div className="mt-1 text-xs font-medium text-muted">
                     Weight (kg)
                   </div>
                 </div>
 
                 {/* Volume */}
                 <div className="min-h-24 w-36 shrink-0 rounded-xl border border-app bg-card-soft p-3 text-center sm:w-44 sm:p-4 lg:flex-1">
-                  <div className="text-xl font-black sm:text-2xl text-cyan-400">
+                  <div className="text-xl font-semibold sm:text-2xl text-cyan-600 dark:text-cyan-400">
                     {result.cargo.volume_liters}
                   </div>
-                  <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-muted">
+                  <div className="mt-1 text-xs font-medium text-muted">
                     Volume (L)
                   </div>
                 </div>
@@ -146,15 +148,15 @@ export default function CargoAnalysisPage() {
                 {/* Cooling */}
                 <div className="min-h-24 w-36 shrink-0 rounded-xl border border-app bg-card-soft p-3 text-center sm:w-44 sm:p-4 lg:flex-1">
                   <div
-                    className={`text-xl font-black sm:text-2xl ${
+                    className={`text-xl font-semibold sm:text-2xl ${
                       result.cargo.requires_cooling
-                        ? "text-amber-400"
-                        : "text-emerald-400"
+                        ? "text-amber-600 dark:text-amber-400"
+                        : "text-emerald-600 dark:text-emerald-400"
                     }`}
                   >
                     {result.cargo.requires_cooling ? "Yes" : "No"}
                   </div>
-                  <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-muted">
+                  <div className="mt-1 text-xs font-medium text-muted">
                     Cooling Required
                   </div>
                 </div>

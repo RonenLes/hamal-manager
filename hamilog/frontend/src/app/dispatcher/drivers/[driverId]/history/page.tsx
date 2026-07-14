@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { LoadingScreen } from "@/components/shared/Spinner";
 import { useParams, useRouter } from "next/navigation";
 
 import {
@@ -119,9 +120,7 @@ export default function DriverHistoryPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-app text-main">
-        Loading driver history...
-      </main>
+      <LoadingScreen label="Loading driver history..." />
     );
   }
 
@@ -131,8 +130,8 @@ export default function DriverHistoryPage() {
         <div className="mx-auto max-w-7xl">
           <BackToMenuButton href="/dispatcher/drivers" />
 
-          <div className="mt-6 rounded-2xl border border-app bg-card p-8 text-center">
-            <h1 className="text-3xl font-black">Driver not found</h1>
+          <div className="mt-6 rounded-xl border border-app bg-card p-8 text-center">
+            <h1 className="text-3xl font-semibold">Driver not found</h1>
             <p className="mt-2 text-muted">
               Could not find a driver with ID: {driverId}
             </p>
@@ -151,7 +150,7 @@ export default function DriverHistoryPage() {
           <p className="mt-5 text-sm font-semibold uppercase tracking-wider text-emerald-400">
             Driver History
           </p>
-          <h1 className="mt-1 text-3xl font-black">{driver.name}</h1>
+          <h1 className="mt-1 text-3xl font-semibold">{driver.name}</h1>
           <p className="mt-2 text-muted">
             Delivery history, completed missions, active assignments, and full
             mission details.
@@ -186,7 +185,7 @@ export default function DriverHistoryPage() {
           />
         </DispatcherStatsWindow>
 
-        <section className="rounded-2xl border border-app bg-card shadow-xl">
+        <section className="rounded-xl border border-app bg-card shadow-sm">
           <div className="border-b border-app px-5 py-4">
             <h2 className="text-xl font-bold text-main">
               Delivery History Entries

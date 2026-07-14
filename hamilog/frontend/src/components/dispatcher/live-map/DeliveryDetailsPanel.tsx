@@ -25,7 +25,7 @@ export default function DeliveryDetailsPanel({
             <p className="text-xs font-bold uppercase tracking-wider text-soft">
               Selected Delivery
             </p>
-            <h2 className="mt-1 truncate text-base font-black text-main">
+            <h2 className="mt-1 truncate text-base font-semibold text-main">
               {selectedPoint.mission.title}
             </h2>
             <p className="mt-1 truncate text-sm text-muted">

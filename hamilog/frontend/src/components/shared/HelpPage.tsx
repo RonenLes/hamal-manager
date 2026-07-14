@@ -26,7 +26,7 @@ function HelpPageCard({ title, href, description, features }: HelpPageItem) {
 
   return (
     <article
-      className={`rounded-2xl border border-app bg-card p-5 shadow-xl ${
+      className={`rounded-xl border border-app bg-card p-5 shadow-sm ${
         isExpanded
           ? "relative z-10 outline outline-2 outline-blue-500/70 shadow-[0_0_0_4px_rgba(59,130,246,0.12)]"
           : ""
@@ -34,7 +34,7 @@ function HelpPageCard({ title, href, description, features }: HelpPageItem) {
     >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h2 className="text-xl font-black text-main">{title}</h2>
+          <h2 className="text-xl font-semibold text-main">{title}</h2>
           <p className="mt-1 text-sm text-muted">{description}</p>
         </div>
 
@@ -47,7 +47,7 @@ function HelpPageCard({ title, href, description, features }: HelpPageItem) {
             onClick={() => setIsExpanded((current) => !current)}
             aria-expanded={isExpanded}
             aria-label={`${isExpanded ? "Collapse" : "Expand"} ${title}`}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-black text-main transition hover:bg-app"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-app bg-card-soft text-sm font-semibold text-main transition hover:bg-app"
           >
             {isExpanded ? "^" : "v"}
           </button>
@@ -92,7 +92,7 @@ export default function HelpPage({
             {guideLabel}
           </p>
 
-          <h1 className="mt-1 text-3xl font-black">Help</h1>
+          <h1 className="mt-1 text-3xl font-semibold">Help</h1>
 
           <p className="mt-2 max-w-3xl text-muted">{intro}</p>
         </header>
@@ -109,10 +109,10 @@ export default function HelpPage({
             onClose={() => setIsTicketOpen(false)}
           />
         ) : (
-          <section className="mt-8 rounded-2xl border border-app bg-card p-5 shadow-xl">
+          <section className="mt-8 rounded-xl border border-app bg-card p-5 shadow-sm">
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_360px]">
               <div>
-                <h2 className="text-xl font-black text-main">
+                <h2 className="text-xl font-semibold text-main">
                   Contact Support
                 </h2>
                 <p className="mt-2 text-sm text-muted">

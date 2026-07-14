@@ -28,7 +28,7 @@ export default function LiveMapCanvas({
   onSelectMission,
 }: LiveMapCanvasProps) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-app bg-card shadow-xl">
+    <div className="overflow-hidden rounded-xl border border-app bg-card shadow-sm">
       <div className="border-b border-app px-5 py-4">
         <h2 className="text-xl font-bold">Map</h2>
         <p className="mt-1 text-sm text-muted">

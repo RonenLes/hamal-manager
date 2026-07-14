@@ -20,6 +20,24 @@ function buildPath(points: DriverScorePoint[]) {
     .join(" ");
 }
 
+// Builds a closed area path (line dropped to the baseline) for the fill.
+function buildAreaPath(points: DriverScorePoint[]) {
+  if (points.length === 0) return "";
+
+  const line = points
+    .map((point, index) => {
+      const x = points.length === 1 ? 50 : (index / (points.length - 1)) * 100;
+      const y = 100 - point.score;
+      return `${index === 0 ? "M" : "L"} ${x} ${y}`;
+    })
+    .join(" ");
+
+  const lastX = points.length === 1 ? 50 : 100;
+  const firstX = points.length === 1 ? 50 : 0;
+
+  return `${line} L ${lastX} 100 L ${firstX} 100 Z`;
+}
+
 // Returns the point position.
 function getPointPosition(
   point: DriverScorePoint,
@@ -40,20 +58,21 @@ export default function DriverScoreGraph({
   const [mode, setMode] = useState<"date" | "mission">("date");
   const points = mode === "date" ? datePoints : missionPoints;
   const path = buildPath(points);
+  const areaPath = buildAreaPath(points);
   const latestScore = points[points.length - 1]?.score ?? 0;
 
   return (
-    <section className="relative z-10 rounded-xl bg-card-soft px-5 py-5 outline outline-2 outline-blue-500/70 shadow-[0_0_0_4px_rgba(59,130,246,0.12)]">
+    <section className="relative z-10 rounded-xl border border-app bg-card px-5 py-5 shadow-sm">
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h3 className="text-lg font-black text-main">Driver Score Trend</h3>
+          <h3 className="text-lg font-semibold text-main">Driver Score Trend</h3>
           <p className="mt-1 text-sm text-muted">
             Score movement from stored driver history.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="rounded-xl border border-app bg-card p-1">
+          <div className="rounded-xl border border-app bg-card-soft p-1">
             {(["date", "mission"] as const).map((item) => (
               <button
                 key={item}
@@ -70,18 +89,18 @@ export default function DriverScoreGraph({
             ))}
           </div>
 
-          <div className="rounded-xl border border-app bg-card px-4 py-2 text-right">
-            <p className="text-xs uppercase tracking-wider text-soft">Latest</p>
-            <p className="text-2xl font-black text-emerald-300">
+          <div className="rounded-xl border border-app bg-card-soft px-4 py-2 text-right">
+            <p className="text-xs text-soft">Latest</p>
+            <p className="text-2xl font-semibold text-emerald-600 dark:text-emerald-400">
               {latestScore}%
             </p>
           </div>
         </div>
       </div>
 
-      <div className="rounded-xl border border-app bg-card p-4">
+      <div className="rounded-xl border border-app bg-card-soft p-4">
         <div className="relative h-64">
-          <div className="absolute inset-y-0 left-0 flex flex-col justify-between pr-3 text-xs font-bold text-soft">
+          <div className="absolute inset-y-0 left-0 flex flex-col justify-between pr-3 text-xs font-medium text-soft">
             <span>100</span>
             <span>75</span>
             <span>50</span>
@@ -105,13 +124,14 @@ export default function DriverScoreGraph({
               role="img"
               aria-label="Driver score line graph"
             >
+              <path d={areaPath} fill="rgb(59 130 246)" fillOpacity="0.12" stroke="none" />
               <path
                 d={path}
                 fill="none"
                 stroke="rgb(59 130 246)"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="3"
+                strokeWidth="2.5"
                 vectorEffect="non-scaling-stroke"
               />
               {points.map((point, index) => {

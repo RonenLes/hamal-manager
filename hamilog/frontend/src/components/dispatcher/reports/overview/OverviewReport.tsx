@@ -23,10 +23,10 @@ export default function OverviewReport({
 }: OverviewReportProps) {
   return (
     <>
-      <section className="rounded-2xl border border-app bg-card p-4 shadow-xl sm:p-5">
+      <section className="rounded-xl border border-app bg-card p-4 shadow-sm sm:p-5">
         <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 className="text-lg font-black text-main">Mission Trend</h2>
+            <h2 className="text-lg font-semibold text-main">Mission Trend</h2>
             <p className="mt-1 text-sm text-muted">Export the current overview graph.</p>
           </div>
         </div>

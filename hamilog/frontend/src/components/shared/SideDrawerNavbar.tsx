@@ -143,7 +143,7 @@ export default function SideDrawerNavbar({ homeHref }: SideDrawerNavbarProps) {
         </button>
         <Link
           href={homeHref}
-          className="absolute left-1/2 -translate-x-1/2 text-xl font-black text-main sm:text-2xl"
+          className="absolute left-1/2 -translate-x-1/2 text-xl font-bold tracking-tight text-main sm:text-2xl"
         >
           Hamalog
         </Link>
@@ -166,7 +166,7 @@ export default function SideDrawerNavbar({ homeHref }: SideDrawerNavbarProps) {
         }`}
       >
         <div className="mb-6 flex items-center justify-between gap-3">
-          <Link href={homeHref} onClick={() => setIsOpen(false)} className="text-xl font-black text-main">
+          <Link href={homeHref} onClick={() => setIsOpen(false)} className="text-xl font-bold tracking-tight text-main">
             Hamalog
           </Link>
           <button
@@ -201,7 +201,7 @@ export default function SideDrawerNavbar({ homeHref }: SideDrawerNavbarProps) {
               >
                 <span>{link.label}</span>
                 {isMessages && unreadMessages > 0 && (
-                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-black text-white">
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-semibold text-white">
                     {unreadMessages}
                   </span>
                 )}
@@ -279,7 +279,7 @@ export default function SideDrawerNavbar({ homeHref }: SideDrawerNavbarProps) {
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-left text-sm font-semibold text-red-300 transition hover:bg-red-500 hover:text-white"
+            className="w-full rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-left text-sm font-semibold text-red-700 dark:text-red-300 transition hover:bg-red-500 hover:text-white"
           >
             Logout
           </button>

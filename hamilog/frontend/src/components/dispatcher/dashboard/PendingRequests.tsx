@@ -77,7 +77,7 @@ export default function PendingRequests({ missionRequests }: PendingRequestsProp
 
               <div className="flex shrink-0 flex-col items-end gap-2">
                 <PriorityBadge priority={mission.priority} />
-                <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-300">
+                <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-700 dark:text-orange-300">
                   {requestCount} request{requestCount === 1 ? "" : "s"}
                 </span>
               </div>

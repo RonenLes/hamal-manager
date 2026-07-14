@@ -27,10 +27,10 @@ function formatDateTime(dateValue?: string) {
 
 // Returns the state classes.
 function getStateClasses(state: string) {
-  if (state === "available") return "border-blue-500/30 bg-blue-500/10 text-blue-300";
-  if (state === "assigned") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
-  if (state === "cancelled") return "border-red-500/30 bg-red-500/10 text-red-300";
-  return "border-orange-500/30 bg-orange-500/10 text-orange-300";
+  if (state === "available") return "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300";
+  if (state === "assigned") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
+  if (state === "cancelled") return "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300";
+  return "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300";
 }
 
 // Renders the pending mission request entry component.
@@ -66,7 +66,7 @@ export default function PendingMissionRequestEntry({
             >
               {mission.status.replace("_", " ")}
             </span>
-            <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-300">
+            <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-700 dark:text-orange-300">
               {requests.length} driver{requests.length === 1 ? "" : "s"}
             </span>
           </div>
@@ -77,7 +77,7 @@ export default function PendingMissionRequestEntry({
         </div>
 
         <div className="flex shrink-0 items-center justify-between gap-4 sm:justify-end">
-          <span className="flex h-8 min-w-8 items-center justify-center rounded-full bg-red-600 px-2 text-sm font-black text-white">
+          <span className="flex h-8 min-w-8 items-center justify-center rounded-full bg-red-600 px-2 text-sm font-semibold text-white">
             {requests.length}
           </span>
           <span className="text-xl text-muted">{isExpanded ? "^" : "v"}</span>
@@ -134,7 +134,7 @@ export default function PendingMissionRequestEntry({
               </DetailTile>
 
               <DetailTile label="Requesting Drivers">
-                <p className="text-3xl font-black text-main">{requests.length}</p>
+                <p className="text-3xl font-semibold text-main">{requests.length}</p>
               </DetailTile>
 
               <DetailTile label="Cargo / Product" className="md:col-span-2">
